@@ -1,8 +1,7 @@
-var srlib  = require('../lib/stringreader.js');
 var assert = require('assert');
 var fs     = require('fs');
 
-StringReader = srlib.StringReader;
+StringReader = require('../lib/lexer/StringReader.js').StringReader;
 
 module.exports = {
 	'smart test': function() {

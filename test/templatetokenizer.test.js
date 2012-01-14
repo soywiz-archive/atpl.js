@@ -1,4 +1,4 @@
-var ttlib  = require('../lib/templatetokenizer.js');
+var ttlib  = require('../lib/lexer/TemplateTokenizer.js');
 var assert = require('assert');
 var fs     = require('fs');
 

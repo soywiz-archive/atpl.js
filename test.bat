@@ -1,0 +1,1 @@
+@mocha --ui exports --globals name test/dummy.test.js test/stringreader.test.js test/templatetokenizer.test.js

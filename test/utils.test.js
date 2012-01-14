@@ -16,4 +16,12 @@ module.exports = {
 		assert.equal(false, utils.pathIsInside('/base', '/base2'));
 		assert.equal(false, utils.pathIsInside('/base/', '/base2/'));
 	},
+	'interpretNumber': function() {
+		assert.equal(10   , utils.interpretNumber('10'));
+		assert.equal(0x10 , utils.interpretNumber('0x10'));
+		assert.equal(0777 , utils.interpretNumber('0777'));
+		assert.equal(7    , utils.interpretNumber('0b111'));
+		assert.equal(11.7 , utils.interpretNumber('11.7'));
+		assert.equal(0x333, utils.interpretNumber('333', 16));
+	},
 };

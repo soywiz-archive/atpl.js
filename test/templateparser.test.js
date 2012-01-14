@@ -2,27 +2,34 @@ var assert = require('assert');
 
 TemplateParser         = require('../lib/parser/TemplateParser.js').TemplateParser;
 MemoryTemplateProvider = require('../lib/TemplateProvider.js').MemoryTemplateProvider;
+RuntimeContext         = require('../lib/runtime/RuntimeContext.js').RuntimeContext;
 
 module.exports = {
-	'test simple extends': function(done) {
+	'test simple extends': function() {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
 		templateProvider.add('base', 'Hello {% block test %}Test{% endblock %}');
 		templateProvider.add('test', '{% extends "base" %}No{% block test %}World{% endblock%}No');
-		templateParser.compileAndRenderToString('test', function(output) {
-			assert.equal("Hello World", output);
-			done();
-		});
+		assert.equal("Hello World", templateParser.compileAndRenderToString('test'));
 	},
-	/*
-	'test simple if': function(done) {
+	'test simple if': function() {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
 		templateProvider.add('test', '{% if 0 %}0{% else %}1{% if 1 %}2{% endif%}{% endif %} ');
-		templateParser.compileAndRenderToString('test', function(output) {
-			assert.equal("12 ", output);
-			done();
-		});
+		assert.equal("12 ", templateParser.compileAndRenderToString('test'));
+	},
+	'test simple for': function() {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{{ hi }}{{ n }}{% for n in [1, 2, 3, 4] %}{{ n }}{% endfor %}{{ n }}');
+		assert.equal("Hello:1234", templateParser.compileAndRenderToString('test', { hi : 'Hello:' }));
+	},
+	/*
+	'test simple for else': function() {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{{ n }}{% for n in [] %}{{ n }}{% else %}No{% endfor %}{{ n }}');
+		assert.equal("No", templateParser.compileAndRenderToString('test', { }));
 	},
 	*/
 };

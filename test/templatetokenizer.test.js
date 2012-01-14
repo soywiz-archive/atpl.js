@@ -32,24 +32,7 @@ module.exports = {
 		var templateTokenizer = new TemplateTokenizer('{%extends base%} {{ 1 + 2 + 3 }} {{ "string" }}');
 		var tokens = templateTokenizer.tokenize();
 		assert.equal(
-			JSON.stringify([
-				{type: "block", value: [
-					{type: "id", value: "extends"},
-					{type: "id", value: "base"}
-				]},
-				{type: "text", value: " "},
-				{type: "expression", value: [
-					{type: "number",   value: "1"},
-					{type: "operator", value: "+"},
-					{type: "number",   value: "2"},
-					{type: "operator", value: "+"},
-					{type: "number",   value: "3"}
-				]},
-				{type: "text", value: " "},
-				{type: "expression", value: [
-					{type: "string", value: "string"}]
-				}
-			]),
+			JSON.stringify([{"type":"block","value":[{"type":"id","value":"extends","rawValue":"extends"},{"type":"id","value":"base","rawValue":"base"}]},{"type":"text","value":" "},{"type":"expression","value":[{"type":"number","value":1,"rawValue":"1"},{"type":"operator","value":"+","rawValue":"+"},{"type":"number","value":2,"rawValue":"2"},{"type":"operator","value":"+","rawValue":"+"},{"type":"number","value":3,"rawValue":"3"}]},{"type":"text","value":" "},{"type":"expression","value":[{"type":"string","value":"string","rawValue":"\"string\""}]}]),
 			JSON.stringify(tokens)
 		);
 	},

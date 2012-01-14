@@ -1,19 +1,22 @@
 {
-  "author": "Carlos Ballesteros <cballesterosvelasco@gmail.com> (http://cballesterosvelasco.es/)",
   "name": "atpl",
   "description": "A simple template engine based on twig and django.",
-  "version": "0.0.1",
-  "homepage": "https://github.com/soywiz/atpl.js",
-  "licenses": [
+  "version": "0.1.0",
+  "author": "Carlos Ballesteros <cballesterosvelasco@gmail.com> (http://cballesterosvelasco.es/)",
+  "contributors": [ 
   ],
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "homepage": "https://github.com/soywiz/atpl.js",
+  "keywords": ["template", "engine"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/soywiz/atpl.js"
+    "url": "git://github.com/soywiz/atpl.js.git"
   },
   "main": "lib/atpl.js",
   "engines": {
     "node": "*"
-  },
-  "dependencies": {},
-  "devDependencies": {}
+  }
 }

@@ -8,6 +8,8 @@
   "dependencies": {
   },
   "devDependencies": {
+    "should": "0.3.x",
+    "mocha": "0.3.x"
   },
   "homepage": "https://github.com/soywiz/atpl.js",
   "keywords": ["template", "engine"],
@@ -16,6 +18,9 @@
     "url": "git://github.com/soywiz/atpl.js.git"
   },
   "main": "lib/atpl.js",
+  "scripts": {
+    "test": "make test"
+  },
   "engines": {
     "node": "*"
   }

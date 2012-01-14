@@ -28,7 +28,7 @@ module.exports = {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
 		templateProvider.add('test', '{{ hi }}{{ n }}{% for n in list %}{{ n * 2 }}{% endfor %}{{ n }}');
-		assert.equal("Hello:2468", templateParser.compileAndRenderToString('test', { hi : 'Hello:', list : [1, 2, 3, 4] }));
+		assert.equal("aHello:2468", templateParser.compileAndRenderToString('test', { hi : 'Hello:', list : [1, 2, 3, 4] }));
 	},
 	'test escape': function() {
 		var templateProvider = new MemoryTemplateProvider();

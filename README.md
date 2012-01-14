@@ -37,3 +37,7 @@ Not-implemented-yet syntax:
 {% for var in list %}...{% else %}...{% endif %}
 {{ expression|filter }}
 ```
+
+Build status on Travis:
+
+[![Build Status](https://secure.travis-ci.org/soywiz/atpl.js.png)](http://travis-ci.org/#!/soywiz/atpl.js)

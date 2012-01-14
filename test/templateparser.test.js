@@ -24,6 +24,12 @@ module.exports = {
 		templateProvider.add('test', '{{ hi }}{{ n }}{% for n in [1, 2, 3, 4] %}{{ n }}{% endfor %}{{ n }}');
 		assert.equal("Hello:1234", templateParser.compileAndRenderToString('test', { hi : 'Hello:' }));
 	},
+	'test escape': function() {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{{ msg }}');
+		assert.equal("&lt;&quot;&gt;__&lt;&quot;&gt;", templateParser.compileAndRenderToString('test', { msg : '<">__<">' }));
+	},
 	/*
 	'test simple for else': function() {
 		var templateProvider = new MemoryTemplateProvider();

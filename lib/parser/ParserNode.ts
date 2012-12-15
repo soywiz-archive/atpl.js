@@ -182,6 +182,10 @@ export class ParserNodeBinaryOperation extends ParserNode {
 
 	generateCode() {
 		switch (this.operator) {
+			case '**':
+				return 'Math.pow(' + this.left.generateCode() + ',' + this.right.generateCode() + ')';
+			case 'in':
+				return 'runtimeContext.inArray(' + this.left.generateCode() + ',' + this.right.generateCode() + ')';
 			case 'is':
 				if (this.right instanceof ParserNodeFunctionCall) {
 					//throw (new Error("Not implemented ParserNodeFunctionCall"));

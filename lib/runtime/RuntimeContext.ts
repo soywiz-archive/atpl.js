@@ -129,6 +129,11 @@ export class RuntimeContext {
 		return this.$call(this.tests, $function, $arguments);
 	}
 
+	include(name: string) {
+		var IncludeTemplate = new ((this.templateParser.compile(name)).class)();
+		IncludeTemplate.__main(this);
+	}
+
 	extends(name: string) {
 		var ParentTemplateInfo = (this.templateParser.compile(name));
 		var ParentTemplate = new (ParentTemplateInfo.class)();
@@ -181,6 +186,11 @@ export class RuntimeContext {
 	emptyList(value: any) {
 		if (value === undefined || value === null) return true;
 		if (value instanceof Array || value instanceof String) return (value.length == 0);
+		return false;
+	}
+
+	inArray(value: any, array: any) {
+		if (array instanceof Array) return array.indexOf(value) != -1;
 		return false;
 	}
 

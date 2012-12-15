@@ -24,6 +24,7 @@ This project will implement the full twig set and will be as fast as possible.
 Supported syntax:
 
  * Inheritance
+ * Include
  * Simple if, for
  * if+elseif
  * for+else
@@ -32,12 +33,14 @@ Supported syntax:
  * Filters
  * Functions
  * Tests
+ * value in array
 
 ```
 {% autoescape %}
 {% autoescape 'type' %}
 {% extends "file.atpl" %}
 {% extends cond ? "base1" : "base2" %}
+{% include "template" %}
 {% block name %}...{% endblock %}
 {% for var in list %}...{% endfor %}
 {% for var in list %}...{% else %}...{% endfor %}
@@ -50,11 +53,13 @@ Supported syntax:
 {{ var is even }}
 {{ var is sameas(var) }}
 {{ var.array['access'] }}
+{{ 3 in [1, 2, 3, 4] }}
 ```
 
 Not-implemented-yet syntax:
 
- * ...
+ * {'key':'value','key2':'value2'}
+ * a, b = 'a', 'b'
 
 ```
 ...

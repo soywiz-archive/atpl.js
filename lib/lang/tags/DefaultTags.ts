@@ -43,6 +43,75 @@ export function register(templateParser: ITemplateParser) {
 		}
 	});
 
+	// DO/SET
+	templateParser.addBlockHandler('set', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
+		var nodeId: any = expressionParser.parseIdentifier();
+		expressionTokenReader.expectAndMoveNext('=');
+		var nodeValue = expressionParser.parseExpression();
+
+		tokenParserContext.write('runtimeContext.scope.set(' + JSON.stringify(nodeId.value) + ', ' + nodeValue.generateCode()  + ');');
+
+	});
+	templateParser.addBlockHandler('do', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		throw (new Error("Not implemented tag [do]"));
+	});
+
+	// EMBED
+	templateParser.addBlockHandler('embed', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		throw (new Error("Not implemented tag [embed]"));
+	});
+
+	// FILTER
+	templateParser.addBlockHandler('filter', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		throw (new Error("Not implemented tag [filter]"));
+	});
+
+	// FLUSH
+	templateParser.addBlockHandler('flush', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		throw (new Error("Not implemented tag [flush]"));
+	});
+
+	// MACRO/FROM/IMPORTUSE
+	templateParser.addBlockHandler('use', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		throw (new Error("Not implemented tag [use]"));
+	});
+	templateParser.addBlockHandler('macro', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		throw (new Error("Not implemented tag [macro]"));
+	});
+	templateParser.addBlockHandler('from', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		throw (new Error("Not implemented tag [from]"));
+	});
+	templateParser.addBlockHandler('import', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		throw (new Error("Not implemented tag [import]"));
+	});
+
+	// INCLUDE
+	templateParser.addBlockHandler('include', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+
+		tokenParserContext.write('runtimeContext.include(' + expressionNode.generateCode() + ');');
+	});
+
+	// RAW
+	templateParser.addBlockHandler('raw', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		throw (new Error("Not implemented tag [raw]"));
+	});
+
+	// SANDBOX
+	templateParser.addBlockHandler('sandbox', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		throw (new Error("Not implemented tag [sandbox]"));
+	});
+
+	// RAW
+	templateParser.addBlockHandler('raw', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		throw (new Error("Not implemented tag [raw]"));
+	});
+
+	// SPACELESS
+	templateParser.addBlockHandler('spaceless', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		throw (new Error("Not implemented tag [spaceless]"));
+	});
 
 	// IF/ELSEIF/ELSE/ENDIF
 	templateParser.addBlockFlowExceptionHandler('else');

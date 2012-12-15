@@ -14,6 +14,10 @@ export class ExpressionTokenizer {
 	constructor(public stringReader: StringReader.StringReader) {
 	}
 
+	static operators3 = [
+		'===', '!==',
+	];
+
 	static operators2 = [
 		'++', '--', '&&', '||', '..', '//', '**',
 		'==', '>=', '<=', '!=',
@@ -21,7 +25,7 @@ export class ExpressionTokenizer {
 
 	static operators1 = [
 		'+', '-', '*', '/', '%', '|', '(', ')',
-		'{', '}', '[', ']', '.', ':', ',', '<', '>', '?',
+		'{', '}', '[', ']', '.', ':', ',', '<', '>', '?', '=', '~',
 	];
 
 	tokenize() {
@@ -59,7 +63,16 @@ export class ExpressionTokenizer {
 					var result = this.stringReader.findRegexp(/^(["'])(?:(?=(\\?))\2.)*?\1/);
 					if (result.position !== 0) throw(new Error("Invalid string"));
 					var value = this.stringReader.readChars(result.length);
-					emitToken('string', JSON.parse(value), value);
+					try {
+						if (value.charAt(0) == "'") {
+							// @TODO: fix ' escape characters
+							emitToken('string', value.substr(1, value.length - 2), value);
+						} else {
+							emitToken('string', JSON.parse(value), value);
+						}
+					} catch (e) {
+						throw (new Error("Can't parse [" + value + "]"));
+					}
 				break;
 				default:
 					// Numbers
@@ -71,9 +84,16 @@ export class ExpressionTokenizer {
 					}
 					else {
 						var operatorIndex = -1;
+						var current3Chars = this.stringReader.peekChars(3);
 						var current2Chars = this.stringReader.peekChars(2);
+						
+						// Found a 3 character operator.
+						if (-1 != (operatorIndex = ExpressionTokenizer.operators3.indexOf(current2Chars))) {
+							emitToken('operator', current3Chars);
+							this.stringReader.skipChars(3);
+						}
 						// Found a 2 character operator.
-						if (-1 != (operatorIndex = ExpressionTokenizer.operators2.indexOf(current2Chars))) {
+						else if (-1 != (operatorIndex = ExpressionTokenizer.operators2.indexOf(current2Chars))) {
 							emitToken('operator', current2Chars);
 							this.stringReader.skipChars(2);
 						}
@@ -90,7 +110,7 @@ export class ExpressionTokenizer {
 							emitToken('id', value);
 						} else {
 							this.stringReader.skipChars(1);
-							throw(new Error("Unknown token '" + currentChar + "'"));
+							throw(new Error("Unknown token '" + currentChar + "' in '" + this.stringReader.peekChars(10) + "'"));
 						}
 					}
 				break;

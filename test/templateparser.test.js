@@ -196,6 +196,34 @@ module.exports = {
 			"12 "
 		);
 	},
+	'test operators': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{{ 1 + 2 ** 8 * 2 }}');
+		assert.equal(
+			templateParser.compileAndRenderToString('test'),
+			"513"
+		);
+	},
+	'test in array': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{{ 3 in [1, 2, 3, 4] }}');
+		assert.equal(
+			templateParser.compileAndRenderToString('test'),
+			"true"
+		);
+	},
+	'test include': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('include', '{{ "Hello" }} World');
+		templateProvider.add('test', '[{% include "include" %}]');
+		assert.equal(
+			templateParser.compileAndRenderToString('test'),
+			"[Hello World]"
+		);
+	},
 	'test simple if elseif else': function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
@@ -203,6 +231,40 @@ module.exports = {
 		assert.equal(
 			templateParser.compileAndRenderToString('test', { v : 2 }),
 			"2"
+		);
+	},
+	'test undefined key': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test',
+			"{{ undefined_key }}" +
+		"");
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { v: 2 }),
+			""
+		);
+	},
+	'test set tag': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test',
+			"{% set foo1 = 'foo' %}" +
+			"{% set foo2 = [1, 2] %}" +
+			//"{% set foo3 = {'foo': 'bar'} %}" +
+			//"{% set foo4 = 'foo' ~ 'bar' %}" +
+			//"{% set foo5, bar = 'foo', 'bar' %}" +
+			"{{ foo1 }}," +
+			"{{ foo2 }}," +
+			"{{ foo3 }}," +
+			"{{ foo4 }}," +
+			"{{ foo5 }}," +
+			"{{ bar }}," +
+		"");
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { v : 2 }),
+			"foo,[1,2],{'foo':'bar'},foobar,foo,bar"
 		);
 	},
 	'test simple for': function () {

@@ -62,7 +62,7 @@ export class ExpressionParser {
 	//}
 
 	parseCompare() {
-		return this._parseBinary('parseCompare', this.parseAddSub, ['==', '!=', '>=', '<=', '>', '<', '===', '!==', 'is']);
+		return this._parseBinary('parseCompare', this.parseAddSub, ['==', '!=', '>=', '<=', '>', '<', '===', '!==', 'is', 'in']);
 	}
 
 	parseAddSub() {
@@ -70,8 +70,12 @@ export class ExpressionParser {
 	}
 
 	parseMulDiv() {
-		return this._parseBinary('parseMulDiv', this.parseLiteralUnary, ['*', '/', '%']);
-	};
+		return this._parseBinary('parseMulDiv', this.parsePow, ['*', '/', '%']);
+	}
+
+	parsePow() {
+		return this._parseBinary('parsePow', this.parseLiteralUnary, ['**']);
+	}
 
 	parseLiteralUnary() {
 		var token = this.tokenReader.peek();

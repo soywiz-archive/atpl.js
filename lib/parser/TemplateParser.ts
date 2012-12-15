@@ -78,7 +78,7 @@ export class TemplateParser {
 		var blocks = tokenParserContext.blocksOutput;
 		var output = '';
 		output += 'CurrentTemplate = function() { };\n';
-		output += 'CurrentTemplate.prototype.render = function(runtimeContext) { this.__main(runtimeContext); };\n';
+		output += 'CurrentTemplate.prototype.render = function(runtimeContext) { runtimeContext.setTemplate(this); this.__main(runtimeContext); };\n';
 		for (var blockName in blocks) {
 			var block = blocks[blockName];
 			output += 'CurrentTemplate.prototype.' + blockName + ' = function(runtimeContext) {\n';

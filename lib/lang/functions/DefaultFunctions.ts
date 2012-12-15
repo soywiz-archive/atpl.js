@@ -36,7 +36,10 @@
 
 	// http://twig.sensiolabs.org/doc/functions/block.html
 	static block(name: string) {
-		throw (new Error("Not implemented"));
+		var that = this;
+		return that.captureOutput(() => {
+			that.putBlock('block_' + name);
+		});
 	}
 
 	// http://twig.sensiolabs.org/doc/functions/parent.html

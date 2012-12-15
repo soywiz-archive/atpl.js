@@ -23,7 +23,7 @@
 
 	// http://twig.sensiolabs.org/doc/tests/even.html
 	static even(value: any) {
-		throw (new Error("Not implemented"));
+		return (value % 2) == 0;
 	}
 
 	// http://twig.sensiolabs.org/doc/tests/iterable.html
@@ -38,7 +38,7 @@
 
 	// http://twig.sensiolabs.org/doc/tests/odd.html
 	static odd(value: any) {
-		throw (new Error("Not implemented"));
+		return (value % 2) == 1;
 	}
 
 	// http://twig.sensiolabs.org/doc/tests/sameas.html

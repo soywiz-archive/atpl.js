@@ -23,8 +23,11 @@ Supported syntax:
  * Skip autoescape (|raw)
  * Filters
  * Functions
+ * Tests
 
 ```
+{% autoescape %}
+{% autoescape 'type' %}
 {% extends "file.atpl" %}
 {% extends cond ? "base1" : "base2" %}
 {% block name %}...{% endblock %}
@@ -34,18 +37,18 @@ Supported syntax:
 {{ expression|filter }}
 {{ expression|filter(params) }}
 {{ function(params) }}
+{{ var is even }}
+{{ var is sameas(var) }}
 ```
 
 Not-implemented-yet syntax:
 
  * for+else
  * if+elseif
- * Tests
 
 ```
 {% if cond1 %}...{% elseif cond2 %}...{% else %}...{% endif %}
 {% for var in list %}...{% else %}...{% endfor %}
-{{ var is even }}
 ```
 
 Build status on Travis:

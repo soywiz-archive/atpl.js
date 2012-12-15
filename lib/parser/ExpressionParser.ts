@@ -25,53 +25,7 @@ export class ExpressionParser {
 	}
 
 	parseFunctionCall() {
-		var expr = this.parseTernary();
-
-		while (true) {
-			// Function call
-			if (this.tokenReader.peek().value == '(')
-			{
-				this.tokenReader.skip();
-				var arguments;
-				if (this.tokenReader.peek().value != ')') {
-					arguments = this.parseCommaExpression();
-				} else {
-					arguments = new ParserNode.ParserNodeCommaExpression([]);
-				}
-				this.tokenReader.expectAndMoveNext(')');
-				if (expr instanceof ParserNode.ParserNodeIdentifier) {
-					expr = new ParserNode.ParserNodeFunctionCall(new ParserNode.ParserNodeLiteral(expr.value), arguments);
-				} else {
-					expr = new ParserNode.ParserNodeFunctionCall(expr, arguments);
-				}
-			}
-			// Filter
-			else if (this.tokenReader.peek().value == '|')
-			{
-				this.tokenReader.skip();
-				var filterName = this.tokenReader.peek().value;
-				this.tokenReader.skip();
-
-				var arguments = new ParserNode.ParserNodeCommaExpression([]);
-
-				if (this.tokenReader.peek().value == '(') {
-					this.tokenReader.skip();
-					if (this.tokenReader.peek().value != ')') {
-						arguments = this.parseCommaExpression();
-					}
-					this.tokenReader.expectAndMoveNext(')');
-				}
-
-				arguments.expressions.unshift(expr);
-
-				expr = new ParserNode.ParserNodeFilterCall(filterName, arguments);
-			}
-			// End or other
-			else
-			{
-				return expr;
-			}
-		}
+		return this.parseTernary();
 	}
 
 	parseTernary() {
@@ -108,7 +62,7 @@ export class ExpressionParser {
 	//}
 
 	parseCompare() {
-		return this._parseBinary('parseCompare', this.parseAddSub, ['==', '!=', '>=', '<=', '>', '<', '===', '!==']);
+		return this._parseBinary('parseCompare', this.parseAddSub, ['==', '!=', '>=', '<=', '>', '<', '===', '!==', 'is']);
 	}
 
 	parseAddSub() {
@@ -121,16 +75,17 @@ export class ExpressionParser {
 
 	parseLiteralUnary() {
 		var token = this.tokenReader.peek();
+		var expr = undefined;
 	
 		// '(' <expression> ')'
 		if (this.tokenReader.checkAndMoveNext('(')) {
 			var subExpression = this.parseExpression();
 			this.tokenReader.expectAndMoveNext(')');
-			return subExpression;
+			expr = subExpression;
 		}
 
 		// '[' [<expression> [',']] ']'
-		if (this.tokenReader.checkAndMoveNext('[')) {
+		else if (this.tokenReader.checkAndMoveNext('[')) {
 			var elements: ParserNode.ParserNodeExpression[] = [];
 			while (true) {
 				if (this.tokenReader.peek().value == ']') {
@@ -145,22 +100,76 @@ export class ExpressionParser {
 					this.tokenReader.skip();
 				}
 			}
-			return new ParserNode.ParserNodeArrayContainer(elements);
+			expr = new ParserNode.ParserNodeArrayContainer(elements);
 		}
 
 		// Unary operator.
-		if (['-', '+', '~', '!'].indexOf(token.value) != -1) {
+		else if (['-', '+', '~', '!'].indexOf(token.value) != -1) {
 			this.tokenReader.skip();
-			return new ParserNode.ParserNodeUnaryOperation(token.value, this.parseLiteralUnary());
+			expr = new ParserNode.ParserNodeUnaryOperation(token.value, this.parseLiteralUnary());
 		}
 	
 		// Numeric or string literal.
-		if (token.type == 'number' || token.type == 'string') {
+		else if (token.type == 'number' || token.type == 'string') {
 			this.tokenReader.skip();
-			return new ParserNode.ParserNodeLiteral(token.value);
+			expr = new ParserNode.ParserNodeLiteral(token.value);
 		}
-	
-		return this.parseIdentifier();
+		else {
+			expr = this.parseIdentifier();
+		}
+
+		while (true)
+		{
+			// Function call
+			if (this.tokenReader.peek().value == '(')
+			{
+				this.tokenReader.skip();
+				var arguments;
+				if (this.tokenReader.peek().value != ')') {
+					arguments = this.parseCommaExpression();
+				} else {
+					arguments = new ParserNode.ParserNodeCommaExpression([]);
+				}
+				this.tokenReader.expectAndMoveNext(')');
+				if (expr instanceof ParserNode.ParserNodeIdentifier) {
+					expr = new ParserNode.ParserNodeFunctionCall(new ParserNode.ParserNodeLiteral(expr.value), arguments);
+				} else {
+					expr = new ParserNode.ParserNodeFunctionCall(expr, arguments);
+				}
+			}
+			// Array access
+			if (this.tokenReader.peek().value == '[') {
+				throw (new Error('Not implemented array access'));
+			}
+			// Field access
+			if (this.tokenReader.peek().value == '.') {
+				throw (new Error('Not implemented field access'));
+			}
+			// Filter
+			else if (this.tokenReader.peek().value == '|') {
+				this.tokenReader.skip();
+				var filterName = this.tokenReader.peek().value;
+				this.tokenReader.skip();
+
+				var arguments = new ParserNode.ParserNodeCommaExpression([]);
+
+				if (this.tokenReader.peek().value == '(') {
+					this.tokenReader.skip();
+					if (this.tokenReader.peek().value != ')') {
+						arguments = this.parseCommaExpression();
+					}
+					this.tokenReader.expectAndMoveNext(')');
+				}
+
+				arguments.expressions.unshift(expr);
+
+				expr = new ParserNode.ParserNodeFilterCall(filterName, arguments);
+			}
+				// End or other
+			else {
+				return expr;
+			}
+		}
 	};
 
 	parseIdentifier(): ParserNode.ParserNodeExpression {
@@ -174,7 +183,8 @@ export class ExpressionParser {
 				case 'false': return new ParserNode.ParserNodeLiteral(false);
 				case 'true': return new ParserNode.ParserNodeLiteral(true);
 				case 'null': return new ParserNode.ParserNodeLiteral(null);
-				default: return new ParserNode.ParserNodeIdentifier(identifierString);
+				default:
+					return new ParserNode.ParserNodeIdentifier(identifierString);
 			}
 		}
 	

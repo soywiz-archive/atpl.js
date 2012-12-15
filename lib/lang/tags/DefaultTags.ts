@@ -87,14 +87,14 @@ export function register(templateParser: ITemplateParser) {
 				}
 			}
 		});
-		tokenParserContext.write('runtimeContext.putBlock(that, ' + JSON.stringify(blockName) + ');');
+		tokenParserContext.write('runtimeContext.putBlock(' + JSON.stringify(blockName) + ');');
 	});
 
 	// EXTENDS
 	templateParser.addBlockHandler('extends', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 
-		tokenParserContext.write('return runtimeContext.extends(that, ' + expressionNode.generateCode() + ');');
+		tokenParserContext.write('return runtimeContext.extends(' + expressionNode.generateCode() + ');');
 	});
 
 	// FOR/ENDFOR

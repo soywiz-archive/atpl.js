@@ -13,6 +13,7 @@ export class RuntimeContext {
 	tests: any = {};
 	currentAutoescape: any = true;
 	defaultAutoescape: any = true;
+	CurrentTemplate: any;
 
 	constructor(public templateParser: any, scopeData: any) {
 		this.scope = new Scope.Scope(scopeData);
@@ -30,8 +31,23 @@ export class RuntimeContext {
 		}
 	}
 
+	setTemplate(CurrentTemplate: any) {
+		this.CurrentTemplate = CurrentTemplate;
+	}
+
 	createScope(inner: () => void) {
 		this.scope.createScope(inner);
+	}
+
+	captureOutput(callback: () => void) {
+		var oldOutput = this.output;
+		this.output = '';
+		try {
+			callback();
+			return this.output;
+		} finally {
+			this.output = oldOutput;
+		}
 	}
 
 	write(text: any) {
@@ -89,35 +105,31 @@ export class RuntimeContext {
 		return this.$call(this.filters, $function, $arguments);
 	}
 
-	extends(CurrentTemplate: any, name: string) {
-		var ParentTemplateInfo = (this.templateParser.compile(name));
-		var ParentTemplate = new (ParentTemplateInfo.class)();
-		//console.log(ParentTemplateInfo.output);
-		//console.log(CurrentTemplate.__main);
-
-		//console.log('extends:' + name);
-		//CurrentTemplate['__proto__']['__proto__'] = ParentTemplate;
-
-		for (var key in ParentTemplate) if (CurrentTemplate[key] === undefined) CurrentTemplate[key] = ParentTemplate[key];
-		CurrentTemplate['__parent'] = ParentTemplate;
-		CurrentTemplate['__main'] = ParentTemplate['__main'];
-		return CurrentTemplate.__main(this);
+	test($function: any, $arguments: any[]) {
+		return this.$call(this.tests, $function, $arguments);
 	}
 
-	putBlock(CurrentTemplate: any, name: string) {
-		return (CurrentTemplate[name])(this);
-		//while (CurrentTemplate !== undefined) {
-		//	//console.log(CurrentTemplate);
-		//	var method = (CurrentTemplate[name]);
-		//	if (method !== undefined) {
-		//		return method(this);
-		//	} else {
-		//		CurrentTemplate = CurrentTemplate['__parent'];
-		//	}
-		//}
+	extends(name: string) {
+		var ParentTemplateInfo = (this.templateParser.compile(name));
+		var ParentTemplate = new (ParentTemplateInfo.class)();
+
+		for (var key in ParentTemplate) if (this.CurrentTemplate[key] === undefined) this.CurrentTemplate[key] = ParentTemplate[key];
+		this.CurrentTemplate['__parent'] = ParentTemplate;
+		this.CurrentTemplate['__main'] = ParentTemplate['__main'];
+		return this.CurrentTemplate.__main(this);
+	}
+
+	putBlock(name: string) {
+		var method = (this.CurrentTemplate[name]);
+		if (method === undefined) {
+			console.log(this.CurrentTemplate['__proto__']);
+			throw (new Error("Can't find block '" + name + "'"));
+		}
+		return method(this);
 	}
 
 	autoescape(temporalValue: any, callback: () => void) {
+		if (temporalValue === undefined) temporalValue = true;
 		var prevDefault = this.defaultAutoescape;
 		
 		this.defaultAutoescape = temporalValue;

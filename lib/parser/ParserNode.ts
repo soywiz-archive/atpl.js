@@ -166,18 +166,30 @@ export class ParserNodeUnaryOperation extends ParserNode {
 ///////////////////////////////////////////////////////////////////////////////
 
 export class ParserNodeBinaryOperation extends ParserNode {
-	constructor(public operation, public left, public right) {
+	constructor(public operator, public left, public right) {
 		super();
 	}
 
 	generateCode() {
-		return (
-			'(' +
-				this.left.generateCode() +
-				' ' + this.operation  + ' ' +
-				this.right.generateCode() +
-			')'
-		);
+		switch (this.operator) {
+			case 'is':
+				if (this.right instanceof ParserNodeFunctionCall) {
+					//throw (new Error("Not implemented ParserNodeFunctionCall"));
+					return 'runtimeContext.test(' + this.right.functionExpr.generateCode() + ', [' + this.left.generateCode() + ',' + this.right.arguments.generateCode() + '])';
+				} else if (this.right instanceof ParserNodeIdentifier) {
+					return 'runtimeContext.test(' + JSON.stringify(this.right.value) + ', [' + this.left.generateCode() + '])';
+				} else {
+					throw (new Error("Not implemented else"));
+				}
+			default:
+				return (
+					'(' +
+						this.left.generateCode() +
+						' ' + this.operator  + ' ' +
+						this.right.generateCode() +
+					')'
+				);
+		}
 	}
 }
 

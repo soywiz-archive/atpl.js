@@ -16,6 +16,50 @@ module.exports = {
 			"0"
 		);
 	},
+	'test simple true': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{{ true }}');
+
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test'),
+			"true"
+		);
+	},
+	'test simple test odd': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{{ 3 is odd }}');
+
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test'),
+			"true"
+		);
+	},
+	'test function block': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '[{{ block("test") }}]{% block test %}Hello{% endblock %}({{ block("test") }})');
+
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test'),
+			"[Hello]Hello(Hello)"
+		);
+	},
+	'test simple test sameas': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{{ 3 is sameas(3) }}');
+
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test'),
+			"true"
+		);
+	},
 	'test simple function range': function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);

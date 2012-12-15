@@ -9,7 +9,8 @@
   },
   "devDependencies": {
     "should": "0.3.x",
-    "mocha": "0.3.x"
+    "mocha": "0.3.x",
+	"typescript": "0.8.x"
   },
   "homepage": "https://github.com/soywiz/atpl.js",
   "keywords": ["template", "engine"],

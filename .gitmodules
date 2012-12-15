@@ -1,0 +1,3 @@
+[submodule "typescript-node-definitions"]
+	path = typescript-node-definitions
+	url = git://github.com/soywiz/typescript-node-definitions.git

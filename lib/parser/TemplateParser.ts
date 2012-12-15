@@ -40,17 +40,15 @@ export class TemplateParser {
 		this.blockHandlers[blockType] = callback;
 	}
 
-	compileAndRenderToString(path, scope) {
+	compileAndRenderToString(path, scope: any) {
 		if (scope === undefined) scope = {};
-		var runtimeContext = new RuntimeContext();
-		runtimeContext.scope = scope;
+		var runtimeContext = new RuntimeContext(this, scope);
 		this.compileAndRender(path, runtimeContext);
 		return runtimeContext.output;
 	}
 
 	compileAndRender(path, runtimeContext) {
-		var Template = this.compile(path);
-		var template = new Template();
+		var template = new (this.compile(path).class)();
 		template.render(runtimeContext);
 		return template;
 	}
@@ -80,11 +78,11 @@ export class TemplateParser {
 		var blocks = tokenParserContext.blocksOutput;
 		var output = '';
 		output += 'CurrentTemplate = function() { };';
-		output += 'CurrentTemplate.parentName = ' + JSON.stringify(tokenParserContext.parentName) + ';';
 		output += 'CurrentTemplate.prototype.render = function(runtimeContext) { this.__main(runtimeContext); };';
 		for (var blockName in blocks) {
 			var block = blocks[blockName];
 			output += 'CurrentTemplate.prototype.' + blockName + ' = function(runtimeContext) {';
+			output += 'var that = this;';
 			output += block;
 			output += '}; ';
 		}
@@ -94,20 +92,16 @@ export class TemplateParser {
 	}
 
 	compile(path: string) {
-		var info = this.getEvalCode(path);
-		var output = info.output;
-		var tokenParserContext = info.tokenParserContext;
-		var CurrentTemplate = undefined;
+		if (this.registry[path] === undefined) {
+			var info = this.getEvalCode(path);
+			var output = info.output;
+			var tokenParserContext = info.tokenParserContext;
+			var CurrentTemplate = undefined;
 
-		eval(output);
-	
-		if (tokenParserContext.parentName != '') {
-			var ParentTemplate = this.compile(tokenParserContext.parentName);
-			CurrentTemplate.prototype.__proto__ = ParentTemplate.prototype;
-			CurrentTemplate.prototype.__main    = ParentTemplate.prototype.__main;
+			eval(output);
+
+			this.registry[path] = { output : output, class : CurrentTemplate };
 		}
-
-		this.registry[path] = CurrentTemplate;
 	
 		return this.registry[path];
 	}

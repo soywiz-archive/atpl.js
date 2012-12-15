@@ -3,17 +3,20 @@
 import DefaultFunctions = module('../lang/functions/DefaultFunctions');
 import DefaultFilters = module('../lang/filters/DefaultFilters');
 import DefaultTests = module('../lang/tests/DefaultTests');
+import Scope = module('./Scope');
 
 export class RuntimeContext {
 	output: string = '';
-	scope: any = {};
+	private scope: Scope.Scope;
 	functions: any = {};
 	filters: any = {};
 	tests: any = {};
 	currentAutoescape: any = true;
 	defaultAutoescape: any = true;
 
-	constructor() {
+	constructor(public templateParser: any, scopeData: any) {
+		this.scope = new Scope.Scope(scopeData);
+
 		for (var key in DefaultFunctions.DefaultFunctions) {
 			this.functions[key.replace(/^\$+/, '')] = DefaultFunctions.DefaultFunctions[key];
 		}
@@ -28,15 +31,7 @@ export class RuntimeContext {
 	}
 
 	createScope(inner: () => void) {
-		var newScope = {};
-		var oldScope = this.scope;
-		newScope['__proto__'] = oldScope;
-		this.scope = newScope;
-		try {
-			inner();
-		} finally {
-			this.scope = oldScope;
-		}
+		this.scope.createScope(inner);
 	}
 
 	write(text: any) {
@@ -92,6 +87,31 @@ export class RuntimeContext {
 
 	filter($function: any, $arguments: any[]) {
 		return this.$call(this.filters, $function, $arguments);
+	}
+
+	extends(CurrentTemplate: any, name: string) {
+		var ParentTemplateInfo = (this.templateParser.compile(name));
+		var ParentTemplate = new (ParentTemplateInfo.class)();
+		//console.log(ParentTemplateInfo.output);
+		//console.log(CurrentTemplate.__main);
+
+		//console.log('extends:' + name);
+		CurrentTemplate['__proto__']['__proto__'] = ParentTemplate;
+		CurrentTemplate['__parent'] = ParentTemplate;
+		return ParentTemplate.__main.apply(CurrentTemplate, [this]);
+	}
+
+	putBlock(CurrentTemplate: any, name: string) {
+		return (CurrentTemplate[name])(this);
+		//while (CurrentTemplate !== undefined) {
+		//	//console.log(CurrentTemplate);
+		//	var method = (CurrentTemplate[name]);
+		//	if (method !== undefined) {
+		//		return method(this);
+		//	} else {
+		//		CurrentTemplate = CurrentTemplate['__parent'];
+		//	}
+		//}
 	}
 
 	autoescape(temporalValue: any, callback: () => void) {

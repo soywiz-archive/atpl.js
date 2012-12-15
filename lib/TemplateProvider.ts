@@ -5,68 +5,46 @@ import util  = module('util');
 import utils = module('./utils');
 
 export interface TemplateProvider {
-	getAsync(path, callback);
 	getSync(path);
 }
 
 export class FileSystemTemplateProvider implements TemplateProvider {
 	basePath;
 	basePathComponents;
-	cache;
-	registry;
+	cacheObject: any = {};
 
-	constructor(basePath, cache?) {
-		if (cache === undefined) cache = true;
+	constructor(basePath: string, public cache: bool = true) {
 		this.basePath = utils.normalizePath(basePath);
 		this.basePathComponents = this.basePath.split('/');
-		
-		// Cache not implemented.
-		this.cache = cache;
-		this.registry = {};
 	}
 
-	getAsync(path, callback) {
-		var normalizedPath = utils.normalizePath(this.basePath + '/' + path);
-		
-		if (normalizedPath.split('/').slice(0, this.basePathComponents.length) == this.basePathComponents) {
-			throw(new Error("Outside the Base Path"));
-		}
-		
-		fs.readFile(normalizedPath, 'utf-8', function (err, data) {
-			if (err) throw err;
-			callback(data);
-		});
-	}
+	getSync(path: string) {
+		if (this.cacheObject[path] === undefined) {
+			var normalizedPath = utils.normalizePath(this.basePath + '/' + path);
 
-	getSync(path) {
-		var normalizedPath = utils.normalizePath(this.basePath + '/' + path);
-		
-		if (normalizedPath.split('/').slice(0, this.basePathComponents.length) == this.basePathComponents) {
-			throw(new Error("Outside the Base Path"));
+			if (normalizedPath.split('/').slice(0, this.basePathComponents.length) == this.basePathComponents) {
+				throw (new Error("Outside the Base Path"));
+			}
+
+			this.cacheObject[path] = fs.readFileSync(normalizedPath, 'utf-8');
 		}
-		
-		return fs.readFileSync(normalizedPath, 'utf-8');
+		return this.cacheObject[path];
 	}
 }
 
 export class MemoryTemplateProvider implements TemplateProvider {
-	registry;
+	registry: any = {};
 
 	constructor() {
-		this.registry = {};
 	}
 
-	add(path, data) {
+	add(path: string, data: string) {
 		this.registry[path] = data;
-	};
+	}
 
-	getAsync(path, callback) {
-		callback(this.getSync(path));
-	};
-
-	getSync(path) {
+	getSync(path: string) {
 		var data = this.registry[path];
 		if (data === undefined) throw(new Error("Can't find key '" + path + "'"));
 		return data;
-	};
+	}
 }

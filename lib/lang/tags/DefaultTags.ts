@@ -1,5 +1,6 @@
 ﻿export import ExpressionParser = module('../../parser/ExpressionParser');
 export import FlowException = module('../../parser/FlowException');
+export import ParserNode = module('../../parser/ParserNode');
 
 export interface ITemplateParser {
 	addBlockFlowExceptionHandler(name: string);
@@ -86,25 +87,25 @@ export function register(templateParser: ITemplateParser) {
 				}
 			}
 		});
-		tokenParserContext.write('this.' + (blockName) + '(runtimeContext);');
+		tokenParserContext.write('runtimeContext.putBlock(that, ' + JSON.stringify(blockName) + ');');
+		//tokenParserContext.write('that.' + (blockName) + '(runtimeContext);');
 	});
 
 	// EXTENDS
 	templateParser.addBlockHandler('extends', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-		tokenParserContext.parentName = expressionTokenReader.read().value;
-		//tokenParserContext.addAsyncCallback = function() {
-		//console.log("extends!");
-		//};
+		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+
+		tokenParserContext.write('return runtimeContext.extends(that, ' + expressionNode.generateCode() + ');');
 	});
 
 	// FOR/ENDFOR
 	templateParser.addBlockFlowExceptionHandler('endfor');
 	templateParser.addBlockHandler('for', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
-		var nodeId = expressionParser.parseIdentifier();
+		var nodeId: any = expressionParser.parseIdentifier();
 		expressionTokenReader.expectAndMoveNext('in');
 		var nodeList = expressionParser.parseExpression();
-		tokenParserContext.write('runtimeContext.createScope((function() { var k, list = ' + nodeList.generateCode() + '; for (k in list) { ' + nodeId.generateCode() + ' = list[k];');
+		tokenParserContext.write('runtimeContext.createScope((function() { var k, list = ' + nodeList.generateCode() + '; for (k in list) { ' + (new ParserNode.ParserNodeAssignment(nodeId, new ParserNode.ParserNodeRaw("list[k]"))).generateCode() + '; ');
 		try {
 			templateParser.parseTemplateSync(tokenParserContext, templateTokenReader);
 		} catch (e) {

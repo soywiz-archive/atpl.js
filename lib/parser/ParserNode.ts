@@ -69,13 +69,47 @@ export class ParserNodeLiteral extends ParserNodeExpression {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-export class ParserNodeIdentifier extends ParserNodeExpression {
+export class ParserNodeLeftValue extends ParserNodeExpression {
+	generateAssign(expr: ParserNodeExpression) {
+		throw (new Error("Must implement"));
+		return "";
+	}
+}
+
+export class ParserNodeIdentifier extends ParserNodeLeftValue {
+	constructor(public value: string) {
+		super();
+	}
+
+	generateAssign(expr: ParserNodeExpression) {
+		return 'runtimeContext.scope.set(' + JSON.stringify(this.value) + ', ' + expr.generateCode() + ')';
+	}
+
+	generateCode() {
+		return 'runtimeContext.scope.get(' + JSON.stringify(this.value) + ')';
+	}
+}
+
+export class ParserNodeStatement extends ParserNode {
+}
+
+export class ParserNodeRaw extends ParserNodeExpression {
 	constructor(public value: string) {
 		super();
 	}
 
 	generateCode() {
-		return 'runtimeContext.scope.' + this.value;
+		return this.value;
+	}
+}
+
+export class ParserNodeAssignment extends ParserNodeStatement {
+	constructor(public leftValue: ParserNodeLeftValue, public rightValue: ParserNodeExpression) {
+		super();
+	}
+
+	generateCode() {
+		return this.leftValue.generateAssign(this.rightValue);
 	}
 }
 
@@ -159,8 +193,8 @@ export class ParserNodeTernaryOperation extends ParserNode {
 		return (
 			'(' +
 				this.cond.generateCode() + 
-				"? " + this.exprTrue.generateCode() +
-				": " + this.exprFalse.generateCode() +
+				" ? " + this.exprTrue.generateCode() +
+				" : " + this.exprFalse.generateCode() +
 			')'
 		);
 	}

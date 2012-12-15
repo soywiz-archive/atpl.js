@@ -154,8 +154,8 @@ export class ExpressionParser {
 			return new ParserNode.ParserNodeUnaryOperation(token.value, this.parseLiteralUnary());
 		}
 	
-		// Numeric literal.
-		if (token.type == 'number') {
+		// Numeric or string literal.
+		if (token.type == 'number' || token.type == 'string') {
 			this.tokenReader.skip();
 			return new ParserNode.ParserNodeLiteral(token.value);
 		}
@@ -178,7 +178,7 @@ export class ExpressionParser {
 			}
 		}
 	
-		throw(new Error("Unexpected token : " + JSON.stringify(token.value)));
+		throw(new Error("Unexpected token : " + JSON.stringify(token.value) + " type:'" + token.type + "'"));
 	};
 
 

@@ -17,7 +17,7 @@
 
 	// http://twig.sensiolabs.org/doc/functions/constant.html
 	static constant(name: string) {
-		throw (new Error("Not implemented"));
+		throw (new Error("Not implemented function [constant] [no use on javascript]"));
 	}
 
 	// http://twig.sensiolabs.org/doc/functions/random.html
@@ -31,7 +31,7 @@
 
 	// http://twig.sensiolabs.org/doc/functions/attribute.html
 	static attribute(object: any, method: any, arguments?: any[]) {
-		throw (new Error("Not implemented"));
+		throw (new Error("Not implemented function [attribute] [no use on javascript]"));
 	}
 
 	// http://twig.sensiolabs.org/doc/functions/block.html
@@ -44,7 +44,10 @@
 
 	// http://twig.sensiolabs.org/doc/functions/parent.html
 	static parent() {
-		throw (new Error("Not implemented"));
+		var that = this;
+		return that.captureOutput(() => {
+			that.putBlockParent(that.currentBlockName);
+		});
 	}
 
 	// http://twig.sensiolabs.org/doc/functions/dump.html
@@ -54,11 +57,11 @@
 
 	// http://twig.sensiolabs.org/doc/functions/date.html
 	static date(date?, timezone?) {
-		throw (new Error("Not implemented"));
+		throw (new Error("Not implemented function [date]"));
 	}
 
 	// http://twig.sensiolabs.org/doc/functions/template_from_string.html
 	static template_from_string(template: string) {
-		throw (new Error("Not implemented"));
+		throw (new Error("Not implemented function [template_from_string]"));
 	}	
 }

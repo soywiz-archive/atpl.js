@@ -139,11 +139,18 @@ export class ExpressionParser {
 			}
 			// Array access
 			if (this.tokenReader.peek().value == '[') {
-				throw (new Error('Not implemented array access'));
+				this.tokenReader.skip();
+				var key;
+				key = this.parseExpression();
+				this.tokenReader.expectAndMoveNext(']');
+				expr = new ParserNode.ParserNodeArrayAccess(expr, key);
 			}
 			// Field access
 			if (this.tokenReader.peek().value == '.') {
-				throw (new Error('Not implemented field access'));
+				this.tokenReader.skip();
+				var fieldName = this.tokenReader.peek().value;
+				this.tokenReader.skip();
+				expr = new ParserNode.ParserNodeArrayAccess(expr, new ParserNode.ParserNodeLiteral(fieldName));
 			}
 			// Filter
 			else if (this.tokenReader.peek().value == '|') {

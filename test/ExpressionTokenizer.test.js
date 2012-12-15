@@ -16,4 +16,8 @@ module.exports = {
 
 		//console.log(expressionTokenizer);
 	},
+	'tokenize ==': function () {
+		var tokens = new ExpressionTokenizer(new StringReader('0 == 1')).tokenize();
+		//console.log(expressionTokenizer);
+	},
 };

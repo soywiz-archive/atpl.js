@@ -49,6 +49,41 @@ module.exports = {
 			"[Hello]Hello(Hello)"
 		);
 	},
+	'test field access': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{{ item.key }}');
+
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { item: { key : 777 } }),
+			"777"
+		);
+	},
+	'test array access': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{{ item.key["demo"].test }}');
+
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { item: { key: { demo : { test : 777 } } } }),
+			"777"
+		);
+	},
+	'test function parent': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('base1', '{% block title %}Title{% endblock %}');
+		templateProvider.add('base2', '{% extends "base1" %}{% block title %}[{{ parent() }}]{% endblock %}');
+		templateProvider.add('test', '{% extends "base2" %}{% block title %}({{ parent() }}){% endblock %}');
+
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test'),
+			"([Title])"
+		);
+	},
 	'test simple test sameas': function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
@@ -161,7 +196,16 @@ module.exports = {
 			"12 "
 		);
 	},
-	'test simple for': function() {
+	'test simple if elseif else': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{% if v == 0 %}0{% elseif v == 1 %}1{% elseif v == 2 %}2{% else %}else{% endif %}');
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { v : 2 }),
+			"2"
+		);
+	},
+	'test simple for': function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
 		templateProvider.add('test', '{{ hi }}{{ n }}{% for n in [1, 2, 3, 4] %}{{ n }}{% endfor %}{{ n }}');
@@ -188,7 +232,16 @@ module.exports = {
 			"Hello:[a]2468[a]"
 		);
 	},
-	'test autoescape': function() {
+	'test for else': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{% for n in list %}{{ n * 2 }}{% else %}empty{% endfor %}');
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { hi: 'Hello:', n: '[a]', list: [] }),
+			"empty"
+		);
+	},
+	'test autoescape': function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
 		templateProvider.add('test', '{{ msg }}');

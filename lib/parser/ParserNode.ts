@@ -129,6 +129,16 @@ export class ParserNodeCommaExpression extends ParserNode {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+export class ParserNodeArrayAccess extends ParserNodeExpression {
+	constructor(public object: ParserNodeExpression, public key: ParserNodeExpression) {
+		super();
+	}
+
+	generateCode() {
+		return 'runtimeContext.access(' + this.object.generateCode() + ', ' + this.key.generateCode() + ')';
+	}
+}
+
 export class ParserNodeFunctionCall extends ParserNodeExpression {
 	constructor(public functionExpr: ParserNodeExpression, public arguments: ParserNodeCommaExpression) {
 		super();

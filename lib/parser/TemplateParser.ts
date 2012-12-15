@@ -71,7 +71,7 @@ export class TemplateParser {
 		} catch (e) {
 			if (e instanceof FlowException) {
 				//console.log(e);
-				throw(new Error("Unexpected tag '" + e.blockType + "'"));
+				throw(new Error("Unexpected tag '" + e.blockType + "' on template root"));
 			}
 			throw(e);
 		}
@@ -82,9 +82,14 @@ export class TemplateParser {
 		for (var blockName in blocks) {
 			var block = blocks[blockName];
 			output += 'CurrentTemplate.prototype.' + blockName + ' = function(runtimeContext) {\n';
-			//output += 'console.log("executing ' + path + '.' + blockName + '");\n';
-			output += 'var that = this;\n';
-			output += block + "\n";
+			{
+				output += 'var that = this;\n';
+				output += 'runtimeContext.setCurrentBlock(that, ' + JSON.stringify(blockName) + ', function() {';
+				{
+					output += block + "\n";
+				}
+				output += '});';
+			}
 			output += '};\n';
 		}
 

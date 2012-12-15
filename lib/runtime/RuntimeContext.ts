@@ -13,7 +13,11 @@ export class RuntimeContext {
 	tests: any = {};
 	currentAutoescape: any = true;
 	defaultAutoescape: any = true;
+	currentBlockName: string = 'none';
+
+	LeafTemplate: any;
 	CurrentTemplate: any;
+	RootTemplate: any;
 
 	constructor(public templateParser: any, scopeData: any) {
 		this.scope = new Scope.Scope(scopeData);
@@ -31,8 +35,24 @@ export class RuntimeContext {
 		}
 	}
 
-	setTemplate(CurrentTemplate: any) {
-		this.CurrentTemplate = CurrentTemplate;
+	setTemplate(Template: any) {
+		this.LeafTemplate = Template;
+		this.CurrentTemplate = Template;
+		this.RootTemplate = Template;
+	}
+
+	setCurrentBlock(template: any, name: string, callback: () => void) {
+		var BackCurrentTemplate = this.CurrentTemplate;
+		var BackCurrentBlockName = this.currentBlockName;
+
+		this.CurrentTemplate = template;
+		this.currentBlockName = name;
+		try {
+			return callback();
+		} finally {
+			this.CurrentTemplate = BackCurrentTemplate;
+			this.currentBlockName = BackCurrentBlockName;
+		}
 	}
 
 	createScope(inner: () => void) {
@@ -113,19 +133,30 @@ export class RuntimeContext {
 		var ParentTemplateInfo = (this.templateParser.compile(name));
 		var ParentTemplate = new (ParentTemplateInfo.class)();
 
-		for (var key in ParentTemplate) if (this.CurrentTemplate[key] === undefined) this.CurrentTemplate[key] = ParentTemplate[key];
-		this.CurrentTemplate['__parent'] = ParentTemplate;
-		this.CurrentTemplate['__main'] = ParentTemplate['__main'];
-		return this.CurrentTemplate.__main(this);
+		//for (var key in ParentTemplate) if (this.CurrentTemplate[key] === undefined) this.CurrentTemplate[key] = ParentTemplate[key];
+		this.RootTemplate['__proto__']['__proto__'] = ParentTemplate;
+		this.RootTemplate = ParentTemplate;
+		this.LeafTemplate['__parent'] = ParentTemplate;
+		this.LeafTemplate['__main'] = ParentTemplate['__main'];
+		return this.LeafTemplate.__main(this);
 	}
 
-	putBlock(name: string) {
-		var method = (this.CurrentTemplate[name]);
+	private _putBlock(Current: any, name: string) {
+		var method = (Current[name]);
 		if (method === undefined) {
-			console.log(this.CurrentTemplate['__proto__']);
+			console.log(Current['__proto__']);
 			throw (new Error("Can't find block '" + name + "'"));
 		}
 		return method(this);
+	}
+
+	putBlock(name: string) {
+		return this._putBlock(this.LeafTemplate, name);
+	}
+
+	putBlockParent(name: string) {
+		//return this._putBlock(this.LeafTemplate['__proto__']['__proto__'], name);
+		throw (new Error("Not implemented"));
 	}
 
 	autoescape(temporalValue: any, callback: () => void) {
@@ -145,6 +176,12 @@ export class RuntimeContext {
 	access(object: any, key: any) {
 		if (object === undefined || object === null) return null;
 		return object[key];
+	}
+
+	emptyList(value: any) {
+		if (value === undefined || value === null) return true;
+		if (value instanceof Array || value instanceof String) return (value.length == 0);
+		return false;
 	}
 
 	static escapeHtmlEntities(text: string) {

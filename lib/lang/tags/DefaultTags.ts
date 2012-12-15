@@ -7,6 +7,19 @@ export interface ITemplateParser {
 	addBlockHandler(name: string, callback: (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) => void);
 }
 
+/*
+export class ParserNodeAutoescape extends ParserNode.ParserNode {
+	constructor(private expression: ParserNode.ParserNodeExpression, private innerCode: ParserNode.ParserNode) {
+		super();
+	}
+
+	generateCode() {
+		return 'runtimeContext.autoescape(' + this.expression.generateCode() + ', function() {' + this.innerCode.generateCode() + '});';
+	}
+}
+*/
+
+// @TODO: blockHandlers should return a ParserNode/AstNode and the output should be generated at the end instead of writing now.
 export function register(templateParser: ITemplateParser) {
 	// AUTOESCAPE
 	templateParser.addBlockFlowExceptionHandler('endautoescape');
@@ -24,7 +37,7 @@ export function register(templateParser: ITemplateParser) {
 					case 'endautoescape':
 						tokenParserContext.write('});');
 						return;
-					default: throw (new Error("Unexpected '" + e.blockType + "'"));
+					default: throw (new Error("Unexpected '" + e.blockType + "' for 'autoescape'"));
 				}
 			}
 		}
@@ -39,7 +52,6 @@ export function register(templateParser: ITemplateParser) {
 		var didElse = false;
 
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
-
 		tokenParserContext.write('if (' + expressionNode.generateCode() + ') {');
 
 		//parseExpressionExpressionSync
@@ -50,13 +62,12 @@ export function register(templateParser: ITemplateParser) {
 			} catch (e) {
 				if (!(e instanceof FlowException.FlowException)) throw (e);
 				switch (e.blockType) {
-					/*
 					case 'elseif':
 						if (didElse) throw(new Error("Can't put 'elseif' after the 'else'"));
-						tokenParserContext.write('} else if (undefined) {');
-						didElse = true;
+
+						var expressionNode = (new ExpressionParser.ExpressionParser(e.expressionTokenReader)).parseExpression();
+						tokenParserContext.write('} else if (' + expressionNode.generateCode() + ') {');
 					break;
-					*/
 					case 'else':
 						if (didElse) throw (new Error("Can't have two 'else'"));
 						tokenParserContext.write('} else {');
@@ -65,7 +76,7 @@ export function register(templateParser: ITemplateParser) {
 					case 'endif':
 						tokenParserContext.write('}');
 						return;
-					default: throw (new Error("Unexpected '" + e.blockType + "'"));
+					default: throw (new Error("Unexpected '" + e.blockType + "' for 'if'"));
 				}
 			}
 		}
@@ -83,7 +94,7 @@ export function register(templateParser: ITemplateParser) {
 				switch (e.blockType) {
 					case 'endblock':
 						break;
-					default: throw (new Error("Unexpected '" + e.blockType + "'"));
+					default: throw (new Error("Unexpected '" + e.blockType + "' for 'block'"));
 				}
 			}
 		});
@@ -100,20 +111,33 @@ export function register(templateParser: ITemplateParser) {
 	// FOR/ENDFOR
 	templateParser.addBlockFlowExceptionHandler('endfor');
 	templateParser.addBlockHandler('for', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		var didElse = false;
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
 		var nodeId: any = expressionParser.parseIdentifier();
 		expressionTokenReader.expectAndMoveNext('in');
 		var nodeList = expressionParser.parseExpression();
-		tokenParserContext.write('runtimeContext.createScope((function() { var k, list = ' + nodeList.generateCode() + '; for (k in list) { ' + (new ParserNode.ParserNodeAssignment(nodeId, new ParserNode.ParserNodeRaw("list[k]"))).generateCode() + '; ');
-		try {
-			templateParser.parseTemplateSync(tokenParserContext, templateTokenReader);
-		} catch (e) {
-			if (!(e instanceof FlowException.FlowException)) throw (e);
-			switch (e.blockType) {
-				case 'endfor':
-					tokenParserContext.write('} }));');
-					break;
-				default: throw (new Error("Unexpected '" + e.blockType + "'"));
+
+		tokenParserContext.write('runtimeContext.createScope((function() { ');
+		tokenParserContext.write('var k, list = ' + nodeList.generateCode() + ';'); 
+		tokenParserContext.write('if (!runtimeContext.emptyList(list)) {'); 
+		tokenParserContext.write('for (k in list) { ' + (new ParserNode.ParserNodeAssignment(nodeId, new ParserNode.ParserNodeRaw("list[k]"))).generateCode() + ';');
+		while (true) {
+			try {
+				templateParser.parseTemplateSync(tokenParserContext, templateTokenReader);
+			} catch (e) {
+				if (!(e instanceof FlowException.FlowException)) throw (e);
+				switch (e.blockType) {
+					case 'else':
+						if (didElse) throw (new Error("Can't have two 'else'"));
+						tokenParserContext.write('} } else {');
+						didElse = true;
+						continue;
+					case 'endfor':
+						if (!didElse) tokenParserContext.write('} ');
+						tokenParserContext.write('} }));');
+						return;
+					default: throw (new Error("Unexpected '" + e.blockType + "' for 'for'"));
+				}
 			}
 		}
 	});

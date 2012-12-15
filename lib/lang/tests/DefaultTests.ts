@@ -1,7 +1,7 @@
 ﻿export class DefaultTests {
 	// http://twig.sensiolabs.org/doc/tests/constant.html
 	static constant(value: string, constant: string) {
-		throw (new Error("Not implemented"));
+		throw (new Error("Not implemented test [constant] [no use on javascript]"));
 	}
 
 	// http://twig.sensiolabs.org/doc/tests/defined.html
@@ -28,7 +28,8 @@
 
 	// http://twig.sensiolabs.org/doc/tests/iterable.html
 	static iterable(value: any) {
-		throw (new Error("Not implemented"));
+		if (value instanceof Array) return true;
+		return false;
 	}
 
 	// http://twig.sensiolabs.org/doc/tests/null.html

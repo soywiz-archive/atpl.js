@@ -1,13 +1,9 @@
-﻿export class DefaultFunctions {
+﻿import RuntimeUtils = module('../../runtime/RuntimeUtils');
+
+export class DefaultFunctions {
 	// http://twig.sensiolabs.org/doc/functions/range.html
 	static range(low: number, high: number, step: number = 1) {
-		var out = [];
-		var current = low;
-		while (current <= high) {
-			out.push(current);
-			current += step;
-		}
-		return out;
+		return RuntimeUtils.range(low, high, step);
 	}
 	
 	// http://twig.sensiolabs.org/doc/functions/cycle.html

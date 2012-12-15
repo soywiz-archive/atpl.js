@@ -182,14 +182,31 @@ export function register(templateParser: ITemplateParser) {
 	templateParser.addBlockHandler('for', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var didElse = false;
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
-		var nodeId: any = expressionParser.parseIdentifier();
-		expressionTokenReader.expectAndMoveNext('in');
+		var valueId: any = expressionParser.parseIdentifier();
+		var keyId: any = undefined;
+		var condId: any = undefined;
+		var res = expressionTokenReader.expectAndMoveNext([',', 'in']);
+		if (res == ',') {
+			keyId = valueId;
+			valueId = expressionParser.parseIdentifier();
+			expressionTokenReader.expectAndMoveNext(['in']);
+		}
 		var nodeList = expressionParser.parseExpression();
+		if (expressionTokenReader.checkAndMoveNext(['if'])) {
+			condId = expressionParser.parseExpression();
+		}
 
 		tokenParserContext.write('runtimeContext.createScope((function() { ');
-		tokenParserContext.write('var k, list = ' + nodeList.generateCode() + ';'); 
-		tokenParserContext.write('if (!runtimeContext.emptyList(list)) {'); 
-		tokenParserContext.write('for (k in list) { ' + (new ParserNode.ParserNodeAssignment(nodeId, new ParserNode.ParserNodeRaw("list[k]"))).generateCode() + ';');
+		tokenParserContext.write(' var list = ' + nodeList.generateCode() + ';'); 
+		tokenParserContext.write(' if (!runtimeContext.emptyList(list)) {'); 
+		tokenParserContext.write('  runtimeContext.each(list, function(k, v) { '); 
+		tokenParserContext.write('   ' + (new ParserNode.ParserNodeAssignment(valueId, new ParserNode.ParserNodeRaw("v"))).generateCode() + ';');
+		if (keyId !== undefined) {
+			tokenParserContext.write('   ' + (new ParserNode.ParserNodeAssignment(keyId, new ParserNode.ParserNodeRaw("k"))).generateCode() + ';');
+		}
+		if (condId) {
+			tokenParserContext.write('   if (' + condId.generateCode() + ') { ');
+		}
 		while (true) {
 			try {
 				templateParser.parseTemplateSync(tokenParserContext, templateTokenReader);
@@ -198,11 +215,12 @@ export function register(templateParser: ITemplateParser) {
 				switch (e.blockType) {
 					case 'else':
 						if (didElse) throw (new Error("Can't have two 'else'"));
-						tokenParserContext.write('} } else {');
+						tokenParserContext.write('}); } else {');
 						didElse = true;
 						continue;
 					case 'endfor':
-						if (!didElse) tokenParserContext.write('} ');
+						if (condId) tokenParserContext.write('} ');
+						if (!didElse) tokenParserContext.write('}); ');
 						tokenParserContext.write('} }));');
 						return;
 					default: throw (new Error("Unexpected '" + e.blockType + "' for 'for'"));

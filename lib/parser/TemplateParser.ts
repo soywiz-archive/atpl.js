@@ -104,7 +104,12 @@ export class TemplateParser {
 			var tokenParserContext = info.tokenParserContext;
 			var CurrentTemplate = undefined;
 
-			eval(output);
+			try {
+				eval(output);
+			} catch (e) {
+				console.log(output);
+				throw (e);
+			}
 
 			//console.log(output);
 

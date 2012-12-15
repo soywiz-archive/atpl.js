@@ -56,6 +56,8 @@
     <Content Include="lib\lang\filters\DefaultFilters.ts" />
     <Content Include="lib\imports.d.ts" />
     <Content Include="lib\lang\functions\DefaultFunctions.ts" />
+    <Content Include="lib\lang\tags\DefaultTags.ts" />
+    <Content Include="lib\lang\tests\DefaultTests.ts" />
     <Content Include="lib\lexer\ExpressionTokenizer.ts" />
     <Content Include="lib\lexer\StringReader.ts" />
     <Content Include="lib\lexer\TemplateTokenizer.ts" />
@@ -66,10 +68,13 @@
     <Content Include="lib\parser\TemplateParser.ts" />
     <Content Include="lib\parser\TokenParserContext.ts" />
     <Content Include="lib\runtime\RuntimeContext.ts" />
+    <Content Include="lib\runtime\RuntimeUtils.ts" />
+    <Content Include="lib\runtime\Scope.ts" />
     <Content Include="lib\TemplateProvider.ts" />
     <Content Include="lib\utils.ts" />
     <Content Include="test\dummy.test.js" />
     <Content Include="test\expressionparser.test.js" />
+    <Content Include="test\ExpressionTokenizer.test.js" />
     <Content Include="test\imports.d.ts" />
     <Content Include="test\stringreader.test.js" />
     <Content Include="test\templateparser.test.js" />
@@ -124,9 +129,10 @@
     <Content Include="typescript-node-definitions\README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="lib\lang\tags\" />
-    <Folder Include="lib\lang\tests\" />
     <Folder Include="typescript-node-definitions\DefinitelyTyped\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.md" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Message Text="Compiling TypeScript files" />

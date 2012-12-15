@@ -36,15 +36,18 @@ export class TokenReader {
 		return item;
 	}
 
-	checkAndMoveNext(value): bool {
-		if (this.peek().value == value) {
+	checkAndMoveNext(values: string[]): string {
+		var peekValue = this.peek().value;
+		if (values.indexOf(peekValue) != -1) {
 			this.skip(1);
-			return true;
+			return peekValue;
 		}
-		return false;
+		return null;
 	}
 
-	expectAndMoveNext(value): void {
-		if (!this.checkAndMoveNext(value)) throw(new Error("Expected '" + value + "' but get '" + this.peek().value + "'"));
+	expectAndMoveNext(values: string[]): string {
+		var ret = this.checkAndMoveNext(values);
+		if (ret === null) throw(new Error("Expected one of " + JSON.stringify(values) + " but get '" + this.peek().value + "'"));
+		return ret;
 	}
 }

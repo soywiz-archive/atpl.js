@@ -44,6 +44,8 @@ Supported syntax:
 {% block name %}...{% endblock %}
 {% for var in list %}...{% endfor %}
 {% for var in list %}...{% else %}...{% endfor %}
+{% for key, value in list %}...{% else %}...{% endfor %}
+{% for key, value in list if condition %}...{% else %}...{% endfor %}
 {% if condition %}...{% else %}...{% endif %}
 {% if cond1 %}...{% elseif cond2 %}...{% else %}...{% endif %}
 {{ expression }}
@@ -54,12 +56,13 @@ Supported syntax:
 {{ var is sameas(var) }}
 {{ var.array['access'] }}
 {{ 3 in [1, 2, 3, 4] }}
+{{ {'key':'value','key2':'value2'} }}
 ```
 
 Not-implemented-yet syntax:
 
- * {'key':'value','key2':'value2'}
  * a, b = 'a', 'b'
+ * loop variable in for loops
 
 ```
 ...

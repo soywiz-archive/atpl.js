@@ -33,7 +33,7 @@ export class ExpressionParser {
 		if (this.tokenReader.peek().value == '?') {
 			this.tokenReader.skip();
 			var middle = this.parseExpression();
-			this.tokenReader.expectAndMoveNext(':');
+			this.tokenReader.expectAndMoveNext([':']);
 			var right = this.parseExpression();
 
 			left = new ParserNode.ParserNodeTernaryOperation(left, middle, right);
@@ -74,7 +74,11 @@ export class ExpressionParser {
 	}
 
 	parsePow() {
-		return this._parseBinary('parsePow', this.parseLiteralUnary, ['**']);
+		return this._parseBinary('parsePow', this.parseString, ['**']);
+	}
+
+	parseString() {
+		return this._parseBinary('parseString', this.parseLiteralUnary, ['~', '..']);
 	}
 
 	parseLiteralUnary() {
@@ -82,21 +86,21 @@ export class ExpressionParser {
 		var expr = undefined;
 	
 		// '(' <expression> ')'
-		if (this.tokenReader.checkAndMoveNext('(')) {
+		if (this.tokenReader.checkAndMoveNext(['('])) {
 			var subExpression = this.parseExpression();
-			this.tokenReader.expectAndMoveNext(')');
+			this.tokenReader.expectAndMoveNext([')']);
 			expr = subExpression;
 		}
 
 		// '[' [<expression> [',']] ']'
-		else if (this.tokenReader.checkAndMoveNext('[')) {
-			var elements: ParserNode.ParserNodeExpression[] = [];
+		else if (this.tokenReader.checkAndMoveNext(['['])) {
+			var arrayElements: ParserNode.ParserNodeExpression[] = [];
 			while (true) {
 				if (this.tokenReader.peek().value == ']') {
 					this.tokenReader.skip();
 					break;
 				}
-				elements.push(this.parseExpression());
+				arrayElements.push(this.parseExpression());
 				if (this.tokenReader.peek().value == ']') {
 					this.tokenReader.skip();
 					break;
@@ -104,7 +108,30 @@ export class ExpressionParser {
 					this.tokenReader.skip();
 				}
 			}
-			expr = new ParserNode.ParserNodeArrayContainer(elements);
+			expr = new ParserNode.ParserNodeArrayContainer(arrayElements);
+		}
+
+		// '{' [<key> ':' <expression> [',']] '}'
+		else if (this.tokenReader.checkAndMoveNext(['{'])) {
+			var objectElements: ParserNode.ParserNodeObjectItem[] = [];
+			while (true) {
+				if (this.tokenReader.peek().value == '}') {
+					this.tokenReader.skip();
+					break;
+				}
+				var key = this.parseExpression();
+				this.tokenReader.expectAndMoveNext([':']);
+				var value = this.parseExpression();
+				objectElements.push(new ParserNode.ParserNodeObjectItem(key, value));
+
+				if (this.tokenReader.peek().value == ']') {
+					this.tokenReader.skip();
+					break;
+				} else if (this.tokenReader.peek().value == ',') {
+					this.tokenReader.skip();
+				}
+			}
+			expr = new ParserNode.ParserNodeObjectContainer(objectElements);
 		}
 
 		// Unary operator.
@@ -134,7 +161,7 @@ export class ExpressionParser {
 				} else {
 					arguments = new ParserNode.ParserNodeCommaExpression([]);
 				}
-				this.tokenReader.expectAndMoveNext(')');
+				this.tokenReader.expectAndMoveNext([')']);
 				if (expr instanceof ParserNode.ParserNodeIdentifier) {
 					expr = new ParserNode.ParserNodeFunctionCall(new ParserNode.ParserNodeLiteral(expr.value), arguments);
 				} else {
@@ -146,7 +173,7 @@ export class ExpressionParser {
 				this.tokenReader.skip();
 				var key;
 				key = this.parseExpression();
-				this.tokenReader.expectAndMoveNext(']');
+				this.tokenReader.expectAndMoveNext([']']);
 				expr = new ParserNode.ParserNodeArrayAccess(expr, key);
 			}
 			// Field access
@@ -169,7 +196,7 @@ export class ExpressionParser {
 					if (this.tokenReader.peek().value != ')') {
 						arguments = this.parseCommaExpression();
 					}
-					this.tokenReader.expectAndMoveNext(')');
+					this.tokenReader.expectAndMoveNext([')']);
 				}
 
 				arguments.expressions.unshift(expr);
@@ -181,7 +208,7 @@ export class ExpressionParser {
 				return expr;
 			}
 		}
-	};
+	}
 
 	parseIdentifier(): ParserNode.ParserNodeExpression {
 		var token = this.tokenReader.peek();
@@ -200,8 +227,7 @@ export class ExpressionParser {
 		}
 	
 		throw(new Error("Unexpected token : " + JSON.stringify(token.value) + " type:'" + token.type + "'"));
-	};
-
+	}
 
 	_parseBinary(levelName, nextParseLevel, validOperators) {
 		var leftNode = nextParseLevel.apply(this);

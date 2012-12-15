@@ -3,6 +3,7 @@
 import DefaultFunctions = module('../lang/functions/DefaultFunctions');
 import DefaultFilters = module('../lang/filters/DefaultFilters');
 import DefaultTests = module('../lang/tests/DefaultTests');
+import RuntimeUtils = module('./RuntimeUtils');
 import Scope = module('./Scope');
 
 export class RuntimeContext {
@@ -144,6 +145,18 @@ export class RuntimeContext {
 		this.LeafTemplate['__parent'] = ParentTemplate;
 		this.LeafTemplate['__main'] = ParentTemplate['__main'];
 		return this.LeafTemplate.__main(this);
+	}
+
+	each(list: any, callback: (key, value) => void ) {
+		for (var k in list) {
+			callback(k, list[k]);
+		}
+	}
+
+	range(low: any, high: any, step: any) {
+		var out = RuntimeUtils.range(low, high, step);
+		//console.log(out);
+		return out;
 	}
 
 	private _putBlock(Current: any, name: string) {

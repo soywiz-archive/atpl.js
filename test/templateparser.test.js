@@ -245,26 +245,126 @@ module.exports = {
 			""
 		);
 	},
+	'test nested for': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test',
+			"{% for x in range(0, 3) %}{% for y in range(0, 3) %}{{ x * y }}{% endfor %},{% endfor %}" +
+		"");
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { v: 2 }),
+			"0000,0123,0246,0369,"
+		);
+	},
+	'test for key/values': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test',
+			"{% for key, value in data %}{{ key }}:{{ value }},{% endfor %}" +
+		"");
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { data: { a : 1, b : 2, c : 'c' } }),
+			"a:1,b:2,c:c,"
+		);
+	},
+	'test for if': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test',
+			"{% for user in users if user.active %}{{ user.name }},{% endfor %}" +
+		"");
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { users: [ { name: 'soywiz', active: true }, { name: 'test', active: false }, { name: 'demo', active: true } ] }),
+			"soywiz,demo,"
+		);
+	},
 	'test set tag': function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
 		templateProvider.add('test',
+			"{% autoescape false %}" +
 			"{% set foo1 = 'foo' %}" +
 			"{% set foo2 = [1, 2] %}" +
-			//"{% set foo3 = {'foo': 'bar'} %}" +
-			//"{% set foo4 = 'foo' ~ 'bar' %}" +
+			"{% set foo3 = {'foo': 'bar'} %}" +
+			"{% set foo4 = 'foo' ~ 'bar' %}" +
 			//"{% set foo5, bar = 'foo', 'bar' %}" +
 			"{{ foo1 }}," +
 			"{{ foo2 }}," +
 			"{{ foo3 }}," +
 			"{{ foo4 }}," +
-			"{{ foo5 }}," +
-			"{{ bar }}," +
+			"{% endautoescape %}" +
 		"");
 		//console.log(templateParser.getEvalCode('test').output);
 		assert.equal(
 			templateParser.compileAndRenderToString('test', { v : 2 }),
-			"foo,[1,2],{'foo':'bar'},foobar,foo,bar"
+			'foo,[1,2],{"foo":"bar"},foobar,'
+		);
+	},
+	'test set tag tuple': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test',
+			"{% autoescape false %}" +
+			"{% set foo, bar = 'foo', 'bar' %}" +
+			"{{ foo }}," +
+			"{{ bear }}," +
+			"{% endautoescape %}" +
+		"");
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { v: 2 }),
+			'foo,bar,'
+		);
+	},
+	'test for loop key': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+
+		assert.fail('infinite loop [fixme]');
+
+		templateProvider.add('test',
+			"{% set n = 'a' %}" +
+			"{% for n in range(7, 9) %}" +
+			"{{ n }}," +
+			"{{ loop.index }}," +
+			"{{ loop.index0 }}", +
+			"{{ loop.revindex }}," +
+			"{{ loop.revindex0 }}," +
+			"{{ loop.first }}," +
+			"{{ loop.last }}," +
+			"{{ loop.length }}," +
+			"{{ loop.parent.n }}," +
+			"{% endfor %}" +
+		"");
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { v: 2 }),
+			"7,1,0,?,?,true,false,3,a," +
+			"8,2,1,?,?,false,false,3,a," +
+			"9,3,2,?,?,false,true,3,a," +
+		'');
+	},
+	'test range operator': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{% for n in "a".."e" %}{{ n }}{% endfor %}');
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test'),
+			"abcde"
+		);
+	},
+	'test range operator with filter': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{% for n in "a"|upper.."e"|upper %}{{ n }}{% endfor %}');
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('test'),
+			"ABCDE"
 		);
 	},
 	'test simple for': function () {

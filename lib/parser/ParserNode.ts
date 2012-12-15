@@ -39,17 +39,33 @@ export class ParserNodeContainer extends ParserNode {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-export class ParserNodeArrayContainer extends ParserNodeExpression {
-	constructor(private nodes: ParserNodeExpression[]) {
+export class ParserNodeObjectItem extends ParserNode {
+	constructor(private key: ParserNodeExpression, private value: ParserNodeExpression) {
 		super();
 	}
 
 	generateCode() {
-		var list = [];
-		for (var n in this.nodes) {
-			list.push(this.nodes[n].generateCode());
-		}
-		return '[' + list.join(', ') + ']';
+		return this.key.generateCode() + ' : ' + this.value.generateCode();
+	}
+}
+
+export class ParserNodeObjectContainer extends ParserNodeExpression {
+	constructor(private items: ParserNodeObjectItem[]) {
+		super();
+	}
+
+	generateCode() {
+		return '{' + this.items.map(node => node.generateCode()).join(', ') + '}';
+	}
+}
+
+export class ParserNodeArrayContainer extends ParserNodeExpression {
+	constructor(private items: ParserNodeExpression[]) {
+		super();
+	}
+
+	generateCode() {
+		return '[' + this.items.map(node => node.generateCode()).join(', ') + ']';
 	}
 }
 
@@ -182,6 +198,10 @@ export class ParserNodeBinaryOperation extends ParserNode {
 
 	generateCode() {
 		switch (this.operator) {
+			case '~':
+				return '("" + ' + this.left.generateCode() + ' + ' + this.right.generateCode() + ')';
+			case '..':
+				return 'runtimeContext.range(' + this.left.generateCode() + ', ' + this.right.generateCode() + ')';
 			case '**':
 				return 'Math.pow(' + this.left.generateCode() + ',' + this.right.generateCode() + ')';
 			case 'in':

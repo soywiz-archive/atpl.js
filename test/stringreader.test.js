@@ -6,7 +6,7 @@ StringReader = require('../lib/lexer/StringReader.js').StringReader;
 module.exports = {
 	'smart test': function() {
 		var stringReader = new StringReader('Hello {{ 1 }} World {{ 2 }}');
-		assert.equal(true, stringReader.hasMore());
+		assert.equal(true, stringReader.hasMore);
 		assert.equal('H', stringReader.readChar());
 		assert.equal('e', stringReader.readChar());
 		var index = stringReader.findRegexp(/\{\{/).position;
@@ -16,9 +16,9 @@ module.exports = {
 	},
 	'eof test': function() {
 		var stringReader = new StringReader('123');
-		assert.equal(true, stringReader.hasMore());
+		assert.equal(true, stringReader.hasMore);
 		stringReader.skipChars(3);
-		assert.equal(false, stringReader.hasMore());
+		assert.equal(false, stringReader.hasMore);
 	},
 	'readLeft test': function() {
 		var stringReader = new StringReader('12345');

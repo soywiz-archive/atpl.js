@@ -3,6 +3,13 @@
 export import StringReader = module('./StringReader');
 import utils = module('../utils');
 
+export interface Token {
+	type: string;
+	value: any;
+	rawValue: any;
+}
+
+
 export class ExpressionTokenizer {
 	constructor(public stringReader: StringReader.StringReader) {
 	}
@@ -30,7 +37,7 @@ export class ExpressionTokenizer {
 	
 		var end = false;
 
-		while (!end && this.stringReader.hasMore()) {
+		while (!end && this.stringReader.hasMore) {
 			switch (this.stringReader.peekChars(2)) {
 				case '%}':
 				case '}}':

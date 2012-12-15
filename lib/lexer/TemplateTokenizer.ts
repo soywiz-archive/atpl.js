@@ -24,7 +24,7 @@ export class TemplateTokenizer {
 			});
 		};
 	
-		while (this.stringReader.hasMore()) {
+		while (this.stringReader.hasMore) {
 			var openMatch = this.stringReader.findRegexp(regExp);
 			// No more tags.
 			if (openMatch.position === null) {

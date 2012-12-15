@@ -18,7 +18,7 @@ function templateTokenizer() {
 
 var registryTemplateParser = {};
 
-export function compile(content, info) {
+export function compile(content: string, info: any) {
 	if (registryTemplateParser[info.root] === undefined) {
 		var templateProvider = new FileSystemTemplateProvider(info.root);
 		registryTemplateParser[info.root] = new TemplateParser.TemplateParser(templateProvider);

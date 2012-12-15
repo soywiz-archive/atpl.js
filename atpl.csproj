@@ -20,15 +20,6 @@
     <IISExpressUseClassicPipelineMode />
     <UpgradeBackupLocation />
   </PropertyGroup>
-  <ItemGroup>
-    <Content Include="index.html" />
-    <Content Include="jquery.d.ts" />
-    <Content Include="script.js">
-      <DependentUpon>script.ts</DependentUpon>
-    </Content>
-    <Content Include="script.txt" />
-    <TypeScriptCompile Include="script.ts" />
-  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -60,6 +51,83 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptSourceMap> --sourcemap</TypeScriptSourceMap>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Include="lib\atpl.ts" />
+    <Content Include="lib\lang\filters\DefaultFilters.ts" />
+    <Content Include="lib\imports.d.ts" />
+    <Content Include="lib\lang\functions\DefaultFunctions.ts" />
+    <Content Include="lib\lexer\ExpressionTokenizer.ts" />
+    <Content Include="lib\lexer\StringReader.ts" />
+    <Content Include="lib\lexer\TemplateTokenizer.ts" />
+    <Content Include="lib\lexer\TokenReader.ts" />
+    <Content Include="lib\parser\ExpressionParser.ts" />
+    <Content Include="lib\parser\FlowException.ts" />
+    <Content Include="lib\parser\ParserNode.ts" />
+    <Content Include="lib\parser\TemplateParser.ts" />
+    <Content Include="lib\parser\TokenParserContext.ts" />
+    <Content Include="lib\runtime\RuntimeContext.ts" />
+    <Content Include="lib\TemplateProvider.ts" />
+    <Content Include="lib\utils.ts" />
+    <Content Include="test\dummy.test.js" />
+    <Content Include="test\expressionparser.test.js" />
+    <Content Include="test\imports.d.ts" />
+    <Content Include="test\stringreader.test.js" />
+    <Content Include="test\templateparser.test.js" />
+    <Content Include="test\templateprovider.test.js" />
+    <Content Include="test\templatetokenizer.test.js" />
+    <Content Include="test\utils.test.js" />
+    <Content Include="typescript-node-definitions\.gitignore" />
+    <Content Include="typescript-node-definitions\.gitmodules" />
+    <Content Include="typescript-node-definitions\async.d.ts" />
+    <Content Include="typescript-node-definitions\colors.d.ts" />
+    <Content Include="typescript-node-definitions\connect.d.ts" />
+    <Content Include="typescript-node-definitions\consolidate.d.ts" />
+    <Content Include="typescript-node-definitions\express2.d.ts" />
+    <Content Include="typescript-node-definitions\express3-useragent.d.ts" />
+    <Content Include="typescript-node-definitions\express3.d.ts" />
+    <Content Include="typescript-node-definitions\fibers.d.ts" />
+    <Content Include="typescript-node-definitions\form-data.d.ts" />
+    <Content Include="typescript-node-definitions\glob.d.ts" />
+    <Content Include="typescript-node-definitions\imagemagick.d.ts" />
+    <Content Include="typescript-node-definitions\less.d.ts" />
+    <Content Include="typescript-node-definitions\mime.d.ts" />
+    <Content Include="typescript-node-definitions\mkdirp.d.ts" />
+    <Content Include="typescript-node-definitions\mocha.d.ts" />
+    <Content Include="typescript-node-definitions\moment.d.ts" />
+    <Content Include="typescript-node-definitions\mongodb.d.ts" />
+    <Content Include="typescript-node-definitions\node.d.ts" />
+    <Content Include="typescript-node-definitions\optimist.d.ts" />
+    <Content Include="typescript-node-definitions\q.d.ts" />
+    <Content Include="typescript-node-definitions\redis.d.ts" />
+    <Content Include="typescript-node-definitions\request.d.ts" />
+    <Content Include="typescript-node-definitions\rimraf.d.ts" />
+    <Content Include="typescript-node-definitions\semver.d.ts" />
+    <Content Include="typescript-node-definitions\send.d.ts" />
+    <Content Include="typescript-node-definitions\should.d.ts" />
+    <Content Include="typescript-node-definitions\socket.io.d.ts" />
+    <Content Include="typescript-node-definitions\sprintf.d.ts" />
+    <Content Include="typescript-node-definitions\superagent.d.ts" />
+    <Content Include="typescript-node-definitions\supertest.d.ts" />
+    <Content Include="typescript-node-definitions\swig.d.ts" />
+    <Content Include="typescript-node-definitions\teechart.d.ts" />
+    <Content Include="typescript-node-definitions\twig.d.ts" />
+    <Content Include="typescript-node-definitions\underscore.d.ts" />
+    <Content Include="typescript-node-definitions\underscore.string.d.ts" />
+    <Content Include="typescript-node-definitions\watch.d.ts" />
+    <Content Include="typescript-node-definitions\wrench.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\templates\simple.atpl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="typescript-node-definitions\.git" />
+    <Content Include="typescript-node-definitions\README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="lib\lang\tags\" />
+    <Folder Include="lib\lang\tests\" />
+    <Folder Include="typescript-node-definitions\DefinitelyTyped\" />
+  </ItemGroup>
   <Target Name="BeforeBuild">
     <Message Text="Compiling TypeScript files" />
     <Message Text="Executing tsc$(TypeScriptSourceMap) @(TypeScriptCompile ->'&quot;%(fullpath)&quot;', ' ')" />

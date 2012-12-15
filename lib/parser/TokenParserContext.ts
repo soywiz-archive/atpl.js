@@ -1,15 +1,11 @@
 ///<reference path='../imports.d.ts'/>
 
 export class TokenParserContext {
-	blocksOutput;
-	currentBlockName;
-	parentName;
+	blocksOutput: any = {};
+	currentBlockName: string = '__main';
+	parentName: string = '';
 
 	constructor() {
-		this.blocksOutput = {};
-		//this.asyncCallbacks = [];
-		this.currentBlockName = '__main';
-		this.parentName = '';
 	};
 
 	write(data) {

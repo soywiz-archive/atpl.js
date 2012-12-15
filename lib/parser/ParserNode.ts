@@ -13,6 +13,9 @@ export export class ParserNode {
 	}
 }
 
+export export class ParserNodeExpression extends ParserNode {
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -36,7 +39,11 @@ export class ParserNodeContainer extends ParserNode {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-export class ParserNodeArrayContainer extends ParserNodeContainer {
+export class ParserNodeArrayContainer extends ParserNodeExpression {
+	constructor(private nodes: ParserNodeExpression[]) {
+		super();
+	}
+
 	generateCode() {
 		var list = [];
 		for (var n in this.nodes) {
@@ -49,8 +56,8 @@ export class ParserNodeArrayContainer extends ParserNodeContainer {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-export class ParserNodeLiteral extends ParserNode {
-	constructor(public value) {
+export class ParserNodeLiteral extends ParserNodeExpression {
+	constructor(public value: any) {
 		super();
 	}
 
@@ -62,8 +69,8 @@ export class ParserNodeLiteral extends ParserNode {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-export class ParserNodeIdentifier extends ParserNode {
-	constructor(public value) {
+export class ParserNodeIdentifier extends ParserNodeExpression {
+	constructor(public value: string) {
 		super();
 	}
 
@@ -75,8 +82,34 @@ export class ParserNodeIdentifier extends ParserNode {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+export class ParserNodeCommaExpression extends ParserNode {
+	constructor(public expressions: ParserNodeExpression[]) {
+		super();
+	}
+
+	generateCode() {
+		return this.expressions.map((item) => item.generateCode()).join(', ');
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+export class ParserNodeFunctionCall extends ParserNodeExpression {
+	constructor(public functionExpr: ParserNodeExpression, public arguments: ParserNodeCommaExpression) {
+		super();
+	}
+
+	generateCode() {
+		return 'runtimeContext.call(' + this.functionExpr.generateCode() + ', [' + this.arguments.generateCode() + '])';
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 export class ParserNodeUnaryOperation extends ParserNode {
-	constructor(public operation, public right: ParserNode) {
+	constructor(public operation: string, public right: ParserNode) {
 		super();
 	}
 

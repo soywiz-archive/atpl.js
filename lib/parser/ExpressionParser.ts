@@ -4,13 +4,23 @@
 // https://developer.mozilla.org/en/JavaScript/Reference/Operators/Operator_Precedence
 
 export import ParserNode = module('./ParserNode');
+export import TokenReader = module('../lexer/TokenReader');
 
 export class ExpressionParser {
-	constructor(public tokenReader) {
+	constructor(public tokenReader: TokenReader.TokenReader) {
 	}
 
+	parseCommaExpression(): ParserNode.ParserNodeCommaExpression {
+		var expressions: ParserNode.ParserNodeExpression[] = [];
+		while (true) {
+			expressions.push(this.parseExpression());
+			if (this.tokenReader.peek().value != ',') break;
+			this.tokenReader.skip();
+		}
+		return new ParserNode.ParserNodeCommaExpression(expressions);
+	}
 
-	parseExpression() {
+	parseExpression(): ParserNode.ParserNodeExpression {
 		return this.parseTernary();
 	}
 
@@ -71,13 +81,13 @@ export class ExpressionParser {
 
 		// '[' [<expression> [',']] ']'
 		if (this.tokenReader.checkAndMoveNext('[')) {
-			var arrayNode = new ParserNode.ParserNodeArrayContainer();
+			var elements: ParserNode.ParserNodeExpression[] = [];
 			while (true) {
 				if (this.tokenReader.peek().value == ']') {
 					this.tokenReader.skip();
 					break;
 				}
-				arrayNode.add(this.parseExpression());
+				elements.push(this.parseExpression());
 				if (this.tokenReader.peek().value == ']') {
 					this.tokenReader.skip();
 					break;
@@ -85,7 +95,7 @@ export class ExpressionParser {
 					this.tokenReader.skip();
 				}
 			}
-			return arrayNode;
+			return new ParserNode.ParserNodeArrayContainer(elements);
 		}
 
 		// Unary operator.
@@ -103,12 +113,22 @@ export class ExpressionParser {
 		return this.parseIdentifier();
 	};
 
-	parseIdentifier() {
+	parseIdentifier(): ParserNode.ParserNodeExpression {
 		var token = this.tokenReader.peek();
 
 		if (token.type == 'id') {
 			this.tokenReader.skip();
-			return new ParserNode.ParserNodeIdentifier(token.value);
+			var identifierString = token.value;
+
+			// Function call
+			if (this.tokenReader.peek().value == '(') {
+				this.tokenReader.skip();
+				var arguments = this.parseCommaExpression();
+				this.tokenReader.expectAndMoveNext(')');
+				return new ParserNode.ParserNodeFunctionCall(new ParserNode.ParserNodeLiteral(identifierString), arguments);
+			}
+
+			return new ParserNode.ParserNodeIdentifier(identifierString);
 		}
 	
 		throw(new Error("Unexpected token : " + JSON.stringify(token.value)));
@@ -120,7 +140,7 @@ export class ExpressionParser {
 		var rightNode;
 		var currentOperator;
 
-		while (this.tokenReader.hasMore()) {
+		while (this.tokenReader.hasMore) {
 			if (validOperators.indexOf(this.tokenReader.peek().value) != -1) {
 				currentOperator = this.tokenReader.peek().value;
 				this.tokenReader.skip();

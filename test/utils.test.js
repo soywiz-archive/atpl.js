@@ -16,7 +16,8 @@ module.exports = {
 		assert.equal(false, utils.pathIsInside('/base', '/base2'));
 		assert.equal(false, utils.pathIsInside('/base/', '/base2/'));
 	},
-	'interpretNumber': function() {
+	'interpretNumber': function () {
+		assert.equal(0    , utils.interpretNumber('0'));
 		assert.equal(10   , utils.interpretNumber('10'));
 		assert.equal(0x10 , utils.interpretNumber('0x10'));
 		assert.equal(0777 , utils.interpretNumber('0777'));

@@ -33,6 +33,7 @@ export function pathIsInside(basePath, path) {
 
 export function interpretNumber(number, radix?) {
 	number = String(number);
+	if (number == '0') return 0;
 	if (radix === undefined) {
 		if (number.substr(0, 2).toLowerCase() == '0x') return interpretNumber(number.substr(2), 16);
 		if (number.substr(0, 2).toLowerCase() == '0b') return interpretNumber(number.substr(2), 2);

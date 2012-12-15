@@ -7,7 +7,7 @@ export class StringReader {
 	constructor(public string: string) {
 	}
 
-	hasMore() {
+	get hasMore() {
 		return this.getLeftCount() > 0;
 	}
 

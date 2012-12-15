@@ -1,14 +1,13 @@
 ///<reference path='../imports.d.ts'/>
 
-import _TemplateTokenizer   = module('../lexer/TemplateTokenizer');
-import _TokenReader         = module('../lexer/TokenReader');
-import _RuntimeContext      = module('../runtime/RuntimeContext');
-import _FlowException       = module('./FlowException');
-import _TokenParserContext  = module('./TokenParserContext');
-import _ExpressionParser    = module('./ExpressionParser');
+export import TokenReader          = module('../lexer/TokenReader');
+export import _TemplateTokenizer   = module('../lexer/TemplateTokenizer');
+export import _RuntimeContext      = module('../runtime/RuntimeContext');
+export import _FlowException       = module('./FlowException');
+export import _TokenParserContext  = module('./TokenParserContext');
+export import _ExpressionParser    = module('./ExpressionParser');
 
 var TemplateTokenizer = _TemplateTokenizer.TemplateTokenizer;
-var TokenReader = _TokenReader.TokenReader;
 var TokenParserContext = _TokenParserContext.TokenParserContext;
 var RuntimeContext = _RuntimeContext.RuntimeContext;
 var ExpressionParser = _ExpressionParser.ExpressionParser;
@@ -19,14 +18,14 @@ function debug(data) {
 }
 
 export class TemplateParser {
-	registry: {};
-	blockHandlers: {};
+	registry:any = {};
+	blockHandlers:any = {};
 
 	constructor(public templateProvider) {
 		this.addStandardBlockHandlers();
 	}
 
-	addStandardBlockHandlers() {
+	private addStandardBlockHandlers() {
 		// IF/ELSEIF/ELSE/ENDIF
 		this.addBlockFlowExceptionHandler('else');
 		this.addBlockFlowExceptionHandler('elseif');
@@ -34,7 +33,7 @@ export class TemplateParser {
 		this.addBlockHandler('if', function(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 			var didElse = false;
 			var done = false;
-		
+
 			var expressionParser = new ExpressionParser(expressionTokenReader);
 			var expressionNode = expressionParser.parseExpression();
 		
@@ -125,7 +124,7 @@ export class TemplateParser {
 		});
 	}
 
-	addBlockHandler(blockType, callback) {
+	addBlockHandler(blockType, callback: (blockType, templateParser: TemplateParser, tokenParserContext: _TokenParserContext.TokenParserContext, templateTokenReader: any, expressionTokenReader: any) => void) {
 		this.blockHandlers[blockType] = callback;
 	}
 
@@ -144,7 +143,7 @@ export class TemplateParser {
 		return template;
 	}
 
-	compile(path) {
+	getEvalCode(path: string) {
 		if (this.registry[path] !== undefined) {
 			return this.registry[path];
 		}
@@ -158,7 +157,7 @@ export class TemplateParser {
 		var tokenParserContext = new TokenParserContext();
 	
 		try {
-			this.parseTemplateSync(tokenParserContext, new TokenReader(templateTokens));
+			this.parseTemplateSync(tokenParserContext, new TokenReader.TokenReader(templateTokens));
 		} catch (e) {
 			if (!(e instanceof FlowException)) {
 				throw(e);
@@ -167,7 +166,6 @@ export class TemplateParser {
 		}
 		var blocks = tokenParserContext.blocksOutput;
 		var output = '';
-		var CurrentTemplate = undefined;
 		output += 'CurrentTemplate = function() { };';
 		output += 'CurrentTemplate.parentName = ' + JSON.stringify(tokenParserContext.parentName) + ';';
 		output += 'CurrentTemplate.prototype.render = function(runtimeContext) { this.__main(runtimeContext); };';
@@ -179,6 +177,15 @@ export class TemplateParser {
 		}
 
 		debug(output);
+		return { output: output, tokenParserContext: tokenParserContext };
+	}
+
+	compile(path: string) {
+		var info = this.getEvalCode(path);
+		var output = info.output;
+		var tokenParserContext = info.tokenParserContext;
+		var CurrentTemplate = undefined;
+
 		eval(output);
 	
 		if (tokenParserContext.parentName != '') {
@@ -192,8 +199,8 @@ export class TemplateParser {
 		return this.registry[path];
 	}
 
-	parseTemplateSync(tokenParserContext, tokenReader) {
-		while (tokenReader.hasMore()) {
+	parseTemplateSync(tokenParserContext, tokenReader: TokenReader.TokenReader) {
+		while (tokenReader.hasMore) {
 			var item = tokenReader.peek();
 			debug('parseTemplateSync: ' + item.type);
 			switch (item.type) {
@@ -206,12 +213,12 @@ export class TemplateParser {
 				case 'expression':
 					item = tokenReader.read();
 					// Propagate the "not done".
-					this.parseTemplateExpressionSync(tokenParserContext, tokenReader, new TokenReader(item.value));
+					this.parseTemplateExpressionSync(tokenParserContext, tokenReader, new TokenReader.TokenReader(item.value));
 				break;
 				case 'block':
 					item = tokenReader.read();
 					// Propagate the "not done".
-					this.parseTemplateBlockSync(tokenParserContext, tokenReader, new TokenReader(item.value));
+					this.parseTemplateBlockSync(tokenParserContext, tokenReader, new TokenReader.TokenReader(item.value));
 				break;
 				default:
 					throw(new Error("Invalid item.type == '" + item.type + "'"));

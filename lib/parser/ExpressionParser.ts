@@ -21,7 +21,57 @@ export class ExpressionParser {
 	}
 
 	parseExpression(): ParserNode.ParserNodeExpression {
-		return this.parseTernary();
+		return this.parseFunctionCall();
+	}
+
+	parseFunctionCall() {
+		var expr = this.parseTernary();
+
+		while (true) {
+			// Function call
+			if (this.tokenReader.peek().value == '(')
+			{
+				this.tokenReader.skip();
+				var arguments;
+				if (this.tokenReader.peek().value != ')') {
+					arguments = this.parseCommaExpression();
+				} else {
+					arguments = new ParserNode.ParserNodeCommaExpression([]);
+				}
+				this.tokenReader.expectAndMoveNext(')');
+				if (expr instanceof ParserNode.ParserNodeIdentifier) {
+					expr = new ParserNode.ParserNodeFunctionCall(new ParserNode.ParserNodeLiteral(expr.value), arguments);
+				} else {
+					expr = new ParserNode.ParserNodeFunctionCall(expr, arguments);
+				}
+			}
+			// Filter
+			else if (this.tokenReader.peek().value == '|')
+			{
+				this.tokenReader.skip();
+				var filterName = this.tokenReader.peek().value;
+				this.tokenReader.skip();
+
+				var arguments = new ParserNode.ParserNodeCommaExpression([]);
+
+				if (this.tokenReader.peek().value == '(') {
+					this.tokenReader.skip();
+					if (this.tokenReader.peek().value != ')') {
+						arguments = this.parseCommaExpression();
+					}
+					this.tokenReader.expectAndMoveNext(')');
+				}
+
+				arguments.expressions.unshift(expr);
+
+				expr = new ParserNode.ParserNodeFilterCall(filterName, arguments);
+			}
+			// End or other
+			else
+			{
+				return expr;
+			}
+		}
 	}
 
 	parseTernary() {
@@ -38,24 +88,24 @@ export class ExpressionParser {
 	}
 
 	parseLogicOr() {
-		return this._parseBinary('parseLogicOr', this.parseLogicAnd, ['||']);
+		return this._parseBinary('parseLogicOr', this.parseLogicAnd, ['||', 'or']);
 	}
 
 	parseLogicAnd() {
-		return this._parseBinary('parseLogicAnd', this.parseBitOr, ['&&']);
+		return this._parseBinary('parseLogicAnd', this.parseCompare, ['&&', 'and']);
 	}
 
-	parseBitOr() {
-		return this._parseBinary('parseBitOr', this.parseBitXor, ['|']);
-	}
-
-	parseBitXor() {
-		return this._parseBinary('parseBitXor', this.parseBitAnd, ['^']);
-	}
-
-	parseBitAnd() {
-		return this._parseBinary('parseBitAnd', this.parseCompare, ['&']);
-	}
+	//parseBitOr() {
+	//	return this._parseBinary('parseBitOr', this.parseBitXor, ['or']);
+	//}
+	//
+	//parseBitXor() {
+	//	return this._parseBinary('parseBitXor', this.parseBitAnd, ['^']);
+	//}
+	//
+	//parseBitAnd() {
+	//	return this._parseBinary('parseBitAnd', this.parseCompare, ['&']);
+	//}
 
 	parseCompare() {
 		return this._parseBinary('parseCompare', this.parseAddSub, ['==', '!=', '>=', '<=', '>', '<', '===', '!==']);
@@ -119,14 +169,6 @@ export class ExpressionParser {
 		if (token.type == 'id') {
 			this.tokenReader.skip();
 			var identifierString = token.value;
-
-			// Function call
-			if (this.tokenReader.peek().value == '(') {
-				this.tokenReader.skip();
-				var arguments = this.parseCommaExpression();
-				this.tokenReader.expectAndMoveNext(')');
-				return new ParserNode.ParserNodeFunctionCall(new ParserNode.ParserNodeLiteral(identifierString), arguments);
-			}
 
 			return new ParserNode.ParserNodeIdentifier(identifierString);
 		}

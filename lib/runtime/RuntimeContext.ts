@@ -1,20 +1,30 @@
 ///<reference path='../imports.d.ts'/>
 
+import DefaultFunctions = module('../lang/functions/DefaultFunctions');
+import DefaultFilters = module('../lang/filters/DefaultFilters');
+import DefaultTests = module('../lang/tests/DefaultTests');
+
 export class RuntimeContext {
 	output: string = '';
 	scope: any = {};
 	functions: any = {};
+	filters: any = {};
+	tests: any = {};
+	currentAutoescape: any = true;
+	defaultAutoescape: any = true;
 
 	constructor() {
-		this.functions.range = function (start, end, step = 1) {
-			var out = [];
-			var current = start;
-			while (current <= end) {
-				out.push(current);
-				current += step;
-			}
-			return out;
-		};
+		for (var key in DefaultFunctions.DefaultFunctions) {
+			this.functions[key.replace(/^\$+/, '')] = DefaultFunctions.DefaultFunctions[key];
+		}
+
+		for (var key in DefaultFilters.DefaultFilters) {
+			this.filters[key.replace(/^\$+/, '')] = DefaultFilters.DefaultFilters[key];
+		}
+
+		for (var key in DefaultTests.DefaultTests) {
+			this.tests[key.replace(/^\$+/, '')] = DefaultTests.DefaultTests[key];
+		}
 	}
 
 	createScope(inner: () => void) {
@@ -37,20 +47,51 @@ export class RuntimeContext {
 	writeExpression(text: any) {
 		if (text === undefined || text === null) return;
 		if (!text.substr) text = JSON.stringify(text);
-		this.write(this.escape(text));
+		//console.log(this.currentAutoescape);
+		switch (this.currentAutoescape) {
+			case false:
+				this.write(text);
+			break;
+			case 'js':
+				throw (new Error("Not implemented"));
+			break;
+			case 'css':
+				throw (new Error("Not implemented"));
+			break;
+			case 'url':
+				throw (new Error("Not implemented"));
+			break;
+			case 'html_attr':
+				throw (new Error("Not implemented"));
+			break;
+			default:
+			case true:
+			case 'html':
+				this.write(RuntimeContext.escapeHtmlEntities(text));
+			break;
+		}
+		this.currentAutoescape = this.defaultAutoescape;
 	}
 
-	call($function: any, arguments: any[]) {
+	$call(functionList: any, $function: any, $arguments: any[]) {
 		if ($function !== undefined && $function !== null) {
 			//console.log('call:' + $function);
-			if ($function.substr) $function = this.functions[$function];
+			if ($function.substr) $function = functionList[$function];
 			//console.log('call:' + $function);
 			if ($function instanceof Function) {
-				return $function.apply(null, arguments);
+				return $function.apply(this, $arguments);
 				//console.log('called!');
 			}
 		}
 		return null;
+	}
+
+	call($function: any, $arguments: any[]) {
+		return this.$call(this.functions, $function, $arguments);
+	}
+
+	filter($function: any, $arguments: any[]) {
+		return this.$call(this.filters, $function, $arguments);
 	}
 
 	access(object: any, key: any) {
@@ -58,7 +99,7 @@ export class RuntimeContext {
 		return object[key];
 	}
 
-	escape(text: string) {
+	static escapeHtmlEntities(text: string) {
 		return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 	}
 }

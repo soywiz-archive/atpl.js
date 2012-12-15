@@ -105,6 +105,16 @@ export class ParserNodeFunctionCall extends ParserNodeExpression {
 	}
 }
 
+export class ParserNodeFilterCall extends ParserNodeExpression {
+	constructor(public filterName: string, public arguments: ParserNodeCommaExpression) {
+		super();
+	}
+
+	generateCode() {
+		return 'runtimeContext.filter(' + JSON.stringify(this.filterName) + ', [' + this.arguments.generateCode() + '])';
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 

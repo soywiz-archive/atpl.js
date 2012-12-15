@@ -6,6 +6,7 @@ export import _RuntimeContext      = module('../runtime/RuntimeContext');
 export import _FlowException       = module('./FlowException');
 export import _TokenParserContext  = module('./TokenParserContext');
 export import _ExpressionParser    = module('./ExpressionParser');
+export import DefaultTags          = module('../lang/tags/DefaultTags');
 
 var TemplateTokenizer = _TemplateTokenizer.TemplateTokenizer;
 var TokenParserContext = _TokenParserContext.TokenParserContext;
@@ -22,100 +23,11 @@ export class TemplateParser {
 	blockHandlers:any = {};
 
 	constructor(public templateProvider) {
-		this.addStandardBlockHandlers();
+		DefaultTags.register(this);
 	}
 
 	private addStandardBlockHandlers() {
-		// IF/ELSEIF/ELSE/ENDIF
-		this.addBlockFlowExceptionHandler('else');
-		this.addBlockFlowExceptionHandler('elseif');
-		this.addBlockFlowExceptionHandler('endif');
-		this.addBlockHandler('if', function(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-			var didElse = false;
-			var done = false;
-
-			var expressionParser = new ExpressionParser(expressionTokenReader);
-			var expressionNode = expressionParser.parseExpression();
 		
-			tokenParserContext.write('if (' + expressionNode.generateCode() + ') {');
-		
-			//parseExpressionExpressionSync
-		
-			while (!done) {
-				try {
-					templateParser.parseTemplateSync(tokenParserContext, templateTokenReader);
-				} catch (e) {
-					if (!(e instanceof FlowException)) throw(e);
-					switch (e.blockType) {
-						/*
-						case 'elseif':
-							if (didElse) throw(new Error("Can't put 'elseif' after the 'else'"));
-							tokenParserContext.write('} else if (undefined) {');
-							didElse = true;
-						break;
-						*/
-						case 'else':
-							if (didElse) throw(new Error("Can't have two 'else'"));
-							tokenParserContext.write('} else {');
-							didElse = true;
-						break;
-						case 'endif':
-							tokenParserContext.write('}');
-							done = true;
-						break;
-						default: throw(new Error("Unexpected '" + e.blockType + "'"));
-					}
-				}
-			}
-		});
-	
-		// BLOCK/ENDBLOCK
-		this.addBlockFlowExceptionHandler('endblock');
-		this.addBlockHandler('block', function(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-			var blockName = 'block_' + expressionTokenReader.read().value;
-			tokenParserContext.setBlock(blockName, function() {
-				try {
-					templateParser.parseTemplateSync(tokenParserContext, templateTokenReader);
-				} catch (e) {
-					if (!(e instanceof FlowException)) throw(e);
-					switch (e.blockType) {
-						case 'endblock':
-						break;
-						default: throw(new Error("Unexpected '" + e.blockType + "'"));
-					}
-				}
-			});
-			tokenParserContext.write('this.' + (blockName) + '(runtimeContext);');
-		});
-	
-		// EXTENDS
-		this.addBlockHandler('extends', function(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-			tokenParserContext.parentName = expressionTokenReader.read().value;
-			//tokenParserContext.addAsyncCallback = function() {
-				//console.log("extends!");
-			//};
-		});
-
-		// FOR/ENDFOR
-		this.addBlockFlowExceptionHandler('endfor');
-		this.addBlockHandler('for', function(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-			var expressionParser = new ExpressionParser(expressionTokenReader);
-			var nodeId = expressionParser.parseIdentifier();
-			expressionTokenReader.expectAndMoveNext('in');
-			var nodeList = expressionParser.parseExpression();
-			tokenParserContext.write('runtimeContext.createScope((function() { var k, list = ' + nodeList.generateCode() + '; for (k in list) { ' + nodeId.generateCode() + ' = list[k];');
-			try {
-				templateParser.parseTemplateSync(tokenParserContext, templateTokenReader);
-			} catch (e) {
-				if (!(e instanceof FlowException)) throw(e);
-				switch (e.blockType) {
-					case 'endfor':
-						tokenParserContext.write('} }));');
-					break;
-					default: throw(new Error("Unexpected '" + e.blockType + "'"));
-				}
-			}
-		});
 	}
 
 	addBlockFlowExceptionHandler(blockType) {

@@ -1,0 +1,14 @@
+﻿=== TITLE
+include
+
+=== INPUT
+{}
+
+=== TEMPLATE:include
+{{ "Hello" }} World
+
+=== TEMPLATE:main
+[{% include "include" %}]
+
+=== OUTPUT
+[Hello World]

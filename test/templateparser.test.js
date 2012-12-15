@@ -73,43 +73,6 @@ function handleSets(path, name) {
 handleSets(__dirname, 'sets');
 
 module.exports = {
-	'test extends 2': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('base1', '[{% block test1 %}1a{% endblock %}{% block test2 %}1b{% endblock %}{% block test3 %}1c{% endblock %}]');
-		templateProvider.add('base2', '{% extends "base1" %}{% block test2 %}2b{% endblock %}');
-		templateProvider.add('base3', '{% extends "base2" %}No{% block test3 %}3c{% endblock%}No');
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('base3', { cond: false }),
-			"[1a2b3c]"
-		);
-	},
-	'test extends 3': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('base1', '[{% block test_a %}1a{% endblock %}{% block test_b %}1b{% endblock %}{% block test_c %}1c{% endblock %}{% block test_d %}1d{% endblock %}]');
-		templateProvider.add('base2', '{% extends "base1" %}{% block test_b %}2b{% endblock %}');
-		templateProvider.add('base3', '{% extends "base2" %}No{% block test_c %}3c{% endblock%}No');
-		templateProvider.add('base4', '{% extends "base3" %}No{% block test_d %}4d{% endblock%}No');
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('base4', { cond: false }),
-			"[1a2b3c4d]"
-		);
-	},
-	'test create block inside blocks': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('base1', 'a{% block body %}b{% endblock %}c');
-		templateProvider.add('base2', '{% extends "base1" %}{% block body %}A{% block left %}B{% endblock %}C{% block right %}D{% endblock %}E{% endblock %}');
-		templateProvider.add('base3', '{% extends "base2" %}No{% block left %}[Z]{% endblock%}No');
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('base3', { cond: false }),
-			"aA[Z]CDEc"
-		);
-	},
 	'test simple if': function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
@@ -119,34 +82,6 @@ module.exports = {
 			"12 "
 		);
 	},
-	'test operators': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ 1 + 2 ** 8 * 2 }}');
-		assert.equal(
-			templateParser.compileAndRenderToString('test'),
-			"513"
-		);
-	},
-	'test in array': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ 3 in [1, 2, 3, 4] }}');
-		assert.equal(
-			templateParser.compileAndRenderToString('test'),
-			"true"
-		);
-	},
-	'test include': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('include', '{{ "Hello" }} World');
-		templateProvider.add('test', '[{% include "include" %}]');
-		assert.equal(
-			templateParser.compileAndRenderToString('test'),
-			"[Hello World]"
-		);
-	},
 	'test simple if elseif else': function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
@@ -154,18 +89,6 @@ module.exports = {
 		assert.equal(
 			templateParser.compileAndRenderToString('test', { v : 2 }),
 			"2"
-		);
-	},
-	'test undefined key': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test',
-			"{{ undefined_key }}" +
-		"");
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test', { v: 2 }),
-			""
 		);
 	},
 	'test nested for': function () {
@@ -270,16 +193,6 @@ module.exports = {
 			"9,3,2,?,?,false,true,3,a," +
 		'');
 	},
-	'test range operator': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{% for n in "a".."e" %}{{ n }}{% endfor %}');
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test'),
-			"abcde"
-		);
-	},
 	'test range operator with filter': function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
@@ -297,15 +210,6 @@ module.exports = {
 		assert.equal(
 			templateParser.compileAndRenderToString('test', { hi: 'Hello:' }),
 			"Hello:1234"
-		);
-	},
-	'test simple for with range and reverse': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ hi }}{{ n }}{% for n in range(1, 4)|reverse %}{{ n }}{% endfor %}{{ n }}');
-		assert.equal(
-			templateParser.compileAndRenderToString('test', { hi: 'Hello:' }),
-			"Hello:4321"
 		);
 	},
 	'test variable for': function () {

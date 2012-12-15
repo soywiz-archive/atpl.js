@@ -8,4 +8,4 @@ autoescape
 {{ msg }}
 
 === OUTPUT
-"&lt;&quot;&gt;__&lt;&quot;&gt;"
+&lt;&quot;&gt;__&lt;&quot;&gt;

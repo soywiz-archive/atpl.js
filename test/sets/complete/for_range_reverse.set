@@ -1,0 +1,11 @@
+﻿=== TITLE
+for range reverse
+
+=== INPUT
+{ "hi": "Hello:" }
+
+=== TEMPLATE:main
+{{ hi }}{{ n }}{% for n in range(1, 4)|reverse %}{{ n }}{% endfor %}{{ n }}
+
+=== OUTPUT
+Hello:4321

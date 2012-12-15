@@ -1,0 +1,17 @@
+﻿=== TITLE
+nested
+
+=== INPUT
+{}
+
+=== TEMPLATE:base1
+a{% block body %}b{% endblock %}c
+
+=== TEMPLATE:base2
+{% extends "base1" %}{% block body %}A{% block left %}B{% endblock %}C{% block right %}D{% endblock %}E{% endblock %}
+
+=== TEMPLATE:main
+{% extends "base2" %}No{% block left %}[Z]{% endblock%}No
+
+=== OUTPUT
+aA[Z]CDEc

@@ -1,0 +1,20 @@
+﻿=== TITLE
+extends 3
+
+=== INPUT
+{}
+
+=== TEMPLATE:base1
+[{% block test_a %}1a{% endblock %}{% block test_b %}1b{% endblock %}{% block test_c %}1c{% endblock %}{% block test_d %}1d{% endblock %}]
+
+=== TEMPLATE:base2
+{% extends "base1" %}{% block test_b %}2b{% endblock %}
+
+=== TEMPLATE:base3
+{% extends "base2" %}No{% block test_c %}3c{% endblock%}No
+
+=== TEMPLATE:main
+{% extends "base3" %}No{% block test_d %}4d{% endblock%}No
+
+=== OUTPUT
+[1a2b3c4d]

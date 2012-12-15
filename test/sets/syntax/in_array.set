@@ -1,0 +1,13 @@
+﻿=== TITLE
+in operator
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ 3 in [1, 2, 3, 4] }}
+{{ 0 in [1, 2, 3, 4] }}
+
+=== OUTPUT
+true
+false

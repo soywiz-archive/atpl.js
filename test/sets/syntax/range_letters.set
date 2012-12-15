@@ -1,0 +1,11 @@
+﻿=== TITLE
+range letters
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{% for n in "a".."e" %}{{ n }}{% endfor %}
+
+=== OUTPUT
+abcde

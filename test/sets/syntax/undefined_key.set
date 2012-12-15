@@ -1,0 +1,15 @@
+﻿=== TITLE
+undefined key
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ undefined_key }},
+{{ undefined_key.test }},
+{{ undefined_key.test['array'][1] }},
+
+=== OUTPUT
+,
+,
+,

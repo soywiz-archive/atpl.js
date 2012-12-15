@@ -1,0 +1,11 @@
+﻿=== TITLE
+operators
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ 1 + 2 ** 8 * 2 }}
+
+=== OUTPUT
+513

@@ -43,25 +43,37 @@ module.exports = {
 		templateProvider.add('base', 'Hello {% block test %}Test{% endblock %}');
 		templateProvider.add('test', '{% extends "base" %}No{% block test %}World{% endblock%}No');
 		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal("Hello World", templateParser.compileAndRenderToString('test'));
+		assert.equal(
+			templateParser.compileAndRenderToString('test'),
+			"Hello World"
+		);
 	},
 	'test simple if': function() {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
 		templateProvider.add('test', '{% if 0 %}0{% else %}1{% if 1 %}2{% endif%}{% endif %} ');
-		assert.equal("12 ", templateParser.compileAndRenderToString('test'));
+		assert.equal(
+			templateParser.compileAndRenderToString('test'),
+			"12 "
+		);
 	},
 	'test simple for': function() {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
 		templateProvider.add('test', '{{ hi }}{{ n }}{% for n in [1, 2, 3, 4] %}{{ n }}{% endfor %}{{ n }}');
-		assert.equal("Hello:1234", templateParser.compileAndRenderToString('test', { hi : 'Hello:' }));
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { hi: 'Hello:' }),
+			"Hello:1234"
+		);
 	},
 	'test simple for with range and reverse': function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
 		templateProvider.add('test', '{{ hi }}{{ n }}{% for n in range(1, 4)|reverse %}{{ n }}{% endfor %}{{ n }}');
-		assert.equal("Hello:4321", templateParser.compileAndRenderToString('test', { hi: 'Hello:' }));
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { hi: 'Hello:' }),
+			"Hello:4321"
+		);
 	},
 	'test variable for': function () {
 		var templateProvider = new MemoryTemplateProvider();
@@ -76,7 +88,29 @@ module.exports = {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
 		templateProvider.add('test', '{{ msg }}');
-		assert.equal("&lt;&quot;&gt;__&lt;&quot;&gt;", templateParser.compileAndRenderToString('test', { msg : '<">__<">' }));
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { msg: '<">__<">' }),
+			"&lt;&quot;&gt;__&lt;&quot;&gt;"
+		);
+	},
+	'test autoescape tag': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{% autoescape false %}{{ msg }}{{ msg }}{% endautoescape %}');
+		assert.equal(
+			templateParser.compileAndRenderToString('test', { msg: '<">' }),
+			'<"><">'
+		);
+	},
+	'test invalid endtag': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('test', '{% endautoescape %}');
+		try {
+			templateParser.compileAndRenderToString('test');
+			assert.fail();
+		} catch (e) {
+		}
 	},
 	'test raw': function () {
 		var templateProvider = new MemoryTemplateProvider();

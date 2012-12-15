@@ -94,6 +94,19 @@ export class RuntimeContext {
 		return this.$call(this.filters, $function, $arguments);
 	}
 
+	autoescape(temporalValue: any, callback: () => void) {
+		var prevDefault = this.defaultAutoescape;
+		
+		this.defaultAutoescape = temporalValue;
+		try {
+			this.currentAutoescape = this.defaultAutoescape;
+			//console.log(this.currentAutoescape);
+			callback();
+		} finally {
+			this.defaultAutoescape = prevDefault;
+		}
+	}
+
 	access(object: any, key: any) {
 		if (object === undefined || object === null) return null;
 		return object[key];

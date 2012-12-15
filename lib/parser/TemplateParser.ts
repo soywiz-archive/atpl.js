@@ -71,8 +71,9 @@ export class TemplateParser {
 		try {
 			this.parseTemplateSync(tokenParserContext, new TokenReader.TokenReader(templateTokens));
 		} catch (e) {
-			if (!(e instanceof FlowException)) {
-				throw(e);
+			if (e instanceof FlowException) {
+				//console.log(e);
+				throw(new Error("Unexpected tag '" + e.blockType + "'"));
 			}
 			throw(e);
 		}

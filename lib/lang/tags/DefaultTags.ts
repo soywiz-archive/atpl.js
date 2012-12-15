@@ -7,22 +7,43 @@ export interface ITemplateParser {
 }
 
 export function register(templateParser: ITemplateParser) {
+	// AUTOESCAPE
+	templateParser.addBlockFlowExceptionHandler('endautoescape');
+	templateParser.addBlockHandler('autoescape', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+
+		tokenParserContext.write('runtimeContext.autoescape(' + expressionNode.generateCode() + ', function() {');
+
+		while (true) {
+			try {
+				templateParser.parseTemplateSync(tokenParserContext, templateTokenReader);
+			} catch (e) {
+				if (!(e instanceof FlowException.FlowException)) throw (e);
+				switch (e.blockType) {
+					case 'endautoescape':
+						tokenParserContext.write('});');
+						return;
+					default: throw (new Error("Unexpected '" + e.blockType + "'"));
+				}
+			}
+		}
+	});
+
+
 	// IF/ELSEIF/ELSE/ENDIF
 	templateParser.addBlockFlowExceptionHandler('else');
 	templateParser.addBlockFlowExceptionHandler('elseif');
 	templateParser.addBlockFlowExceptionHandler('endif');
 	templateParser.addBlockHandler('if', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var didElse = false;
-		var done = false;
 
-		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
-		var expressionNode = expressionParser.parseExpression();
+		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 
 		tokenParserContext.write('if (' + expressionNode.generateCode() + ') {');
 
 		//parseExpressionExpressionSync
 
-		while (!done) {
+		while (true) {
 			try {
 				templateParser.parseTemplateSync(tokenParserContext, templateTokenReader);
 			} catch (e) {
@@ -42,8 +63,7 @@ export function register(templateParser: ITemplateParser) {
 						break;
 					case 'endif':
 						tokenParserContext.write('}');
-						done = true;
-						break;
+						return;
 					default: throw (new Error("Unexpected '" + e.blockType + "'"));
 				}
 			}

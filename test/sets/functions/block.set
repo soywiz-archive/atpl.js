@@ -1,0 +1,11 @@
+﻿=== TITLE
+block
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+[{{ block("test") }}]{% block test %}Hello{% endblock %}({{ block("test") }})
+
+=== OUTPUT
+[Hello]Hello(Hello)

@@ -1,0 +1,17 @@
+﻿=== TITLE
+parent
+
+=== INPUT
+{}
+
+=== TEMPLATE:base1
+{% block title %}Title{% endblock %}
+
+=== TEMPLATE:base2
+{% extends "base1" %}{% block title %}[{{ parent() }}]{% endblock %}
+
+=== TEMPLATE:main
+{% extends "base2" %}{% block title %}({{ parent() }}){% endblock %}
+
+=== OUTPUT
+([Title])

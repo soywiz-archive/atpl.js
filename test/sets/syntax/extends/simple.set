@@ -1,0 +1,14 @@
+﻿=== TITLE
+simple
+
+=== INPUT
+{}
+
+=== TEMPLATE:base
+Hello {% block test %}Test{% endblock %}
+
+=== TEMPLATE:main
+{% extends "base" %}No{% block test %}World{% endblock%}No
+
+=== OUTPUT
+Hello World

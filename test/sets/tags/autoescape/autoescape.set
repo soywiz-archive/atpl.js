@@ -1,0 +1,11 @@
+﻿=== TITLE
+autoescape
+
+=== INPUT
+{ "msg": "<\">" }
+
+=== TEMPLATE:main
+{% autoescape false %}{{ msg }}{{ msg }}{% endautoescape %}
+
+=== OUTPUT
+<"><">

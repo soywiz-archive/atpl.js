@@ -1,0 +1,11 @@
+﻿=== TITLE
+field access
+
+=== INPUT
+{ "item": { "key" : 777 } }
+
+=== TEMPLATE:main
+{{ item.key }}
+
+=== OUTPUT
+777

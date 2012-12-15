@@ -1,0 +1,11 @@
+﻿=== TITLE
+simple for-else
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ n }}{% for n in [] %}{{ n }}{% else %}No{% endfor %}{{ n }}
+
+=== OUTPUT
+No

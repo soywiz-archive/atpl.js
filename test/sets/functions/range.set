@@ -1,0 +1,11 @@
+﻿=== TITLE
+range
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ range(0, 2) }}
+
+=== OUTPUT
+[0,1,2]

@@ -1,7 +1,7 @@
 {
   "name": "atpl",
-  "description": "A simple template engine based on twig and django.",
-  "version": "0.3.0",
+  "description": "A simple and very fast template engine based on twig and django (implements more features than twig.js and swig).",
+  "version": "0.3.1",
   "author": "Carlos Ballesteros <cballesterosvelasco@gmail.com> (http://cballesterosvelasco.es/)",
   "contributors": [ 
   ],

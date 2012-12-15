@@ -18,11 +18,11 @@ export class DefaultFunctions {
 
 	// http://twig.sensiolabs.org/doc/functions/random.html
 	static random(values: any) {
-		if (values === undefined || values === null) return Math.round(Math.random() * 99999999);
+		if (values === undefined || values === null) return Math.round(RuntimeUtils.random() * 99999999);
 		if ((values.prototype == Array.prototype) || (values.prototype == String.prototype)) {
-			return values[Math.round(Math.random() * (values.length - 1))];
+			return values[Math.round(RuntimeUtils.random() * (values.length - 1))];
 		}
-		return Math.round(Math.random() * values);
+		return Math.round(RuntimeUtils.random() * values);
 	}
 
 	// http://twig.sensiolabs.org/doc/functions/attribute.html

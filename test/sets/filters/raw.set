@@ -1,0 +1,11 @@
+﻿=== TITLE
+raw
+
+=== INPUT
+{ "msg": "<\">__<\">" }
+
+=== TEMPLATE:main
+{{ msg|raw }}
+
+=== OUTPUT
+<">__<">

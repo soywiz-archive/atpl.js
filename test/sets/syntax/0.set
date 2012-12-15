@@ -1,0 +1,11 @@
+﻿=== TITLE
+simple 0
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ 0 }}
+
+=== OUTPUT
+0

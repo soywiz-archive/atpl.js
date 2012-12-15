@@ -1,0 +1,13 @@
+﻿=== TITLE
+sameas
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ 3 is sameas(3) }}
+{{ 3 is sameas(2) }}
+
+=== OUTPUT
+true
+false

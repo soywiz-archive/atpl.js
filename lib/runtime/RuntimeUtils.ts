@@ -35,3 +35,7 @@ export function rangeString(from: string, to: string, step: number = 1): string[
 		return '' + String.fromCharCode(value);
 	});
 }
+
+export function random(): number {
+	return Math.random();
+}

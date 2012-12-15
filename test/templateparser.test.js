@@ -1,155 +1,78 @@
 var assert = require('assert');
+var fs = require('fs');
 
 TemplateParser         = require('../lib/parser/TemplateParser.js').TemplateParser;
 MemoryTemplateProvider = require('../lib/TemplateProvider.js').MemoryTemplateProvider;
-RuntimeContext         = require('../lib/runtime/RuntimeContext.js').RuntimeContext;
+RuntimeContext = require('../lib/runtime/RuntimeContext.js').RuntimeContext;
+RuntimeUtils = require('../lib/runtime/RuntimeUtils.js');
+
+module.exports = {};
+
+function handleSet(name, data) {
+	var parts = data.split('===');
+	var test = { title: 'untitled: ' + name, input: {}, expected: '', templates: {}, eval: '' };
+	for (var n = 0; n < parts.length; n++) {
+		var part = parts[n].trim();
+		var token = /^([\w:]+)\s+(.*)$/m.exec(part);
+		//console.log(part);
+		if (token != null) {
+			var key = token[1].trim().toLowerCase();
+			var value = token[2].trim();
+			switch (key) {
+				case 'title': test.title = value + ' (' + name + ')'; break;
+				case 'input': test.input = JSON.parse(value); break;
+				case 'output': test.expected = value; break;
+				case 'eval': test.eval = value; break;
+				default: {
+					var pp = key.split(':');
+					switch (pp[0]) {
+						case 'template':
+							test.templates[pp[1]] = value;
+							break;
+						default:
+							throw(new Error("Unknown key '" + key + "'"));
+					}
+				}
+			}
+		}
+	}
+	it(test.title, function() {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		for (var key in test.templates) {
+			templateProvider.add(key, test.templates[key]);
+		}
+
+		if (test.templates['main'] === undefined) {
+			console.log(test);
+		}
+
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('main', test.input),
+			test.expected
+		);
+	});
+}
+
+function handleSets(path, name) {
+	describe(name, function() {
+		var rpath = path + '/' + name;
+		var sets = fs.readdirSync(rpath);
+		for (var n = 0; n < sets.length; n++) {
+			var rfile = rpath + '/' + sets[n];
+			if (fs.statSync(rfile).isDirectory()) {
+				handleSets(rpath, sets[n]);
+			} else {
+				handleSet(sets[n], fs.readFileSync(rfile, 'utf-8'));
+			}
+		}
+	});
+}
+
+handleSets(__dirname, 'sets');
 
 module.exports = {
-	'test simple 0': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ 0 }}');
-
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test'),
-			"0"
-		);
-	},
-	'test simple true': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ true }}');
-
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test'),
-			"true"
-		);
-	},
-	'test simple test odd': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ 3 is odd }}');
-
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test'),
-			"true"
-		);
-	},
-	'test function block': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '[{{ block("test") }}]{% block test %}Hello{% endblock %}({{ block("test") }})');
-
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test'),
-			"[Hello]Hello(Hello)"
-		);
-	},
-	'test field access': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ item.key }}');
-
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test', { item: { key : 777 } }),
-			"777"
-		);
-	},
-	'test array access': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ item.key["demo"].test }}');
-
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test', { item: { key: { demo : { test : 777 } } } }),
-			"777"
-		);
-	},
-	'test function parent': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('base1', '{% block title %}Title{% endblock %}');
-		templateProvider.add('base2', '{% extends "base1" %}{% block title %}[{{ parent() }}]{% endblock %}');
-		templateProvider.add('test', '{% extends "base2" %}{% block title %}({{ parent() }}){% endblock %}');
-
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test'),
-			"([Title])"
-		);
-	},
-	'test simple test sameas': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ 3 is sameas(3) }}');
-
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test'),
-			"true"
-		);
-	},
-	'test simple function range': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ range(0, 2) }}');
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test'),
-			"[0,1,2]"
-		);
-	},
-	'test simple function random': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ random() }}');
-		//console.log(templateParser.getEvalCode('test').output);
-		//Math.random = function () { return 777; };
-		assert.notEqual(
-			templateParser.compileAndRenderToString('test'),
-			""
-		);
-	},
-	'test simple extends': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('base', 'Hello {% block test %}Test{% endblock %}');
-		templateProvider.add('test', '{% extends "base" %}No{% block test %}World{% endblock%}No');
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test'),
-			"Hello World"
-		);
-	},
-	'test simple extends 2': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('base', 'Hello {% block test %}Test{% endblock %}{% block test2 %} Wow{% endblock %}');
-		templateProvider.add('test', '{% extends "base" %}No{% block test %}World{% endblock%}No');
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test'),
-			"Hello World Wow"
-		);
-	},
-	'test conditional extends': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('base1', 'Hello {% block test %}Test{% endblock %}');
-		templateProvider.add('base2', 'Goodbye {% block test %}Test{% endblock %}');
-		templateProvider.add('test', '{% extends cond ? "base1" : "base2" %}No{% block test %}World{% endblock%}No');
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test', { cond : false }),
-			"Goodbye World"
-		);
-	},
 	'test extends 2': function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
@@ -403,24 +326,6 @@ module.exports = {
 			"empty"
 		);
 	},
-	'test autoescape': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ msg }}');
-		assert.equal(
-			templateParser.compileAndRenderToString('test', { msg: '<">__<">' }),
-			"&lt;&quot;&gt;__&lt;&quot;&gt;"
-		);
-	},
-	'test autoescape tag': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{% autoescape false %}{{ msg }}{{ msg }}{% endautoescape %}');
-		assert.equal(
-			templateParser.compileAndRenderToString('test', { msg: '<">' }),
-			'<"><">'
-		);
-	},
 	'test invalid endtag': function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
@@ -431,22 +336,4 @@ module.exports = {
 		} catch (e) {
 		}
 	},
-	'test raw': function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ msg|raw }}');
-		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('test', { msg: '<">__<">' }),
-			'<">__<">'
-		);
-	},
-	/*
-	'test simple for else': function() {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
-		templateProvider.add('test', '{{ n }}{% for n in [] %}{{ n }}{% else %}No{% endfor %}{{ n }}');
-		assert.equal("No", templateParser.compileAndRenderToString('test', { }));
-	},
-	*/
 };

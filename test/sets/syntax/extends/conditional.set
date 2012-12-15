@@ -1,0 +1,17 @@
+﻿=== TITLE
+simple
+
+=== INPUT
+{ "cond": false}
+
+=== TEMPLATE:base_a
+Hello {% block test %}Test{% endblock %}
+
+=== TEMPLATE:base_b
+Goodbye {% block test %}Test{% endblock %}
+
+=== TEMPLATE:main
+{% extends cond ? "base_a" : "base_b" %}No{% block test %}World{% endblock%}No
+
+=== OUTPUT
+Goodbye World

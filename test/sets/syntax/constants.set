@@ -1,0 +1,11 @@
+﻿=== TITLE
+simple constants
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ true }},{{ false }},{{ null }}
+
+=== OUTPUT
+true,false,

@@ -1,0 +1,14 @@
+﻿=== TITLE
+block
+
+=== INPUT
+{}
+
+=== EVAL
+RuntimeUtils.random = function() { return 0.5; };
+
+=== TEMPLATE:main
+{{ random() }}
+
+=== OUTPUT
+0.5

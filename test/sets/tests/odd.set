@@ -1,0 +1,11 @@
+﻿=== TITLE
+odd
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ 3 is odd }}
+
+=== OUTPUT
+true

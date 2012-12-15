@@ -4,8 +4,8 @@ var tp  = require('../lib/TemplateProvider.js');
 FileSystemTemplateProvider = tp.FileSystemTemplateProvider;
 MemoryTemplateProvider     = tp.MemoryTemplateProvider;
 
-module.exports = {
-	'test file system': function(done) {
+describe('TemplateProvider', function() {
+	it('test file system', function(done) {
 		var templateProvider = new FileSystemTemplateProvider(__dirname + '/templates');
 		assert.equal('Hello World!', templateProvider.getSync('simple.atpl'));
 
@@ -14,8 +14,8 @@ module.exports = {
 		//	done();
 		//});
 		done();
-	},
-	'test memory': function() {
+	});
+	it('test memory', function() {
 		var templateProvider = new MemoryTemplateProvider();
 		try {
 			templateProvider.getSync('simple.atpl');
@@ -29,5 +29,5 @@ module.exports = {
 		templateProvider.add('simple.atpl', templateContent);
 		//console.log(templateProvider.registry);
 		assert.equal(templateContent, templateProvider.getSync('simple.atpl'));
-	},
-};
+	});
+});

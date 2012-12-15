@@ -96,9 +96,12 @@ export class RuntimeContext {
 		//console.log(CurrentTemplate.__main);
 
 		//console.log('extends:' + name);
-		CurrentTemplate['__proto__']['__proto__'] = ParentTemplate;
+		//CurrentTemplate['__proto__']['__proto__'] = ParentTemplate;
+
+		for (var key in ParentTemplate) if (CurrentTemplate[key] === undefined) CurrentTemplate[key] = ParentTemplate[key];
 		CurrentTemplate['__parent'] = ParentTemplate;
-		return ParentTemplate.__main.apply(CurrentTemplate, [this]);
+		CurrentTemplate['__main'] = ParentTemplate['__main'];
+		return CurrentTemplate.__main(this);
 	}
 
 	putBlock(CurrentTemplate: any, name: string) {

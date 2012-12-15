@@ -71,30 +71,43 @@ module.exports = {
 			"Goodbye World"
 		);
 	},
-	//'test extends 2': function () {
-	//	var templateProvider = new MemoryTemplateProvider();
-	//	var templateParser = new TemplateParser(templateProvider);
-	//	templateProvider.add('base1', '{% block test1 %}1a{% endblock %}{% block test2 %}1b{% endblock %}{% block test3 %}1c{% endblock %}');
-	//	templateProvider.add('base2', '{% extends "base1" %}{% block test2 %}2b{% endblock %}');
-	//	templateProvider.add('base3', '{% extends "base2" %}No{% block test3 %}3c{% endblock%}No');
-	//	//console.log(templateParser.getEvalCode('test').output);
-	//	assert.equal(
-	//		templateParser.compileAndRenderToString('base3', { cond: false }),
-	//		"1a2b3c"
-	//	);
-	//},
-	//'test create block inside blocks': function () {
-	//	var templateProvider = new MemoryTemplateProvider();
-	//	var templateParser = new TemplateParser(templateProvider);
-	//	templateProvider.add('base1', 'a{% block body %}b{% endblock %}c');
-	//	templateProvider.add('base2', '{% extends "base1" %}{% block body %}A{% block left %}B{% endblock %}C{% block right %}D{% endblock %}E{% endblock %}');
-	//	templateProvider.add('base3', '{% extends "base2" %}No{% block left %}[Z]{% endblock%}No');
-	//	//console.log(templateParser.getEvalCode('test').output);
-	//	assert.equal(
-	//		templateParser.compileAndRenderToString('base3', { cond: false }),
-	//		"aA[Z]CDEc"
-	//	);
-	//},
+	'test extends 2': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('base1', '[{% block test1 %}1a{% endblock %}{% block test2 %}1b{% endblock %}{% block test3 %}1c{% endblock %}]');
+		templateProvider.add('base2', '{% extends "base1" %}{% block test2 %}2b{% endblock %}');
+		templateProvider.add('base3', '{% extends "base2" %}No{% block test3 %}3c{% endblock%}No');
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('base3', { cond: false }),
+			"[1a2b3c]"
+		);
+	},
+	'test extends 3': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('base1', '[{% block test_a %}1a{% endblock %}{% block test_b %}1b{% endblock %}{% block test_c %}1c{% endblock %}{% block test_d %}1d{% endblock %}]');
+		templateProvider.add('base2', '{% extends "base1" %}{% block test_b %}2b{% endblock %}');
+		templateProvider.add('base3', '{% extends "base2" %}No{% block test_c %}3c{% endblock%}No');
+		templateProvider.add('base4', '{% extends "base3" %}No{% block test_d %}4d{% endblock%}No');
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('base4', { cond: false }),
+			"[1a2b3c4d]"
+		);
+	},
+	'test create block inside blocks': function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+		templateProvider.add('base1', 'a{% block body %}b{% endblock %}c');
+		templateProvider.add('base2', '{% extends "base1" %}{% block body %}A{% block left %}B{% endblock %}C{% block right %}D{% endblock %}E{% endblock %}');
+		templateProvider.add('base3', '{% extends "base2" %}No{% block left %}[Z]{% endblock%}No');
+		//console.log(templateParser.getEvalCode('test').output);
+		assert.equal(
+			templateParser.compileAndRenderToString('base3', { cond: false }),
+			"aA[Z]CDEc"
+		);
+	},
 	'test simple if': function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);

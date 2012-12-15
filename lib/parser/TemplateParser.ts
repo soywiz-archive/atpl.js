@@ -77,14 +77,15 @@ export class TemplateParser {
 		}
 		var blocks = tokenParserContext.blocksOutput;
 		var output = '';
-		output += 'CurrentTemplate = function() { };';
-		output += 'CurrentTemplate.prototype.render = function(runtimeContext) { this.__main(runtimeContext); };';
+		output += 'CurrentTemplate = function() { };\n';
+		output += 'CurrentTemplate.prototype.render = function(runtimeContext) { this.__main(runtimeContext); };\n';
 		for (var blockName in blocks) {
 			var block = blocks[blockName];
-			output += 'CurrentTemplate.prototype.' + blockName + ' = function(runtimeContext) {';
-			output += 'var that = this;';
-			output += block;
-			output += '}; ';
+			output += 'CurrentTemplate.prototype.' + blockName + ' = function(runtimeContext) {\n';
+			//output += 'console.log("executing ' + path + '.' + blockName + '");\n';
+			output += 'var that = this;\n';
+			output += block + "\n";
+			output += '};\n';
 		}
 
 		debug(output);
@@ -99,6 +100,8 @@ export class TemplateParser {
 			var CurrentTemplate = undefined;
 
 			eval(output);
+
+			//console.log(output);
 
 			this.registry[path] = { output : output, class : CurrentTemplate };
 		}

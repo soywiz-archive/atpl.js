@@ -44,7 +44,7 @@ Not-implemented-yet syntax:
 
 ```
 {% if cond1 %}...{% elseif cond2 %}...{% else %}...{% endif %}
-{% for var in list %}...{% else %}...{% endif %}
+{% for var in list %}...{% else %}...{% endfor %}
 {{ var is even }}
 ```
 

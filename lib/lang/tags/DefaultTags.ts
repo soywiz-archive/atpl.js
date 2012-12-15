@@ -88,7 +88,6 @@ export function register(templateParser: ITemplateParser) {
 			}
 		});
 		tokenParserContext.write('runtimeContext.putBlock(that, ' + JSON.stringify(blockName) + ');');
-		//tokenParserContext.write('that.' + (blockName) + '(runtimeContext);');
 	});
 
 	// EXTENDS

@@ -1,4 +1,4 @@
-var utils  = require('../lib/Utils.js');
+var utils  = require('../lib/utils.js');
 var assert = require('assert');
 
 module.exports = {

@@ -1,2 +1,2 @@
 @echo off
-npm publish .
+call build_release.bat && npm publish .

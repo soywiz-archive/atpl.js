@@ -1,5 +1,6 @@
 {
   "name": "atpl",
+  "preferGlobal": "false",
   "description": "A simple and very fast template engine based on twig and django (implements more features than twig.js and swig).",
   "version": "0.3.1",
   "author": "Carlos Ballesteros <cballesterosvelasco@gmail.com> (http://cballesterosvelasco.es/)",
@@ -8,10 +9,13 @@
   "dependencies": {
   },
   "devDependencies": {
-    "should": "0.3.x",
-    "mocha": "0.3.x",
+	"supertest": "0.5.x",
 	"express": "3.x.x",
-	"typescript": "0.8.x"
+    "should": "1.2.x",
+    "mocha": "1.7.x",
+	"typescript": "0.8.x",
+	"async": "0.1.x",
+	"moment": "1.7.x"
   },
   "homepage": "https://github.com/soywiz/atpl.js",
   "keywords": ["template", "engine"],
@@ -21,8 +25,9 @@
   },
   "main": "lib/atpl.js",
   "scripts": {
-    "test": "make test"
+    "test": "./node_modules/.bin/mocha --ui exports --globals name "
   },
+  "license": "MIT",
   "engines": {
     "node": "*"
   }

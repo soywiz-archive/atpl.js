@@ -52,6 +52,8 @@
     <TypeScriptSourceMap> --sourcemap</TypeScriptSourceMap>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="benchmarks\benchmark.ts" />
+    <Content Include="benchmarks\views\simple.html" />
     <Content Include="lib\atpl.ts" />
     <Content Include="lib\lang\DefaultFilters.ts" />
     <Content Include="lib\imports.d.ts" />
@@ -67,18 +69,21 @@
     <Content Include="lib\parser\ParserNode.ts" />
     <Content Include="lib\parser\TemplateParser.ts" />
     <Content Include="lib\parser\TokenParserContext.ts" />
+    <Content Include="lib\runtime\lib\DateFormat.ts" />
+    <Content Include="lib\runtime\lib\Format.ts" />
     <Content Include="lib\runtime\RuntimeContext.ts" />
     <Content Include="lib\runtime\RuntimeUtils.ts" />
     <Content Include="lib\runtime\Scope.ts" />
     <Content Include="lib\TemplateProvider.ts" />
     <Content Include="lib\utils.ts" />
-    <Content Include="test\dummy.test.js" />
     <Content Include="test\expressionparser.test.js" />
     <Content Include="test\ExpressionTokenizer.test.js" />
     <Content Include="test\imports.d.ts" />
+    <Content Include="test\RuntimeUtils.test.js" />
     <Content Include="test\stringreader.test.js" />
     <Content Include="test\fixtures.test.js" />
     <Content Include="test\templateprovider.test.js" />
+    <Content Include="test\templates\simple.html" />
     <Content Include="test\templatetokenizer.test.js" />
     <Content Include="test\utils.test.js" />
     <Content Include="typescript-node-definitions\.gitignore" />
@@ -122,138 +127,99 @@
     <Content Include="typescript-node-definitions\wrench.d.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\templates\simple.atpl" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="typescript-node-definitions\.git" />
     <Content Include="typescript-node-definitions\README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="test\sets\regressions\" />
+    <Folder Include="test\fixtures\regressions\" />
     <Folder Include="typescript-node-definitions\DefinitelyTyped\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\syntax\0.set" />
+    <Content Include="test\fixtures\complete\for_if.set" />
+    <Content Include="test\fixtures\complete\for_range_op_filter.set" />
+    <Content Include="test\fixtures\complete\for_range_reverse.set" />
+    <Content Include="test\fixtures\filters\raw.set" />
+    <Content Include="test\fixtures\functions\block.set" />
+    <Content Include="test\fixtures.disabled\functions\parent.set" />
+    <Content Include="test\fixtures\functions\random.set" />
+    <Content Include="test\fixtures\functions\range.set" />
+    <Content Include="test\fixtures\syntax\0.set" />
+    <Content Include="test\fixtures\syntax\array_access.set" />
+    <Content Include="test\fixtures\syntax\autoescape.set" />
+    <Content Include="test\fixtures\syntax\constants.set" />
+    <Content Include="test\fixtures\syntax\exceptions\end_tag.set" />
+    <Content Include="test\fixtures\syntax\exceptions\start_tag.set" />
+    <Content Include="test\fixtures\syntax\field_access.set" />
+    <Content Include="test\fixtures\syntax\in_array.set" />
+    <Content Include="test\fixtures\syntax\operators.set" />
+    <Content Include="test\fixtures\syntax\range_letters.set" />
+    <Content Include="test\fixtures\syntax\undefined_key.set" />
+    <Content Include="test\fixtures\tags\autoescape\autoescape.set" />
+    <Content Include="test\fixtures\tags\block\nested.set" />
+    <Content Include="test\fixtures\tags\extends\conditional.set" />
+    <Content Include="test\fixtures\tags\extends\extends2.set" />
+    <Content Include="test\fixtures\tags\extends\extends3.set" />
+    <Content Include="test\fixtures\tags\extends\simple.set" />
+    <Content Include="test\fixtures\tags\extends\simple2.set" />
+    <Content Include="test\fixtures\tags\for\else.set" />
+    <Content Include="test\fixtures\tags\for\key_value.set" />
+    <Content Include="test\fixtures\tags\for\loop_key.set" />
+    <Content Include="test\fixtures\tags\for\nested.set" />
+    <Content Include="test\fixtures\tags\for\simple.set" />
+    <Content Include="test\fixtures\tags\for\simple0.set" />
+    <Content Include="test\fixtures\tags\for\simple_else.set" />
+    <Content Include="test\fixtures\tags\if\elseif.set" />
+    <Content Include="test\fixtures\tags\if\simple.set" />
+    <Content Include="test\fixtures\tags\include\include.set" />
+    <Content Include="test\fixtures\tags\set\test.set" />
+    <Content Include="test\fixtures.disabled\tags\set\tuple.set" />
+    <Content Include="test\fixtures\tests\odd.set" />
+    <Content Include="test\fixtures\tests\sameas.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\syntax\constants.set" />
+    <Content Include="test\fixtures\syntax\exceptions\unknown_tag.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\tests\odd.set" />
+    <Content Include="test\fixtures\tags\for\loop_context_local.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\functions\block.set" />
+    <Content Include="test\fixtures\syntax\exceptions\incomplete_expression.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\syntax\field_access.set" />
+    <Content Include="test\fixtures\filters\upper.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\syntax\array_access.set" />
+    <Content Include="test\fixtures\filters\lower.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\functions\parent.set" />
+    <Content Include="test\fixtures\filters\abs.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\tests\sameas.set" />
+    <Content Include="test\fixtures\filters\capitalize.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\functions\range.set" />
+    <Content Include="test\fixtures\filters\title.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\functions\random.set" />
+    <Content Include="test\fixtures\filters\sort.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\tags\extends\simple.set" />
+    <Content Include="test\fixtures\filters\format.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\tags\extends\simple2.set" />
+    <Content Include="test\fixtures\filters\date.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\tags\extends\conditional.set" />
+    <Content Include="test\fixtures\filters\default.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\tags\for\simple_else.set" />
+    <Content Include="test\fixtures\filters\join.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\sets\filters\raw.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\autoescape\autoescape.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\syntax\autoescape.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\extends\extends2.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\extends\extends3.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\block\nested.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\syntax\operators.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\syntax\in_array.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\include\include.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\syntax\undefined_key.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\syntax\range_letters.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\complete\for_range_reverse.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\for\simple.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\for\simple0.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\for\else.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\complete\for_range_op_filter.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\if\simple.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\if\elseif.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\for\nested.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\for\key_value.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\complete\for_if.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\set\test.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\set\tuple.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\syntax\exceptions\end_tag.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\tags\for\loop_key.set" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test\sets\syntax\exceptions\start_tag.set" />
+    <Content Include="test\fixtures\filters\keys.set" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Message Text="Compiling TypeScript files" />

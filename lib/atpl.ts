@@ -12,6 +12,20 @@ export interface IOptions {
 	cache?: bool;
 }
 
+export interface IOptionsExpress {
+	settings: {
+		//'x-powered-by': bool;
+		etag: bool;
+		env: string;
+		views: string;
+		//'jsonp callback name': string;
+		//'json spaces': number;
+		//'view engine': string;
+	};
+	_locals();
+	cache: bool;
+}
+
 function internalCompile(options: IOptions) {
 	if (registryTemplateParser[options.root] === undefined) {
 		registryTemplateParser[options.root] = new TemplateParser.TemplateParser(
@@ -36,30 +50,29 @@ export function express2Compile(templateString: string, options: any): (params: 
 	return internalCompileString(templateString, options.settings['atpl options']);
 }
 
-function express3RenderFile(filename: string, options: any, callback: (err: Error, output: string) => void) {
+function express3RenderFile(filename: string, options: any/*IOptionsExpress*/, callback: (err: Error, output: string) => void) {
     // handle callback in options
     if ('function' == typeof options) {
         callback = options;
         options = {};
     }
 
+    //console.log(filename);
+	//console.log(options);
+	//console.log(options._locals);
+	//console.log(callback);
+
     options = options || {};
 
-    var params = {
+    var params: IOptions = {
         path: filename,
-        base: options.settings['views'],
-        load: function(template) {
-            // render and return template
-            callback(null, template.render(options));
-        }
+        root: options.settings['views'],
+		cache: options.cache,
     };
-
-    // mixin any options provided to the express app.
-    var view_options = options.settings['atpl options'];
 
     try {
 		var func = internalCompile(params);
-    	var output = func({});
+    	var output = func(options);
     	callback(null, output);
     } catch (e) {
     	callback(e, '');

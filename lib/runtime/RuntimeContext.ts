@@ -1,17 +1,12 @@
 ///<reference path='../imports.d.ts'/>
 
-import DefaultFunctions = module('../lang/DefaultFunctions');
-import DefaultFilters = module('../lang/DefaultFilters');
-import DefaultTests = module('../lang/DefaultTests');
 import RuntimeUtils = module('./RuntimeUtils');
+export import LanguageContext = module('../LanguageContext');
 import Scope = module('./Scope');
 
 export class RuntimeContext {
 	output: string = '';
 	private scope: Scope.Scope;
-	functions: any = {};
-	filters: any = {};
-	tests: any = {};
 	currentAutoescape: any = true;
 	defaultAutoescape: any = true;
 	currentBlockName: string = 'none';
@@ -20,20 +15,8 @@ export class RuntimeContext {
 	CurrentTemplate: any;
 	RootTemplate: any;
 
-	constructor(public templateParser: any, scopeData: any) {
+	constructor(public templateParser: any, scopeData: any, public languageContext: LanguageContext.LanguageContext) {
 		this.scope = new Scope.Scope(scopeData);
-
-		for (var key in DefaultFunctions.DefaultFunctions) {
-			this.functions[key.replace(/^\$+/, '')] = DefaultFunctions.DefaultFunctions[key];
-		}
-
-		for (var key in DefaultFilters.DefaultFilters) {
-			this.filters[key.replace(/^\$+/, '')] = DefaultFilters.DefaultFilters[key];
-		}
-
-		for (var key in DefaultTests.DefaultTests) {
-			this.tests[key.replace(/^\$+/, '')] = DefaultTests.DefaultTests[key];
-		}
 	}
 
 	setTemplate(Template: any) {
@@ -45,6 +28,8 @@ export class RuntimeContext {
 	setCurrentBlock(template: any, name: string, callback: () => void) {
 		var BackCurrentTemplate = this.CurrentTemplate;
 		var BackCurrentBlockName = this.currentBlockName;
+
+		//console.log("setCurrentBlock('" + template.name + "', '" + name + "')");
 
 		this.CurrentTemplate = template;
 		this.currentBlockName = name;
@@ -115,15 +100,15 @@ export class RuntimeContext {
 	}
 
 	call($function: any, $arguments: any[]) {
-		return this.$call(this.functions, $function, $arguments);
+		return this.$call(this.languageContext.functions, $function, $arguments);
 	}
 
 	filter($function: any, $arguments: any[]) {
-		return this.$call(this.filters, $function, $arguments);
+		return this.$call(this.languageContext.filters, $function, $arguments);
 	}
 
 	test($function: any, $arguments: any[]) {
-		return this.$call(this.tests, $function, $arguments);
+		return this.$call(this.languageContext.tests, $function, $arguments);
 	}
 
 	include(name: string) {
@@ -174,7 +159,7 @@ export class RuntimeContext {
 			console.log(Current['__proto__']);
 			throw (new Error("Can't find block '" + name + "'"));
 		}
-		return method(this);
+		return method.call(Current, this);
 	}
 
 	putBlock(name: string) {
@@ -182,8 +167,11 @@ export class RuntimeContext {
 	}
 
 	putBlockParent(name: string) {
-		//return this._putBlock(this.LeafTemplate['__proto__']['__proto__'], name);
-		throw (new Error("Not implemented"));
+		//console.log('RootTemplate: ' + this.RootTemplate.name);
+		//console.log('LeafTemplate: ' + this.LeafTemplate.name);
+		//console.log('CurrentTemplate: ' + this.CurrentTemplate.name);
+		return this._putBlock(this.CurrentTemplate['__proto__']['__proto__'], name);
+		//throw (new Error("Not implemented"));
 	}
 
 	autoescape(temporalValue: any, callback: () => void) {

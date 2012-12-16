@@ -1,10 +1,12 @@
 var assert = require('assert');
 var fs = require('fs');
 
-TemplateParser         = require('../lib/parser/TemplateParser.js').TemplateParser;
-MemoryTemplateProvider = require('../lib/TemplateProvider.js').MemoryTemplateProvider;
-RuntimeContext = require('../lib/runtime/RuntimeContext.js').RuntimeContext;
-RuntimeUtils = require('../lib/runtime/RuntimeUtils.js');
+var TemplateParser         = require('../lib/parser/TemplateParser.js').TemplateParser;
+var MemoryTemplateProvider = require('../lib/TemplateProvider.js').MemoryTemplateProvider;
+var LanguageContext = require('../lib/LanguageContext.js');
+var RuntimeContext = require('../lib/runtime/RuntimeContext.js').RuntimeContext;
+var RuntimeUtils = require('../lib/runtime/RuntimeUtils.js');
+var Default = require('../lib/lang/Default.js');
 
 module.exports = {};
 
@@ -42,7 +44,7 @@ function handleSet(name, data) {
 
 	it(test.title, function() {
 		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
+		var templateParser = new TemplateParser(templateProvider, Default.register(new LanguageContext.LanguageContext()));
 
 		for (var key in test.templates) {
 			templateProvider.add(key, test.templates[key]);
@@ -92,7 +94,7 @@ handleSets(__dirname, 'fixtures');
 describe('extra fixtures', function () {
 	it('function call as argument', function () {
 		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider);
+		var templateParser = new TemplateParser(templateProvider, Default.register(new LanguageContext.LanguageContext()));
 
 		templateProvider.add('main', '{{ test.func(1, 2, 3) }}');
 

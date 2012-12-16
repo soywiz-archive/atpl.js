@@ -6,7 +6,7 @@ export import _RuntimeContext      = module('../runtime/RuntimeContext');
 export import _FlowException       = module('./FlowException');
 export import _TokenParserContext  = module('./TokenParserContext');
 export import _ExpressionParser    = module('./ExpressionParser');
-export import DefaultTags          = module('../lang/DefaultTags');
+export import LanguageContext = module('../LanguageContext');
 
 var TemplateTokenizer = _TemplateTokenizer.TemplateTokenizer;
 var TokenParserContext = _TokenParserContext.TokenParserContext;
@@ -20,29 +20,14 @@ function debug(data) {
 
 export class TemplateParser {
 	registry:any = {};
-	blockHandlers:any = {};
 
-	constructor(public templateProvider) {
-		DefaultTags.register(this);
+	constructor(public templateProvider, public languageContext: LanguageContext.LanguageContext) {
 	}
 
-	private addStandardBlockHandlers() {
-		
-	}
-
-	addBlockFlowExceptionHandler(blockType) {
-		this.addBlockHandler(blockType, function(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-			throw(new FlowException(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader));
-		});
-	}
-
-	addBlockHandler(blockType, callback: (blockType, templateParser: TemplateParser, tokenParserContext: _TokenParserContext.TokenParserContext, templateTokenReader: any, expressionTokenReader: any) => void) {
-		this.blockHandlers[blockType] = callback;
-	}
 
 	compileAndRenderToString(path, scope: any) {
 		if (scope === undefined) scope = {};
-		var runtimeContext = new RuntimeContext(this, scope);
+		var runtimeContext = new RuntimeContext(this, scope, this.languageContext);
 		this.compileAndRender(path, runtimeContext);
 		return runtimeContext.output;
 	}
@@ -77,7 +62,7 @@ export class TemplateParser {
 		}
 		var blocks = tokenParserContext.blocksOutput;
 		var output = '';
-		output += 'CurrentTemplate = function() { };\n';
+		output += 'CurrentTemplate = function() { this.name = ' + JSON.stringify(path) + '; };\n';
 		output += 'CurrentTemplate.prototype.render = function(runtimeContext) { runtimeContext.setTemplate(this); this.__main(runtimeContext); };\n';
 		for (var blockName in blocks) {
 			var block = blocks[blockName];
@@ -162,7 +147,7 @@ export class TemplateParser {
 		if (blockTypeToken.type != 'id') throw(new Error("Block expected a type as first token but found : " + JSON.stringify(blockTypeToken)));
 		debug('BLOCK: ' + blockType);
 	
-		var blockHandler = this.blockHandlers[blockType];
+		var blockHandler = this.languageContext.tags[blockType];
 		if (blockHandler !== undefined) {
 			return blockHandler(blockType, this, tokenParserContext, templateTokenReader, expressionTokenReader);
 		}

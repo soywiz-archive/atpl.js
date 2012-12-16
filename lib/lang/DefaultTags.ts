@@ -24,11 +24,15 @@ function checkNoMoreTokens(expressionTokenReader) {
 	return expressionTokenReader;
 }
 
+function _flowexception(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	throw(new FlowException.FlowException(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader));
+}
+
 // @TODO: blockHandlers should return a ParserNode/AstNode and the output should be generated at the end instead of writing now.
-export function register(templateParser: ITemplateParser) {
-	// AUTOESCAPE
-	templateParser.addBlockFlowExceptionHandler('endautoescape');
-	templateParser.addBlockHandler('autoescape', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+export class DefaultTags {
+	// autoescape
+	static endautoescape = _flowexception;
+	static autoescape(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
@@ -49,10 +53,10 @@ export function register(templateParser: ITemplateParser) {
 				}
 			}
 		}
-	});
+	}
 
 	// DO/SET
-	templateParser.addBlockHandler('set', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static set(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
 		var nodeId: any = expressionParser.parseIdentifier();
 		expressionTokenReader.expectAndMoveNext('=');
@@ -60,74 +64,68 @@ export function register(templateParser: ITemplateParser) {
 		checkNoMoreTokens(expressionTokenReader);
 
 		tokenParserContext.write('runtimeContext.scope.set(' + JSON.stringify(nodeId.value) + ', ' + nodeValue.generateCode()  + ');');
-
-	});
-	templateParser.addBlockHandler('do', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	}
+	static $do(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [do]"));
-	});
+	}
 
 	// EMBED
-	templateParser.addBlockHandler('embed', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static embed(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [embed]"));
-	});
+	}
 
 	// FILTER
-	templateParser.addBlockHandler('filter', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static filter(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [filter]"));
-	});
+	}
 
 	// FLUSH
-	templateParser.addBlockHandler('flush', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static flush(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [flush]"));
-	});
+	}
 
 	// MACRO/FROM/IMPORTUSE
-	templateParser.addBlockHandler('use', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static use(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [use]"));
-	});
-	templateParser.addBlockHandler('macro', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	}
+	static macro(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [macro]"));
-	});
-	templateParser.addBlockHandler('from', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	}
+	static from(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [from]"));
-	});
-	templateParser.addBlockHandler('import', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	}
+	static $import(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [import]"));
-	});
+	}
 
 	// INCLUDE
-	templateParser.addBlockHandler('include', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static include(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
 		tokenParserContext.write('runtimeContext.include(' + expressionNode.generateCode() + ');');
-	});
+	}
 
 	// RAW
-	templateParser.addBlockHandler('raw', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static raw(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [raw]"));
-	});
+	}
 
 	// SANDBOX
-	templateParser.addBlockHandler('sandbox', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static sandbox(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [sandbox]"));
-	});
-
-	// RAW
-	templateParser.addBlockHandler('raw', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-		throw (new Error("Not implemented tag [raw]"));
-	});
+	}
 
 	// SPACELESS
-	templateParser.addBlockHandler('spaceless', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static spaceless(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [spaceless]"));
-	});
+	}
 
 	// IF/ELSEIF/ELSE/ENDIF
-	templateParser.addBlockFlowExceptionHandler('else');
-	templateParser.addBlockFlowExceptionHandler('elseif');
-	templateParser.addBlockFlowExceptionHandler('endif');
-	templateParser.addBlockHandler('if', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static $else = _flowexception;
+	static $elseif = _flowexception;
+	static $endif = _flowexception;
+	static $if(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var didElse = false;
 
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
@@ -146,12 +144,12 @@ export function register(templateParser: ITemplateParser) {
 				if (!(e instanceof FlowException.FlowException)) throw (e);
 				switch (e.blockType) {
 					case 'elseif':
-						if (didElse) throw(new Error("Can't put 'elseif' after the 'else'"));
+						if (didElse) throw (new Error("Can't put 'elseif' after the 'else'"));
 
 						var expressionNode = (new ExpressionParser.ExpressionParser(e.expressionTokenReader)).parseExpression();
 						checkNoMoreTokens(expressionTokenReader);
 						tokenParserContext.write('} else if (' + expressionNode.generateCode() + ') {');
-					break;
+						break;
 					case 'else':
 						if (didElse) throw (new Error("Can't have two 'else'"));
 						tokenParserContext.write('} else {');
@@ -164,11 +162,11 @@ export function register(templateParser: ITemplateParser) {
 				}
 			}
 		}
-	});
+	}
 
 	// BLOCK/ENDBLOCK
-	templateParser.addBlockFlowExceptionHandler('endblock');
-	templateParser.addBlockHandler('block', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static endblock = _flowexception;
+	static block(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var blockName = 'block_' + expressionTokenReader.read().value;
 		tokenParserContext.setBlock(blockName, function () {
 			try {
@@ -185,19 +183,19 @@ export function register(templateParser: ITemplateParser) {
 			}
 		});
 		tokenParserContext.write('runtimeContext.putBlock(' + JSON.stringify(blockName) + ');');
-	});
+	}
 
 	// EXTENDS
-	templateParser.addBlockHandler('extends', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static $extends(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
 		tokenParserContext.write('return runtimeContext.extends(' + expressionNode.generateCode() + ');');
-	});
+	}
 
 	// http://twig.sensiolabs.org/doc/tags/for.html
-	templateParser.addBlockFlowExceptionHandler('endfor');
-	templateParser.addBlockHandler('for', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static $endfor = _flowexception;
+	static $for(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var didElse = false;
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
 		var valueId: any = expressionParser.parseIdentifier();
@@ -251,5 +249,5 @@ export function register(templateParser: ITemplateParser) {
 				}
 			}
 		}
-	});
+	}
 }

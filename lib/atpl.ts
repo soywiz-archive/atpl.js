@@ -1,7 +1,10 @@
 ﻿///<reference path='imports.d.ts'/>
+///<reference path='TemplateProvider.ts'/>
 
 export import TemplateParser = module('./parser/TemplateParser');
 import TemplateProvider = module('./TemplateProvider');
+import LanguageContext = module('./LanguageContext');
+import Default = module('./lang/Default');
 import fs = module('fs');
 var FileSystemTemplateProvider = TemplateProvider.FileSystemTemplateProvider;
 
@@ -29,9 +32,15 @@ export interface IOptionsExpress {
 
 function internalCompile(options: IOptions) {
 	if (registryTemplateParser[options.root] === undefined) {
-		registryTemplateParser[options.root] = new TemplateParser.TemplateParser(
-			new FileSystemTemplateProvider(options.root, options.cache)
+		var languageContext = new LanguageContext.LanguageContext();
+		Default.register(languageContext);
+
+		var templateParser = new TemplateParser.TemplateParser(
+			new FileSystemTemplateProvider(options.root, options.cache),
+			languageContext
 		);
+
+		registryTemplateParser[options.root] = templateParser;
 	}
 
 	return function(params: any) {

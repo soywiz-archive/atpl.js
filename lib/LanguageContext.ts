@@ -4,10 +4,21 @@
 	filters:any = {};
 	tests:any = {};
 
+	private _registerSomethingItem(object: any, key: string, value: any) {
+		object[key.replace(/^\$+/, '')] = value;
+	}
+
 	private _registerSomething(object: any, list: any) {
-		for (var key in list) {
-			object[key.replace(/^\$+/, '')] = list[key];
+		if (list !== undefined) {
+			for (var key in list) this._registerSomethingItem(object, key, list[key]);
 		}
+	}
+
+	registerExtension(container: any) {
+		this.registerTags(container.tags);
+		this.registerFunctions(container.functions);
+		this.registerFilters(container.filters);
+		this.registerTests(container.tests);
 	}
 
 	registerTags(tags: any) {

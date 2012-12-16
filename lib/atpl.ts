@@ -30,9 +30,10 @@ export interface IOptionsExpress {
 	cache: bool;
 }
 
+var languageContext = new LanguageContext.LanguageContext();
+
 function internalCompile(options: IOptions) {
 	if (registryTemplateParser[options.root] === undefined) {
-		var languageContext = new LanguageContext.LanguageContext();
 		Default.register(languageContext);
 
 		var templateParser = new TemplateParser.TemplateParser(
@@ -95,6 +96,11 @@ function express3RenderFile(filename: string, options: any/*IOptionsExpress*/, c
     	callback(e, '');
     }
 }
+
+export function registerTags(items: any) { return languageContext.registerTags(items); }
+export function registerFunctions(items: any) { return languageContext.registerFunctions(items); }
+export function registerFilters(items: any) { return languageContext.registerFilters(items); }
+export function registerTests(items: any) { return languageContext.registerTests(items); }
 
 //Express 2x template engine compatibility required the following module export:
 //

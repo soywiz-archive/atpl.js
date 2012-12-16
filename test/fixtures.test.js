@@ -71,4 +71,4 @@ function handleSets(path, name) {
 	});
 }
 
-handleSets(__dirname, 'sets');
+handleSets(__dirname, 'fixtures');

@@ -1,0 +1,11 @@
+﻿=== TITLE
+if+elseif
+
+=== INPUT
+{ "v" : 2 }
+
+=== TEMPLATE:main
+{% if v == 0 %}0{% elseif v == 1 %}1{% elseif v == 2 %}2{% else %}else{% endif %}
+
+=== OUTPUT
+2

@@ -5,7 +5,9 @@ autoescape
 { "msg": "<\">" }
 
 === TEMPLATE:main
-{% autoescape false %}{{ msg }}{{ msg }}{% endautoescape %}
+{% autoescape false %}
+{{ msg }}{{ msg }}
+{% endautoescape %}
 
 === OUTPUT
 <"><">

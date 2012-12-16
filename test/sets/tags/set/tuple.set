@@ -1,0 +1,16 @@
+﻿=== TITLE
+set tuple
+
+=== INPUT
+{ "v" : 2 }
+
+=== TEMPLATE:main
+{% autoescape false %}
+{% set foo, bar = 'foo', 'bar' %}
+{{ foo }},
+{{ bar }},
+{% endautoescape %}
+
+=== OUTPUT
+foo,
+bar,

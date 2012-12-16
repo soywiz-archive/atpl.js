@@ -1,0 +1,11 @@
+﻿=== TITLE
+simple for-else
+
+=== INPUT
+{ "hi": "Hello:", "n": "[a]", "list": [] }
+
+=== TEMPLATE:main
+{% for n in list %}{{ n * 2 }}{% else %}empty{% endfor %}
+
+=== OUTPUT
+empty

@@ -1,0 +1,11 @@
+﻿=== TITLE
+end tag without matching start
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{% endautoescape %}
+
+=== EXCEPTION
+Error!

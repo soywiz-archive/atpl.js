@@ -129,10 +129,89 @@
     <Content Include="typescript-node-definitions\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="test\sets\regressions\" />
     <Folder Include="typescript-node-definitions\DefinitelyTyped\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\syntax\0.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\syntax\constants.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\tests\odd.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\functions\block.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\syntax\field_access.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\syntax\array_access.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\functions\parent.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\tests\sameas.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\functions\range.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\functions\random.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\tags\extends\simple.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\tags\extends\simple2.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\tags\extends\conditional.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\tags\for\simple_else.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\filters\raw.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\tags\autoescape\autoescape.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\syntax\autoescape.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\tags\extends\extends2.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\tags\extends\extends3.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\tags\block\nested.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\syntax\operators.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\syntax\in_array.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\tags\include\include.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\syntax\undefined_key.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\syntax\range_letters.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\sets\complete\for_range_reverse.set" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Message Text="Compiling TypeScript files" />

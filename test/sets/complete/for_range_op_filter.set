@@ -1,0 +1,11 @@
+﻿=== TITLE
+for range reverse
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{% for n in "a"|upper.."e"|upper %}{{ n }}{% endfor %}
+
+=== OUTPUT
+ABCDE

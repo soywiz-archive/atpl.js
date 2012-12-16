@@ -1,0 +1,11 @@
+﻿=== TITLE
+simple
+
+=== INPUT
+{ "hi": "Hello:", "n" : "[a]", "list": [1, 2, 3, 4] }
+
+=== TEMPLATE:main
+{{ hi }}{{ n }}{% for n in list %}{{ n * 2 }}{% endfor %}{{ n }}
+
+=== OUTPUT
+Hello:[a]2468[a]

@@ -1,0 +1,11 @@
+﻿=== TITLE
+simple if
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{% if 0 %}0{% else %}1{% if 1 %}2{% endif%}{% endif %}
+
+=== OUTPUT
+12

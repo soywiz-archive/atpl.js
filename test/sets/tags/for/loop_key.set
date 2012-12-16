@@ -1,0 +1,24 @@
+﻿=== TITLE
+simple for-else
+
+=== INPUT
+{ "v": 2 }
+
+=== TEMPLATE:main
+{% set n = 'a' %}
+{% for n in range(7, 9) %}
+{{ n }},
+{{ loop.index }},
+{{ loop.index0 }},
+{{ loop.revindex }},
+{{ loop.revindex0 }},
+{{ loop.first }},
+{{ loop.last }},
+{{ loop.length }},
+{{ loop.parent.n }},
+{% endfor %}
+
+=== OUTPUT
+7,1,0,?,?,true,false,3,a,
+8,2,1,?,?,false,false,3,a,
+9,3,2,?,?,false,true,3,a,

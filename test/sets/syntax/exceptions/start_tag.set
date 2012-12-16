@@ -1,0 +1,11 @@
+﻿=== TITLE
+start tag without matching end
+
+=== INPUT
+{ "list" : [1, 2] }
+
+=== TEMPLATE:main
+{% for n in list %}{{ n }}
+
+=== EXCEPTION
+Error!

@@ -1,0 +1,23 @@
+﻿=== TITLE
+test
+
+=== INPUT
+{ "v" : 2 }
+
+=== TEMPLATE:main
+{% autoescape false %}
+{% set foo1 = 'foo' %}
+{% set foo2 = [1, 2] %}
+{% set foo3 = {'foo': 'bar'} %}
+{% set foo4 = 'foo' ~ 'bar' %}
+{{ foo1 }},
+{{ foo2 }},
+{{ foo3 }},
+{{ foo4 }},
+{% endautoescape %}
+
+=== OUTPUT
+foo,
+[1,2],
+{"foo":"bar"},
+foobar,

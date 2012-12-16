@@ -1,0 +1,11 @@
+﻿=== TITLE
+for+if
+
+=== INPUT
+{ "users": [ { "name": "soywiz", "active": true }, { "name": "test", "active": false }, { "name": "demo", "active": true } ] }
+
+=== TEMPLATE:main
+{% for user in users if user.active %}{{ user.name }},{% endfor %}
+
+=== OUTPUT
+soywiz,demo,

@@ -1,0 +1,11 @@
+﻿=== TITLE
+for key, value
+
+=== INPUT
+{ "data": { "a" : 1, "b" : 2, "c" : "c" } }
+
+=== TEMPLATE:main
+{% for key, value in data %}{{ key }}:{{ value }},{% endfor %}
+
+=== OUTPUT
+a:1,b:2,c:c,

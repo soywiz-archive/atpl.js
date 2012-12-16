@@ -1,0 +1,11 @@
+﻿=== TITLE
+nested for
+
+=== INPUT
+{ "v": 2 }
+
+=== TEMPLATE:main
+{% for x in range(0, 3) %}{% for y in range(0, 3) %}{{ x * y }}{% endfor %},{% endfor %}
+
+=== OUTPUT
+0000,0123,0246,0369,

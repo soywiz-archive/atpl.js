@@ -30,7 +30,9 @@ export function register(templateParser: ITemplateParser) {
 
 		while (true) {
 			try {
-				templateParser.parseTemplateSync(tokenParserContext, templateTokenReader);
+				if (!templateParser.parseTemplateSync(tokenParserContext, templateTokenReader)) {
+					throw (new Error("Unexpected end of 'autoescape' no closing 'endautoescape'"));
+				}
 			} catch (e) {
 				if (!(e instanceof FlowException.FlowException)) throw (e);
 				switch (e.blockType) {
@@ -127,7 +129,9 @@ export function register(templateParser: ITemplateParser) {
 
 		while (true) {
 			try {
-				templateParser.parseTemplateSync(tokenParserContext, templateTokenReader);
+				if (!templateParser.parseTemplateSync(tokenParserContext, templateTokenReader)) {
+					throw (new Error("Unexpected end of 'if' no closing 'endif'"));
+				}
 			} catch (e) {
 				if (!(e instanceof FlowException.FlowException)) throw (e);
 				switch (e.blockType) {
@@ -157,7 +161,9 @@ export function register(templateParser: ITemplateParser) {
 		var blockName = 'block_' + expressionTokenReader.read().value;
 		tokenParserContext.setBlock(blockName, function () {
 			try {
-				templateParser.parseTemplateSync(tokenParserContext, templateTokenReader);
+				if (!templateParser.parseTemplateSync(tokenParserContext, templateTokenReader)) {
+					throw (new Error("Unexpected end of 'block' no closing 'endblock'"));
+				}
 			} catch (e) {
 				if (!(e instanceof FlowException.FlowException)) throw (e);
 				switch (e.blockType) {
@@ -209,7 +215,9 @@ export function register(templateParser: ITemplateParser) {
 		}
 		while (true) {
 			try {
-				templateParser.parseTemplateSync(tokenParserContext, templateTokenReader);
+				if (!templateParser.parseTemplateSync(tokenParserContext, templateTokenReader)) {
+					throw (new Error("Unexpected end of 'for' no closing 'endfor'"));
+				}
 			} catch (e) {
 				if (!(e instanceof FlowException.FlowException)) throw (e);
 				switch (e.blockType) {

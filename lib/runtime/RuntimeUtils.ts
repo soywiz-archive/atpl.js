@@ -36,6 +36,8 @@ export function rangeString(from: string, to: string, step: number = 1): string[
 	});
 }
 
-export function random(): number {
-	return Math.random();
+export function random(min: number = 0, max: number = 2147483647): number {
+	min = Math.round(min);
+	max = Math.round(max);
+	return Math.round(Math.random() * (max - min)) + min;
 }

@@ -10,11 +10,13 @@ module.exports = {};
 
 function handleSet(name, data) {
 	var parts = data.split('===');
-	var test = { title: 'untitled: ' + name, input: {}, expected: '', templates: {}, eval: '', exception: false };
+	var test = { title: 'untitled: ' + name, input: {}, expected: '', templates: {}, eval: undefined, exception: undefined };
 	for (var n = 0; n < parts.length; n++) {
 		var part = parts[n].trim();
-		var token = /^([\w:]+)\s+(.*)$/m.exec(part);
-		//console.log(part);
+		var token = /^([\w:]+)\s+([\S\s]*)$/igm.exec(part);
+
+		//if (name == 'autoescape.set') { console.log('""' + part + '""'); console.log(JSON.stringify(token)); console.log(''); }
+
 		if (token != null) {
 			var key = token[1].trim().toLowerCase();
 			var value = token[2].trim();
@@ -37,9 +39,11 @@ function handleSet(name, data) {
 			}
 		}
 	}
+
 	it(test.title, function() {
 		var templateProvider = new MemoryTemplateProvider();
 		var templateParser = new TemplateParser(templateProvider);
+
 		for (var key in test.templates) {
 			templateProvider.add(key, test.templates[key]);
 		}
@@ -48,11 +52,22 @@ function handleSet(name, data) {
 			console.log(test);
 		}
 
+		if (test.eval !== undefined) eval(test.eval);
+
 		//console.log(templateParser.getEvalCode('test').output);
-		assert.equal(
-			templateParser.compileAndRenderToString('main', test.input),
-			test.expected
-		);
+		try {
+			assert.equal(
+				templateParser.compileAndRenderToString('main', test.input).trim().replace(/\r\n/g, '\n'),
+				test.expected.trim().replace(/\r\n/g, '\n')
+			);
+			if (test.exception !== undefined) assert.fail('Excepting exception "' + test.exception + '"');
+		} catch (e) {
+			if (test.exception === undefined) {
+				console.log(test);
+				throw (e);
+			}
+			assert.equal(e.message, test.exception);
+		}
 	});
 }
 

@@ -8,4 +8,4 @@ end tag without matching start
 {% endautoescape %}
 
 === EXCEPTION
-Error!
+Unexpected tag 'endautoescape' on template root

@@ -8,4 +8,4 @@ start tag without matching end
 {% for n in list %}{{ n }}
 
 === EXCEPTION
-Error!
+Unexpected end of 'for' no closing 'endfor'

@@ -5,10 +5,10 @@ block
 {}
 
 === EVAL
-RuntimeUtils.random = function() { return 0.5; };
+RuntimeUtils.random = function(min, max) { return 777; }
 
 === TEMPLATE:main
 {{ random() }}
 
 === OUTPUT
-0.5
+777

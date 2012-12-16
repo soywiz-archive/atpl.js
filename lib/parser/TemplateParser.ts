@@ -107,7 +107,7 @@ export class TemplateParser {
 			try {
 				eval(output);
 			} catch (e) {
-				console.log(output);
+				console.log('Exception in eval: ' + output);
 				throw (e);
 			}
 
@@ -145,8 +145,8 @@ export class TemplateParser {
 			}
 		}
 	
-		return;
-	};
+		return tokenReader.hasMore;
+	}
 
 	parseTemplateExpressionSync(tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionParser = new ExpressionParser(expressionTokenReader);

@@ -6,16 +6,7 @@ simple for-else
 
 === TEMPLATE:main
 {% set n = 'a' %}
-{% for n in range(7, 9) %}
-{{ n }},
-{{ loop.index }},
-{{ loop.index0 }},
-{{ loop.revindex }},
-{{ loop.revindex0 }},
-{{ loop.first }},
-{{ loop.last }},
-{{ loop.length }},
-{{ loop.parent.n }},
+{% for n in range(7, 9) %}{{ n }},{{ loop.index }},{{ loop.index0 }},{{ loop.revindex }},{{ loop.revindex0 }},{{ loop.first }},{{ loop.last }},{{ loop.length }},{{ loop.parent.n }},
 {% endfor %}
 
 === OUTPUT

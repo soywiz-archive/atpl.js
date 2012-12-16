@@ -1,0 +1,11 @@
+﻿=== TITLE
+find an unknown tag
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{% myunknowntag %}
+
+=== EXCEPTION
+Invalid block type 'myunknowntag'

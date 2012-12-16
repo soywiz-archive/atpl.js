@@ -43,9 +43,8 @@ function internalCompile(options: IOptions) {
 }
 
 export function internalCompileString(content: string, options: IOptions) {
-	return function(params: any) {
+	return function(params: any): string {
 		throw (new Error("Not implemented internalCompileString"));
-		return "";
 	}
 }
 

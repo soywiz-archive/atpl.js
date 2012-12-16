@@ -1,2 +1,2 @@
 @echo off
-tsc lib/atpl.ts --target ES5
+tsc --target ES3 lib/atpl.ts

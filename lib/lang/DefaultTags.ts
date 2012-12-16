@@ -20,7 +20,7 @@ export class ParserNodeAutoescape extends ParserNode.ParserNode {
 */
 
 function checkNoMoreTokens(expressionTokenReader) {
-	if (expressionTokenReader.hasMore) throw (new Error("Unexpected token '" + JSON.stringify(expressionTokenReader.peek()) + "'"));
+	if (expressionTokenReader.hasMore()) throw (new Error("Unexpected token '" + JSON.stringify(expressionTokenReader.peek()) + "'"));
 	return expressionTokenReader;
 }
 

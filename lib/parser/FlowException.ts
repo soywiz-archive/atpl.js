@@ -8,4 +8,4 @@ export var FlowException = function(blockType, templateParser, tokenParserContex
 	this.expressionTokenReader = expressionTokenReader;
 };
 
-FlowException.prototype.__proto__ = Error.prototype;
+FlowException.prototype['__proto__'] = Error.prototype;

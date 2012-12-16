@@ -120,7 +120,7 @@ export class TemplateParser {
 	}
 
 	parseTemplateSync(tokenParserContext, tokenReader: TokenReader.TokenReader) {
-		while (tokenReader.hasMore) {
+		while (tokenReader.hasMore()) {
 			var item = tokenReader.peek();
 			debug('parseTemplateSync: ' + item.type);
 			switch (item.type) {
@@ -145,7 +145,7 @@ export class TemplateParser {
 			}
 		}
 	
-		return tokenReader.hasMore;
+		return tokenReader.hasMore();
 	}
 
 	parseTemplateExpressionSync(tokenParserContext, templateTokenReader, expressionTokenReader) {

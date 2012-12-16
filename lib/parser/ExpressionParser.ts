@@ -235,7 +235,7 @@ export class ExpressionParser {
 		var rightNode;
 		var currentOperator;
 
-		while (this.tokenReader.hasMore) {
+		while (this.tokenReader.hasMore()) {
 			if (validOperators.indexOf(this.tokenReader.peek().value) != -1) {
 				currentOperator = this.tokenReader.peek().value;
 				this.tokenReader.skip();

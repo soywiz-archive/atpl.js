@@ -86,16 +86,12 @@ export class RuntimeContext {
 			break;
 			case 'js':
 				throw (new Error("Not implemented"));
-			break;
 			case 'css':
 				throw (new Error("Not implemented"));
-			break;
 			case 'url':
 				throw (new Error("Not implemented"));
-			break;
 			case 'html_attr':
 				throw (new Error("Not implemented"));
-			break;
 			default:
 			case true:
 			case 'html':

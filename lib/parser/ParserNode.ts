@@ -99,9 +99,8 @@ export class ParserNodeLiteral extends ParserNodeExpression {
 export class ParserNodeLeftValue extends ParserNodeExpression {
 	type: string = 'ParserNodeLeftValue';
 
-	generateAssign(expr: ParserNodeExpression) {
+	generateAssign(expr: ParserNodeExpression): string {
 		throw (new Error("Must implement"));
-		return "";
 	}
 }
 

@@ -11,7 +11,7 @@ export class TokenReader {
 		this.position = 0;
 	}
 
-	get hasMore(): bool {
+	hasMore(): bool {
 		return this.getLeftCount() > 0;
 	}
 

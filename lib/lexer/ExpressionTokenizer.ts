@@ -42,7 +42,7 @@ export class ExpressionTokenizer {
 	
 		var end = false;
 
-		while (!end && this.stringReader.hasMore) {
+		while (!end && this.stringReader.hasMore()) {
 			switch (this.stringReader.peekChars(2)) {
 				case '%}':
 				case '}}':

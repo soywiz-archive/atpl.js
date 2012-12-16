@@ -57,4 +57,16 @@ describe('app', function() {
 			})
 		;
 	});
+
+	it('should be compatible with express2 (render file)', function () {
+		//express2Compile(templateString: string, options: any): (params: any) => string
+		var func = atpl.compile('dummy');
+		assert.equal(func({ filename: 'test/templates/simple.html', name: 'World' }), 'Hello World!');
+	});
+
+	it('should be compatible with express2 (render string)', function () {
+		//express2Compile(templateString: string, options: any): (params: any) => string
+		var func = atpl.compile('Hello {{ name }}!');
+		assert.equal(func({ name: 'World' }), 'Hello World!');
+	});
 });

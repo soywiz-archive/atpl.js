@@ -87,6 +87,7 @@
     <Content Include="test\stringreader.test.js" />
     <Content Include="test\fixtures.test.js" />
     <Content Include="test\templateprovider.test.js" />
+    <Content Include="test\templates\extension.html" />
     <Content Include="test\templates\for.html" />
     <Content Include="test\templates\simple.html" />
     <Content Include="test\templates\simple_extends.html" />
@@ -233,6 +234,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="test\fixtures\syntax\no_extended_empty_block.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\filters\length.set" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Message Text="Compiling TypeScript files" />

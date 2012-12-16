@@ -14,6 +14,7 @@ export interface IOptions {
 	path?: string;
 	root?: string;
 	cache?: bool;
+	content?: string;
 }
 
 export interface IOptionsExpress {
@@ -32,7 +33,9 @@ export interface IOptionsExpress {
 
 var languageContext = new LanguageContext.LanguageContext();
 
-function internalCompile(options: IOptions) {
+function internalCompile(options: IOptions, absolutePath = false) {
+	if (options.root === undefined) options.root = '';
+
 	if (registryTemplateParser[options.root] === undefined) {
 		Default.register(languageContext);
 
@@ -47,53 +50,75 @@ function internalCompile(options: IOptions) {
 	return function(params: any) {
 		//console.log(options.path);
 		//console.log(options.root);
-		if (options.path.indexOf(options.root) !== 0) throw (new Error("Path '" + options.path + "' not inside root '" + options.root + "'"));
-		return registryTemplateParser[options.root].compileAndRenderToString(options.path.substr(options.root.length), params);
+		var templateParser = <TemplateParser.TemplateParser>registryTemplateParser[options.root];
+
+		if (options.path === undefined) {
+			if (options.content === undefined) throw (new Error("No content or path"));
+			return templateParser.compileAndRenderStringToString(options.content, params);
+		} else {
+			if (absolutePath) {
+				return templateParser.compileAndRenderToString(options.path, params);
+			} else {
+				if (options.path.indexOf(options.root) !== 0) throw (new Error("Path '" + options.path + "' not inside root '" + options.root + "'"));
+				return templateParser.compileAndRenderToString(options.path.substr(options.root.length), params);
+			}
+		}
 	}
-}
-
-export function internalCompileString(content: string, options: IOptions) {
-	return function(params: any): string {
-		throw (new Error("Not implemented internalCompileString"));
-	}
-}
-
-
-export function express2Compile(templateString: string, options: any): (params: any) => string {
-	return internalCompileString(templateString, options.settings['atpl options']);
 }
 
 var rootPathCache = {};
 
-function express3RenderFile(filename: string, options: any/*IOptionsExpress*/, callback: (err: Error, output: string) => void) {
-    // handle callback in options
-    if ('function' == typeof options) {
-        callback = options;
-        options = {};
-    }
-
-    //console.log(filename);
+function internalRender(filename: string, options: any/*IOptionsExpress*/, absolutePath = false): string {
+	//console.log(filename);
 	//console.log(options);
 	//console.log(options._locals);
 	//console.log(callback);
 
     options = options || {};
+	if (options.settings === undefined) options.settings = {};
 
-    var rootPath = options.settings['views'];
+    var rootPath = options.settings['views'] || '.';
     if (rootPathCache[rootPath] === undefined) rootPathCache[rootPath] = fs.realpathSync(rootPath);
 
     var params: IOptions = {
         path: filename,
         root: rootPathCache[rootPath],
 		cache: options.cache,
+		content: options.content,
     };
 
+    return internalCompile(params, absolutePath)(options);
+}
+
+export function internalCompileString(content: string, options: IOptions) {
+	return function(params: any): string {
+		//console.log('content: ' + JSON.stringify(content));
+		//console.log('options: ' + JSON.stringify(options));
+		//console.log('params: ' + JSON.stringify(params));
+		params.content = content;
+		params.path = params.filename;
+		return internalRender(params.filename, params, true);
+	}
+}
+
+
+export function express2Compile(templateString: string, options: any): (params: any) => string {
+	options = options || {};
+	if (options.settings === undefined) options.settings = {};
+	return internalCompileString(templateString, options.settings['atpl options']);
+}
+
+function express3RenderFile(filename: string, options: any/*IOptionsExpress*/, callback: (err: Error, output?: string) => void) {
+    // handle callback in options
+    if ('function' == typeof options) {
+        callback = options;
+        options = {};
+    }
+
     try {
-		var func = internalCompile(params);
-    	var output = func(options);
-    	callback(null, output);
-    } catch (e) {
-    	callback(e, '');
+    	callback(null, internalRender(filename, options));
+    } catch (err) {
+    	callback(err);
     }
 }
 

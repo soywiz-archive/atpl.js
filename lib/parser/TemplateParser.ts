@@ -20,10 +20,17 @@ function debug(data) {
 
 export class TemplateParser {
 	registry:any = {};
+	registryString: any = {};
 
 	constructor(public templateProvider, public languageContext: LanguageContext.LanguageContext) {
 	}
 
+	compileAndRenderStringToString(content, scope: any) {
+		if (scope === undefined) scope = {};
+		var runtimeContext = new RuntimeContext(this, scope, this.languageContext);
+		this.compileAndRenderString(content, runtimeContext);
+		return runtimeContext.output;
+	}
 
 	compileAndRenderToString(path, scope: any) {
 		if (scope === undefined) scope = {};
@@ -32,21 +39,19 @@ export class TemplateParser {
 		return runtimeContext.output;
 	}
 
+	compileAndRenderString(content, runtimeContext) {
+		var template = new (this.compileString(content).class)();
+		template.render(runtimeContext);
+		return template;
+	}
+
 	compileAndRender(path, runtimeContext) {
 		var template = new (this.compile(path).class)();
 		template.render(runtimeContext);
 		return template;
 	}
 
-	getEvalCode(path: string) {
-		if (this.registry[path] !== undefined) {
-			return this.registry[path];
-		}
-	
-		//console.log("TemplateParser.prototype.compile: " + path);
-
-		var content            = this.templateProvider.getSync(path);
-	
+	getEvalCodeString(content: string, path: string) {
 		var templateTokenizer  = new TemplateTokenizer(content);
 		var templateTokens     = templateTokenizer.tokenize();
 		var tokenParserContext = new TokenParserContext();
@@ -80,6 +85,40 @@ export class TemplateParser {
 
 		debug(output);
 		return { output: output, tokenParserContext: tokenParserContext };
+	}
+
+	getEvalCode(path: string) {
+		if (this.registry[path] !== undefined) {
+			return this.registry[path];
+		}
+	
+		//console.log("TemplateParser.prototype.compile: " + path);
+
+		var content            = this.templateProvider.getSync(path);
+	
+		return this.getEvalCodeString(content, path);
+	}
+
+	compileString(content: string) {
+		if (this.registryString[content] === undefined) {
+			var info = this.getEvalCodeString(content, 'inline');
+			var output = info.output;
+			var tokenParserContext = info.tokenParserContext;
+			var CurrentTemplate = undefined;
+
+			try {
+				eval(output);
+			} catch (e) {
+				console.log('Exception in eval: ' + output);
+				throw (e);
+			}
+
+			//console.log(output);
+
+			this.registryString[content] = { output : output, class : CurrentTemplate };
+		}
+	
+		return this.registryString[content];
 	}
 
 	compile(path: string) {

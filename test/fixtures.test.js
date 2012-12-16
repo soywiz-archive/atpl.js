@@ -42,13 +42,8 @@ function handleSet(name, data) {
 		}
 	}
 
-	it(test.title, function() {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider, Default.register(new LanguageContext.LanguageContext()));
-
-		for (var key in test.templates) {
-			templateProvider.add(key, test.templates[key]);
-		}
+	it(test.title, function () {
+		var templateParser = createTemplateParser(test.templates);
 
 		if (test.templates['main'] === undefined) {
 			console.log(test);
@@ -89,18 +84,42 @@ function handleSets(path, name) {
 	});
 }
 
+function createTemplateParser(templates) {
+	var templateProvider = new MemoryTemplateProvider();
+	var templateParser = new TemplateParser(templateProvider, Default.register(new LanguageContext.LanguageContext()));
+
+	for (var key in templates) {
+		templateProvider.add(key, templates[key]);
+	}
+
+	return templateParser;
+}
+
 handleSets(__dirname, 'fixtures');
+
+var TestClass = function () { this.testClassValue = 17; };
+TestClass.prototype.testMethod = function (a, b, c) { return 'a=' + a + "," + 'b=' + b + "," + 'c=' + c + "," + 'testClassValue=' + this.testClassValue + "," }
 
 describe('extra fixtures', function () {
 	it('function call as argument', function () {
-		var templateProvider = new MemoryTemplateProvider();
-		var templateParser = new TemplateParser(templateProvider, Default.register(new LanguageContext.LanguageContext()));
-
-		templateProvider.add('main', '{{ test.func(1, 2, 3) }}');
+		var templateParser = createTemplateParser({
+			main : '{{ test.func(1, 2, 3) }}',
+		});
 
 		assert.equal(
 			templateParser.compileAndRenderToString('main', { test: { func: function (a, b, c) { return 'hello' + a + b + c; } } }),
 			'hello123'
+		);
+	});
+
+	it('function call as argument with context', function () {
+		var templateParser = createTemplateParser({
+			main: '{{ test.testMethod(1, 2, 3) }}',
+		});
+
+		assert.equal(
+			templateParser.compileAndRenderToString('main', { test: new TestClass() }),
+			'a=1,b=2,c=3,testClassValue=17,'
 		);
 	});
 });

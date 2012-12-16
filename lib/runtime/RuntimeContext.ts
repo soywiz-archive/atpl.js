@@ -99,6 +99,14 @@ export class RuntimeContext {
 		return null;
 	}
 
+	callContext($context: any, $functionName: any, $arguments: any[]) {
+		var $function = $context[$functionName];
+		if ($function instanceof Function) {
+			return $function.apply($context, $arguments);
+		}
+		return null;
+	}
+
 	call($function: any, $arguments: any[]) {
 		return this.$call(this.languageContext.functions, $function, $arguments);
 	}
@@ -157,7 +165,7 @@ export class RuntimeContext {
 		var method = (Current[name]);
 		if (method === undefined) {
 			console.log(Current['__proto__']);
-			throw (new Error("Can't find block '" + name + "'"));
+			throw (new Error("Can't find block '" + name + "' in '" + Current.name + ":" + this.currentBlockName + "'"));
 		}
 		return method.call(Current, this);
 	}

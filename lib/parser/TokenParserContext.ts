@@ -17,6 +17,7 @@ export class TokenParserContext {
 		var previousBlockName = this.currentBlockName;
 		this.currentBlockName = newBlockName;
 		{
+			this.write('');
 			callback();
 		}
 		this.currentBlockName = previousBlockName;

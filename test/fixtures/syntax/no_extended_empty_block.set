@@ -1,0 +1,14 @@
+﻿=== TITLE
+no extended empty block
+
+=== INPUT
+{}
+
+=== TEMPLATE:base
+{% block title %}{% endblock %}
+
+=== TEMPLATE:main
+{% extends "base" %}
+
+=== OUTPUT
+

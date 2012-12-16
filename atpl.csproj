@@ -53,7 +53,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="benchmarks\benchmark.ts" />
-    <Content Include="benchmarks\views\simple.html" />
+    <Content Include="lib\lang\Default.ts" />
+    <Content Include="lib\LanguageContext.ts" />
+    <Content Include="test\templates\base\base.html" />
+    <Content Include="test\templates\base\simple_extends.html" />
     <Content Include="lib\atpl.ts" />
     <Content Include="lib\lang\DefaultFilters.ts" />
     <Content Include="lib\imports.d.ts" />
@@ -76,6 +79,7 @@
     <Content Include="lib\runtime\Scope.ts" />
     <Content Include="lib\TemplateProvider.ts" />
     <Content Include="lib\utils.ts" />
+    <Content Include="test\app.test.js" />
     <Content Include="test\expressionparser.test.js" />
     <Content Include="test\ExpressionTokenizer.test.js" />
     <Content Include="test\imports.d.ts" />
@@ -83,7 +87,9 @@
     <Content Include="test\stringreader.test.js" />
     <Content Include="test\fixtures.test.js" />
     <Content Include="test\templateprovider.test.js" />
+    <Content Include="test\templates\for.html" />
     <Content Include="test\templates\simple.html" />
+    <Content Include="test\templates\simple_extends.html" />
     <Content Include="test\templatetokenizer.test.js" />
     <Content Include="test\utils.test.js" />
     <Content Include="typescript-node-definitions\.gitignore" />
@@ -131,6 +137,7 @@
     <Content Include="typescript-node-definitions\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="test\fixtures.disabled\functions\" />
     <Folder Include="test\fixtures\regressions\" />
     <Folder Include="typescript-node-definitions\DefinitelyTyped\" />
   </ItemGroup>
@@ -143,7 +150,7 @@
     <Content Include="test\fixtures\complete\for_range_reverse.set" />
     <Content Include="test\fixtures\filters\raw.set" />
     <Content Include="test\fixtures\functions\block.set" />
-    <Content Include="test\fixtures.disabled\functions\parent.set" />
+    <Content Include="test\fixtures\functions\parent.set" />
     <Content Include="test\fixtures\functions\random.set" />
     <Content Include="test\fixtures\functions\range.set" />
     <Content Include="test\fixtures\syntax\0.set" />
@@ -220,6 +227,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="test\fixtures\filters\keys.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\underscore_var.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\no_extended_empty_block.set" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Message Text="Compiling TypeScript files" />

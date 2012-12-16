@@ -186,7 +186,12 @@ export class ParserNodeFunctionCall extends ParserNodeExpression {
 	}
 
 	generateCode() {
-		return 'runtimeContext.call(' + this.functionExpr.generateCode() + ', [' + this.arguments.generateCode() + '])';
+		if (this.functionExpr instanceof ParserNodeArrayAccess) {
+			var arrayAccess = <ParserNodeArrayAccess>this.functionExpr;
+			return 'runtimeContext.callContext(' + arrayAccess.object.generateCode() + ', ' + arrayAccess.key.generateCode() + ', [' + this.arguments.generateCode() + '])';
+		} else {
+			return 'runtimeContext.call(' + this.functionExpr.generateCode() + ', [' + this.arguments.generateCode() + '])';
+		}
 	}
 }
 

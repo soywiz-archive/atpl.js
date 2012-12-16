@@ -1,0 +1,11 @@
+﻿=== TITLE
+variable with underscore
+
+=== INPUT
+{ "_test" : 1 }
+
+=== TEMPLATE:main
+{{ _test }}
+
+=== OUTPUT
+1

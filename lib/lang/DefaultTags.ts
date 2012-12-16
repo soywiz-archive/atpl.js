@@ -177,7 +177,7 @@ export class DefaultTags {
 				if (!(e instanceof FlowException.FlowException)) throw (e);
 				switch (e.blockType) {
 					case 'endblock':
-						break;
+						return;
 					default: throw (new Error("Unexpected '" + e.blockType + "' for 'block'"));
 				}
 			}

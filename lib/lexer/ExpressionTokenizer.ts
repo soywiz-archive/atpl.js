@@ -103,8 +103,8 @@ export class ExpressionTokenizer {
 							this.stringReader.skipChars(1);
 						}
 						// An ID
-						else if (currentChar.match(/^[a-z]$/i)) {
-							var result = this.stringReader.findRegexp(/^[a-z]\w*/i);
+						else if (currentChar.match(/^[a-z_\$]$/i)) {
+							var result = this.stringReader.findRegexp(/^[a-z_\$]\w*/i);
 							if (result.position !== 0) throw(new Error("Assertion failed! Not expected!"));
 							var value = this.stringReader.readChars(result.length);
 							emitToken('id', value);

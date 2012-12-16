@@ -1,4 +1,4 @@
-﻿import RuntimeUtils = module('../../runtime/RuntimeUtils');
+﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
 
 export class DefaultFunctions {
 	// http://twig.sensiolabs.org/doc/functions/range.html

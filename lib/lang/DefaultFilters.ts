@@ -1,4 +1,4 @@
-﻿import RuntimeUtils = module('../../runtime/RuntimeUtils');
+﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
 
 export class DefaultFilters {
 	// http://twig.sensiolabs.org/doc/filters/abs.html

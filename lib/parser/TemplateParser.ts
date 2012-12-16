@@ -6,7 +6,7 @@ export import _RuntimeContext      = module('../runtime/RuntimeContext');
 export import _FlowException       = module('./FlowException');
 export import _TokenParserContext  = module('./TokenParserContext');
 export import _ExpressionParser    = module('./ExpressionParser');
-export import DefaultTags          = module('../lang/tags/DefaultTags');
+export import DefaultTags          = module('../lang/DefaultTags');
 
 var TemplateTokenizer = _TemplateTokenizer.TemplateTokenizer;
 var TokenParserContext = _TokenParserContext.TokenParserContext;

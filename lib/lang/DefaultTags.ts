@@ -1,6 +1,6 @@
-﻿export import ExpressionParser = module('../../parser/ExpressionParser');
-export import FlowException = module('../../parser/FlowException');
-export import ParserNode = module('../../parser/ParserNode');
+﻿export import ExpressionParser = module('../parser/ExpressionParser');
+export import FlowException = module('../parser/FlowException');
+export import ParserNode = module('../parser/ParserNode');
 
 export interface ITemplateParser {
 	addBlockFlowExceptionHandler(name: string);

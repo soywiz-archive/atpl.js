@@ -1,8 +1,8 @@
 ///<reference path='../imports.d.ts'/>
 
-import DefaultFunctions = module('../lang/functions/DefaultFunctions');
-import DefaultFilters = module('../lang/filters/DefaultFilters');
-import DefaultTests = module('../lang/tests/DefaultTests');
+import DefaultFunctions = module('../lang/DefaultFunctions');
+import DefaultFilters = module('../lang/DefaultFilters');
+import DefaultTests = module('../lang/DefaultTests');
 import RuntimeUtils = module('./RuntimeUtils');
 import Scope = module('./Scope');
 

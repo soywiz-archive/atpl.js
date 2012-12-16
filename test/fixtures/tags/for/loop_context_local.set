@@ -1,0 +1,13 @@
+﻿=== TITLE
+"for" tag adds a loop variable to the context locally
+
+=== INPUT
+{ "items": [] }
+
+=== TEMPLATE:main
+{% for item in items %}
+{% endfor %}
+{% if loop is not defined %}WORKS{% endif %}
+
+=== OUTPUT
+WORKS

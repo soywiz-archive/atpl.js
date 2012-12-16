@@ -1,0 +1,33 @@
+﻿=== TITLE
+capitalize
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ 1|capitalize }}
+{{ null|capitalize }}
+{{ true|capitalize }}
+{{ false|capitalize }}
+{{ "a"|capitalize }}
+{{ "A"|capitalize }}
+{{ "test"|capitalize }}
+{{ "tEST"|capitalize }}
+{{ "TesT"|capitalize }}
+{{ "TEST"|capitalize }}
+{{ "hello world, this is a test"|capitalize }}
+{{ "HELLO WORLD, THIS IS A TEST"|capitalize }}
+
+=== OUTPUT
+1
+Null
+True
+False
+A
+A
+Test
+TEST
+TesT
+TEST
+Hello world, this is a test
+HELLO WORLD, THIS IS A TEST

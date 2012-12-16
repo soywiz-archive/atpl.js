@@ -78,7 +78,7 @@ export class RuntimeContext {
 
 	writeExpression(text: any) {
 		if (text === undefined || text === null) return;
-		if (!text.substr) text = JSON.stringify(text);
+		if (!RuntimeUtils.isString(text)) text = JSON.stringify(text);
 		//console.log(this.currentAutoescape);
 		switch (this.currentAutoescape) {
 			case false:
@@ -108,7 +108,7 @@ export class RuntimeContext {
 	$call(functionList: any, $function: any, $arguments: any[]) {
 		if ($function !== undefined && $function !== null) {
 			//console.log('call:' + $function);
-			if ($function.substr) $function = functionList[$function];
+			if (RuntimeUtils.isString($function)) $function = functionList[$function];
 			//console.log('call:' + $function);
 			if ($function instanceof Function) {
 				return $function.apply(this, $arguments);
@@ -148,8 +148,21 @@ export class RuntimeContext {
 	}
 
 	each(list: any, callback: (key, value) => void ) {
+		var index = 0;
+		var length = list.length;
 		for (var k in list) {
+			this.scope.set('loop', {
+				'index0': index,
+				'index': index + 1,
+				'revindex0': length - index,
+				'revindex': length - index - 1,
+				'first': index == 0,
+				'last': index == length - 1,
+				'parent': this.scope.getParent(),
+				'length': length,
+			})
 			callback(k, list[k]);
+			index++;
 		}
 	}
 

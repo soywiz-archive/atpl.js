@@ -1,4 +1,6 @@
-﻿export class DefaultTests {
+﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
+
+export class DefaultTests {
 	// http://twig.sensiolabs.org/doc/tests/constant.html
 	static constant(value: string, constant: string) {
 		throw (new Error("Not implemented test [constant] [no use on javascript]"));
@@ -6,7 +8,7 @@
 
 	// http://twig.sensiolabs.org/doc/tests/defined.html
 	static defined(value: any) {
-		return (value !== null) && (value !== undefined);
+		return RuntimeUtils.defined(value);
 	}
 
 	// http://twig.sensiolabs.org/doc/tests/divisibleby.html
@@ -16,9 +18,7 @@
 
 	// http://twig.sensiolabs.org/doc/tests/empty.html
 	static empty(value: any) {
-		if (!DefaultTests.defined(value)) return true;
-		if (value.prototype == Array.prototype || value.prototype == String.prototype) return (value.length == 0);
-		return false;
+		return RuntimeUtils.empty(value);
 	}
 
 	// http://twig.sensiolabs.org/doc/tests/even.html

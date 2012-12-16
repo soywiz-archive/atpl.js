@@ -16,6 +16,6 @@ describe("ExpressionParser", function() {
 	it('array definition test', function () {
 		var expressionParser = new ExpressionParser(new TokenReader(new ExpressionTokenizer(new StringReader('[1, (2 + 3), -4]')).tokenize()));
 		var parseNode = expressionParser.parseExpression();
-		assert.equal('[1, (2 + 3), -4]', parseNode.generateCode());
+		assert.equal('[1, (2 + 3), -(4)]', parseNode.generateCode());
 	});
 });

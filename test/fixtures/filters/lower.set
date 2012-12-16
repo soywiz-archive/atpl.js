@@ -1,0 +1,33 @@
+﻿=== TITLE
+lower
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ 1|lower }}
+{{ null|lower }}
+{{ true|lower }}
+{{ false|lower }}
+{{ "a"|lower }}
+{{ "A"|lower }}
+{{ "test"|lower }}
+{{ "tEST"|lower }}
+{{ "TesT"|lower }}
+{{ "TEST"|lower }}
+{{ "hello world, this is a test"|lower }}
+{{ "HELLO WORLD, THIS IS A TEST"|lower }}
+
+=== OUTPUT
+1
+null
+true
+false
+a
+a
+test
+test
+test
+test
+hello world, this is a test
+hello world, this is a test

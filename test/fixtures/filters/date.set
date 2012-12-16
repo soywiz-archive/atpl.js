@@ -1,0 +1,11 @@
+﻿=== TITLE
+date
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ 1355661966|date('d-m-Y') }}
+
+=== OUTPUT
+16-12-2012

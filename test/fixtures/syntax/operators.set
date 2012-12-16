@@ -6,6 +6,10 @@ operators
 
 === TEMPLATE:main
 {{ 1 + 2 ** 8 * 2 }}
+{{ not true }}
+{{ 1 is not defined }}
 
 === OUTPUT
 513
+false
+false

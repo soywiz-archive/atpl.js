@@ -1,0 +1,13 @@
+﻿=== TITLE
+join
+
+=== INPUT
+{ "list" : [ 1, "a", 3 ] }
+
+=== TEMPLATE:main
+{{ list|join }}
+{{ list|join(',') }}
+
+=== OUTPUT
+1a3
+1,a,3

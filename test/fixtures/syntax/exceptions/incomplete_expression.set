@@ -1,0 +1,11 @@
+﻿=== TITLE
+end tag without matching start
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{% if 1 + %}-{% endif %}
+
+=== EXCEPTION
+Unexpected token : null type:'eof'

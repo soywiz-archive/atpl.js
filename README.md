@@ -53,6 +53,7 @@ Supported syntax:
 {{ expression|filter(params) }}
 {{ function(params) }}
 {{ var is even }}
+{{ var is not defined }}
 {{ var is sameas(var) }}
 {{ var.array['access'] }}
 {{ 3 in [1, 2, 3, 4] }}

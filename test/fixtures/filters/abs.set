@@ -1,0 +1,17 @@
+﻿=== TITLE
+abs
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ -777|abs }}
+{{ (-777)|abs }}
+{{ 0|abs }}
+{{ 777|abs }}
+
+=== OUTPUT
+-777
+777
+0
+777

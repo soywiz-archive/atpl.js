@@ -4,6 +4,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 export export class ParserNode {
+	type: string = '-';
+
 	generateCode() {
 		return '<invalid>';
 	}
@@ -21,6 +23,7 @@ export export class ParserNodeExpression extends ParserNode {
 
 export class ParserNodeContainer extends ParserNode {
 	nodes:ParserNode[] = [];
+	type: string = 'ParserNodeContainer';
 
 	add(node) {
 		this.nodes.push(node);
@@ -40,6 +43,8 @@ export class ParserNodeContainer extends ParserNode {
 ///////////////////////////////////////////////////////////////////////////////
 
 export class ParserNodeObjectItem extends ParserNode {
+	type: string = 'ParserNodeObjectItem';
+
 	constructor(private key: ParserNodeExpression, private value: ParserNodeExpression) {
 		super();
 	}
@@ -50,6 +55,8 @@ export class ParserNodeObjectItem extends ParserNode {
 }
 
 export class ParserNodeObjectContainer extends ParserNodeExpression {
+	type: string = 'ParserNodeObjectContainer';
+
 	constructor(private items: ParserNodeObjectItem[]) {
 		super();
 	}
@@ -60,6 +67,8 @@ export class ParserNodeObjectContainer extends ParserNodeExpression {
 }
 
 export class ParserNodeArrayContainer extends ParserNodeExpression {
+	type: string = 'ParserNodeArrayContainer';
+
 	constructor(private items: ParserNodeExpression[]) {
 		super();
 	}
@@ -73,6 +82,8 @@ export class ParserNodeArrayContainer extends ParserNodeExpression {
 ///////////////////////////////////////////////////////////////////////////////
 
 export class ParserNodeLiteral extends ParserNodeExpression {
+	type: string = 'ParserNodeLiteral';
+
 	constructor(public value: any) {
 		super();
 	}
@@ -86,6 +97,8 @@ export class ParserNodeLiteral extends ParserNodeExpression {
 ///////////////////////////////////////////////////////////////////////////////
 
 export class ParserNodeLeftValue extends ParserNodeExpression {
+	type: string = 'ParserNodeLeftValue';
+
 	generateAssign(expr: ParserNodeExpression) {
 		throw (new Error("Must implement"));
 		return "";
@@ -93,6 +106,8 @@ export class ParserNodeLeftValue extends ParserNodeExpression {
 }
 
 export class ParserNodeIdentifier extends ParserNodeLeftValue {
+	type: string = 'ParserNodeIdentifier';
+
 	constructor(public value: string) {
 		super();
 	}
@@ -107,9 +122,12 @@ export class ParserNodeIdentifier extends ParserNodeLeftValue {
 }
 
 export class ParserNodeStatement extends ParserNode {
+	type: string = 'ParserNodeStatement';
 }
 
 export class ParserNodeRaw extends ParserNodeExpression {
+	type: string = 'ParserNodeRaw';
+
 	constructor(public value: string) {
 		super();
 	}
@@ -120,6 +138,8 @@ export class ParserNodeRaw extends ParserNodeExpression {
 }
 
 export class ParserNodeAssignment extends ParserNodeStatement {
+	type: string = 'ParserNodeAssignment';
+
 	constructor(public leftValue: ParserNodeLeftValue, public rightValue: ParserNodeExpression) {
 		super();
 	}
@@ -133,6 +153,8 @@ export class ParserNodeAssignment extends ParserNodeStatement {
 ///////////////////////////////////////////////////////////////////////////////
 
 export class ParserNodeCommaExpression extends ParserNode {
+	type: string = 'ParserNodeCommaExpression';
+
 	constructor(public expressions: ParserNodeExpression[]) {
 		super();
 	}
@@ -146,6 +168,8 @@ export class ParserNodeCommaExpression extends ParserNode {
 ///////////////////////////////////////////////////////////////////////////////
 
 export class ParserNodeArrayAccess extends ParserNodeExpression {
+	type: string = 'ParserNodeArrayAccess';
+
 	constructor(public object: ParserNodeExpression, public key: ParserNodeExpression) {
 		super();
 	}
@@ -156,6 +180,8 @@ export class ParserNodeArrayAccess extends ParserNodeExpression {
 }
 
 export class ParserNodeFunctionCall extends ParserNodeExpression {
+	type: string = 'ParserNodeFunctionCall';
+
 	constructor(public functionExpr: ParserNodeExpression, public arguments: ParserNodeCommaExpression) {
 		super();
 	}
@@ -166,6 +192,8 @@ export class ParserNodeFunctionCall extends ParserNodeExpression {
 }
 
 export class ParserNodeFilterCall extends ParserNodeExpression {
+	type: string = 'ParserNodeFilterCall';
+
 	constructor(public filterName: string, public arguments: ParserNodeCommaExpression) {
 		super();
 	}
@@ -179,12 +207,19 @@ export class ParserNodeFilterCall extends ParserNodeExpression {
 ///////////////////////////////////////////////////////////////////////////////
 
 export class ParserNodeUnaryOperation extends ParserNode {
-	constructor(public operation: string, public right: ParserNode) {
+	type: string = 'ParserNodeUnaryOperation';
+
+	constructor(public operator: string, public right: ParserNode) {
 		super();
 	}
 
 	generateCode() {
-		return this.operation + this.right.generateCode();
+		switch (this.operator) {
+			case 'not':
+				return '!(' + this.right.generateCode() + ')';
+			default:
+				return this.operator + '(' + this.right.generateCode() + ')';
+		}
 	}
 }
 
@@ -192,6 +227,8 @@ export class ParserNodeUnaryOperation extends ParserNode {
 ///////////////////////////////////////////////////////////////////////////////
 
 export class ParserNodeBinaryOperation extends ParserNode {
+	type: string = 'ParserNodeBinaryOperation';
+
 	constructor(public operator, public left, public right) {
 		super();
 	}
@@ -207,14 +244,34 @@ export class ParserNodeBinaryOperation extends ParserNode {
 			case 'in':
 				return 'runtimeContext.inArray(' + this.left.generateCode() + ',' + this.right.generateCode() + ')';
 			case 'is':
-				if (this.right instanceof ParserNodeFunctionCall) {
-					//throw (new Error("Not implemented ParserNodeFunctionCall"));
-					return 'runtimeContext.test(' + this.right.functionExpr.generateCode() + ', [' + this.left.generateCode() + ',' + this.right.arguments.generateCode() + '])';
-				} else if (this.right instanceof ParserNodeIdentifier) {
-					return 'runtimeContext.test(' + JSON.stringify(this.right.value) + ', [' + this.left.generateCode() + '])';
-				} else {
-					throw (new Error("Not implemented else"));
+				var ret = '';
+				var left = this.left;
+				var right = this.right;
+
+				if (this.right instanceof ParserNodeUnaryOperation) {
+					right = this.right.right;
 				}
+
+				if (right instanceof ParserNodeFunctionCall) {
+					//throw (new Error("Not implemented ParserNodeFunctionCall"));
+					ret = 'runtimeContext.test(' + right.functionExpr.generateCode() + ', [' + left.generateCode() + ',' + right.arguments.generateCode() + '])';
+				} else if (right instanceof ParserNodeIdentifier) {
+					ret = 'runtimeContext.test(' + JSON.stringify(right.value) + ', [' + left.generateCode() + '])';
+				} else {
+					throw (new Error("ParserNodeBinaryOperation: Not implemented 'is' operator for tests with " + JSON.stringify(right)));
+				}
+
+				if (this.right instanceof ParserNodeUnaryOperation) {
+					switch (this.right.operator) {
+						case 'not':
+							ret = '!(' + ret + ')';
+						break;
+						default:
+							throw (new Error("ParserNodeBinaryOperation: Not implemented 'is' operator for tests with unary operator '" + this.right.operator + "'"));
+					}
+				}
+
+				return ret;
 			default:
 				return (
 					'(' +
@@ -231,6 +288,8 @@ export class ParserNodeBinaryOperation extends ParserNode {
 ///////////////////////////////////////////////////////////////////////////////
 
 export class ParserNodeTernaryOperation extends ParserNode {
+	type: string = 'ParserNodeTernaryOperation';
+
 	constructor(public cond: ParserNode, public exprTrue: ParserNode, public exprFalse: ParserNode) {
 		super();
 	}
@@ -250,6 +309,8 @@ export class ParserNodeTernaryOperation extends ParserNode {
 ///////////////////////////////////////////////////////////////////////////////
 
 export class ParserNodeOutputText extends ParserNode {
+	type: string = 'ParserNodeOutputText';
+
 	constructor(public text) {
 		super();
 	}

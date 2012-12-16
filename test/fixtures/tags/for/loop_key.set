@@ -10,6 +10,6 @@ simple for-else
 {% endfor %}
 
 === OUTPUT
-7,1,0,?,?,true,false,3,a,
-8,2,1,?,?,false,false,3,a,
-9,3,2,?,?,false,true,3,a,
+7,1,0,2,3,true,false,3,a,
+8,2,1,1,2,false,false,3,a,
+9,3,2,0,1,false,true,3,a,

@@ -64,6 +64,7 @@ function handleSet(name, data) {
 		} catch (e) {
 			if (test.exception === undefined) {
 				console.log(test);
+				console.log(templateParser.getEvalCode('main').output);
 				throw (e);
 			}
 			assert.equal(e.message, test.exception);
@@ -87,3 +88,17 @@ function handleSets(path, name) {
 }
 
 handleSets(__dirname, 'fixtures');
+
+describe('extra fixtures', function () {
+	it('function call as argument', function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var templateParser = new TemplateParser(templateProvider);
+
+		templateProvider.add('main', '{{ test.func(1, 2, 3) }}');
+
+		assert.equal(
+			templateParser.compileAndRenderToString('main', { test: { func: function (a, b, c) { return 'hello' + a + b + c; } } }),
+			'hello123'
+		);
+	});
+});

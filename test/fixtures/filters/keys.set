@@ -1,0 +1,19 @@
+﻿=== TITLE
+keys
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ 0|keys|raw }}
+{{ undefined|keys|raw }}
+{{ 'test'|keys|raw }}
+{{ ['a', 'b', 'c']|keys|raw }}
+{{ { 'orange': 1, 'apple': 2 }|keys|raw }}
+
+=== OUTPUT
+[]
+[]
+[]
+["0","1","2"]
+["orange","apple"]

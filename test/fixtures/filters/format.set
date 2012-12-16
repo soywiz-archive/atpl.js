@@ -1,0 +1,11 @@
+﻿=== TITLE
+format
+
+=== INPUT
+{ "foo": "test" }
+
+=== TEMPLATE:main
+{{ "I like %s and %s."|format(foo, "bar") }}
+
+=== OUTPUT
+I like test and bar.

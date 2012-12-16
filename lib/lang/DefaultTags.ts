@@ -19,12 +19,18 @@ export class ParserNodeAutoescape extends ParserNode.ParserNode {
 }
 */
 
+function checkNoMoreTokens(expressionTokenReader) {
+	if (expressionTokenReader.hasMore) throw (new Error("Unexpected token '" + JSON.stringify(expressionTokenReader.peek()) + "'"));
+	return expressionTokenReader;
+}
+
 // @TODO: blockHandlers should return a ParserNode/AstNode and the output should be generated at the end instead of writing now.
 export function register(templateParser: ITemplateParser) {
 	// AUTOESCAPE
 	templateParser.addBlockFlowExceptionHandler('endautoescape');
 	templateParser.addBlockHandler('autoescape', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+		checkNoMoreTokens(expressionTokenReader);
 
 		tokenParserContext.write('runtimeContext.autoescape(' + expressionNode.generateCode() + ', function() {');
 
@@ -51,6 +57,7 @@ export function register(templateParser: ITemplateParser) {
 		var nodeId: any = expressionParser.parseIdentifier();
 		expressionTokenReader.expectAndMoveNext('=');
 		var nodeValue = expressionParser.parseExpression();
+		checkNoMoreTokens(expressionTokenReader);
 
 		tokenParserContext.write('runtimeContext.scope.set(' + JSON.stringify(nodeId.value) + ', ' + nodeValue.generateCode()  + ');');
 
@@ -91,6 +98,7 @@ export function register(templateParser: ITemplateParser) {
 	// INCLUDE
 	templateParser.addBlockHandler('include', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+		checkNoMoreTokens(expressionTokenReader);
 
 		tokenParserContext.write('runtimeContext.include(' + expressionNode.generateCode() + ');');
 	});
@@ -123,6 +131,8 @@ export function register(templateParser: ITemplateParser) {
 		var didElse = false;
 
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+		checkNoMoreTokens(expressionTokenReader);
+
 		tokenParserContext.write('if (' + expressionNode.generateCode() + ') {');
 
 		//parseExpressionExpressionSync
@@ -139,6 +149,7 @@ export function register(templateParser: ITemplateParser) {
 						if (didElse) throw(new Error("Can't put 'elseif' after the 'else'"));
 
 						var expressionNode = (new ExpressionParser.ExpressionParser(e.expressionTokenReader)).parseExpression();
+						checkNoMoreTokens(expressionTokenReader);
 						tokenParserContext.write('} else if (' + expressionNode.generateCode() + ') {');
 					break;
 					case 'else':
@@ -179,11 +190,12 @@ export function register(templateParser: ITemplateParser) {
 	// EXTENDS
 	templateParser.addBlockHandler('extends', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+		checkNoMoreTokens(expressionTokenReader);
 
 		tokenParserContext.write('return runtimeContext.extends(' + expressionNode.generateCode() + ');');
 	});
 
-	// FOR/ENDFOR
+	// http://twig.sensiolabs.org/doc/tags/for.html
 	templateParser.addBlockFlowExceptionHandler('endfor');
 	templateParser.addBlockHandler('for', function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var didElse = false;
@@ -198,9 +210,13 @@ export function register(templateParser: ITemplateParser) {
 			expressionTokenReader.expectAndMoveNext(['in']);
 		}
 		var nodeList = expressionParser.parseExpression();
+
+		// Since Twig 1.2
 		if (expressionTokenReader.checkAndMoveNext(['if'])) {
 			condId = expressionParser.parseExpression();
 		}
+
+		checkNoMoreTokens(expressionTokenReader);
 
 		tokenParserContext.write('runtimeContext.createScope((function() { ');
 		tokenParserContext.write(' var list = ' + nodeList.generateCode() + ';'); 

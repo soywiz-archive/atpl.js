@@ -14,6 +14,10 @@
 		}
 	}
 
+	getParent() {
+		return this.scope['__proto__'];
+	}
+
 	get(key) {
 		return this.scope[key];
 	}

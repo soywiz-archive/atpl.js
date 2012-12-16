@@ -1,0 +1,21 @@
+﻿=== TITLE
+default
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ false|default('default') }}
+{{ 1|default('default') }}
+{{ undefined|default('default') }}
+{{ null|default('default') }}
+{{ true|default('default') }}
+{{ []|default('default') }}
+
+=== OUTPUT
+false
+1
+default
+default
+true
+[]

@@ -17,8 +17,8 @@ export class DefaultFilters {
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/date.html
-	static date(value: string, format?, timezone?) {
-		throw (new Error("Not implemented filter [date]"));
+	static date(value: any, format?, timezone?) {
+		return RuntimeUtils.date(format, value, timezone);
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/date_modify.html
@@ -28,7 +28,7 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/default.html
 	static $default(value: string, default_value: any) {
-		if (value === null || value === undefined) return default_value;
+		if (RuntimeUtils.empty(value)) return default_value;
 		return value;
 	}
 
@@ -41,12 +41,12 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/format.html
 	static format(format: string, ...parameters: any[]) {
-		throw (new Error("Not implemented filter [format]"));
+		return RuntimeUtils.sprintf.apply(null, arguments);
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/join.html
 	static join(value: any, separator: string = '') {
-		if (value === null || value === undefined) return '';
+		if (!RuntimeUtils.defined(value)) return '';
 		if (value instanceof Array) {
 			return value.join(separator);
 		} else {
@@ -61,6 +61,8 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/keys.html
 	static keys(value: any) {
+		if (!RuntimeUtils.defined(value)) return [];
+		if (RuntimeUtils.isString(value)) return [];
 		var keys = [];
 		for (var key in value) keys.push(key);
 		return keys;
@@ -68,13 +70,13 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/length.html
 	static length(value: any) {
-		if (value === null || value === undefined) return 0;
+		if (!RuntimeUtils.defined(value)) return 0;
 		return value.length;
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/lower.html
 	static lower(value: any) {
-		return String(lower).toLowerCase();
+		return String(value).toLowerCase();
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/merge.html
@@ -105,15 +107,13 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/reverse.html
 	static reverse(value: any) {
-		if (value !== undefined && value !== null) {
-			if (value instanceof Array) {
-				return value.reverse();
-			}
-			else if (value instanceof String) {
-				throw (new Error("Not implemented filter [reverse]"));
-			}
+		if (!RuntimeUtils.defined(value)) return value;
+		if (value instanceof Array) {
+			return value.reverse();
 		}
-		return value;
+		else if (value instanceof String) {
+			throw (new Error("Not implemented filter [reverse]"));
+		}
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/slice.html
@@ -152,7 +152,7 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/upper.html
 	static upper(value: any) {
-		return String(upper).toUpperCase();
+		return String(value).toUpperCase();
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/url_encode.html

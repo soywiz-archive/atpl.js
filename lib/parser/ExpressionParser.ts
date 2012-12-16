@@ -135,7 +135,7 @@ export class ExpressionParser {
 		}
 
 		// Unary operator.
-		else if (['-', '+', '~', '!'].indexOf(token.value) != -1) {
+		else if (['-', '+', '~', '!', 'not'].indexOf(token.value) != -1) {
 			this.tokenReader.skip();
 			expr = new ParserNode.ParserNodeUnaryOperation(token.value, this.parseLiteralUnary());
 		}
@@ -221,6 +221,7 @@ export class ExpressionParser {
 				case 'false': return new ParserNode.ParserNodeLiteral(false);
 				case 'true': return new ParserNode.ParserNodeLiteral(true);
 				case 'null': return new ParserNode.ParserNodeLiteral(null);
+				case 'undefined': return new ParserNode.ParserNodeLiteral(undefined);
 				default:
 					return new ParserNode.ParserNodeIdentifier(identifierString);
 			}

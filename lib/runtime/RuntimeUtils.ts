@@ -1,4 +1,7 @@
-﻿export function capitalize(str: string) {
+﻿export import DateFormat = module('./lib/DateFormat');
+export import Format = module('./lib/Format');
+
+export function capitalize(str: string) {
 	str = String(str);
 	return str.charAt(0).toUpperCase() + str.substr(1);
 }
@@ -10,7 +13,7 @@ export function title(str: string) {
 }
 
 export function range(from: any, to: any, step: number = 1): any[] {
-	if ((from.substr) || (to.substr)) {
+	if (isString(from) || isString(to)) {
 		return rangeString(String(from), String(to), step);
 	}
 	return rangeNumbers(from, to, step);
@@ -40,4 +43,31 @@ export function random(min: number = 0, max: number = 2147483647): number {
 	min = Math.round(min);
 	max = Math.round(max);
 	return Math.round(Math.random() * (max - min)) + min;
+}
+
+export function sprintf() {
+	return Format.sprintf.apply(null, arguments);
+}
+
+export function date(format: string, date?: any, timezone?) {
+	if (date === undefined) date = new Date();
+	if (!(date instanceof Date)) {
+		// Number (unix timestamp?)
+		date = new Date(date * 1000);
+	}
+	return DateFormat.date(date, format);
+}
+
+export function defined(value: any) {
+	return (value !== null) && (value !== undefined);
+}
+
+export function empty(value: any) {
+	if (!defined(value)) return true;
+	if (value.prototype == Array.prototype || value.prototype == String.prototype) return (value.length == 0);
+	return false;
+}
+
+export function isString(obj) {
+  return toString.call(obj) == '[object String]';
 }

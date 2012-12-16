@@ -1,7 +1,7 @@
 export function normalizePath(path) {
 	var components = [];
-	var notNormalizedComponents = path.split('/');
-	path = path.replace('\\', '/');
+	var notNormalizedComponents = path.split(/[\\\/]/g);
+	path = path.replace(/\\/g, '/');
 	for (var index in notNormalizedComponents) {
 		var component = notNormalizedComponents[index];
 		switch (component) {

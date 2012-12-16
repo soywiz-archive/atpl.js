@@ -3,9 +3,11 @@ var assert = require('assert');
 
 describe('utils', function() {
 	it('simple normalize path', function() {
-		assert.equal('/this/is/a/test', utils.normalizePath('/this/is//a/path/../test'));
-		assert.equal('this/is/a/test', utils.normalizePath('this/is//a/path/../test'));
-		assert.equal('', utils.normalizePath('../../'));
+		assert.equal(utils.normalizePath('/this/is//a/path/../test'), '/this/is/a/test');
+		assert.equal(utils.normalizePath('this/is//a/path/../test'), 'this/is/a/test');
+		assert.equal(utils.normalizePath('../../'), '');
+		assert.equal(utils.normalizePath('C:\\htdocs\\atpl.js\\benchmarks/../test/templates'), 'C:/htdocs/atpl.js/test/templates');
+		
 	});
 	it('path is inside', function() {
 		assert.equal(true, utils.pathIsInside('/base', '/base'));

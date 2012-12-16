@@ -9,7 +9,7 @@ app.engine('html', require('../lib/atpl').__express);
 app.set('devel', false);
 app.set('view engine', 'html');
 app.set('view cache', true);
-app.set('views', __dirname + '/templates');
+app.set('views', __dirname + '/../test/templates');
 
 app.get('/simple', function(req, res) {
 	res.render('simple', { name : 'Test' });

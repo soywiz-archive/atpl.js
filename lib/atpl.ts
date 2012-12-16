@@ -2,6 +2,7 @@
 
 export import TemplateParser = module('./parser/TemplateParser');
 import TemplateProvider = module('./TemplateProvider');
+import fs = module('fs');
 var FileSystemTemplateProvider = TemplateProvider.FileSystemTemplateProvider;
 
 var registryTemplateParser = {};
@@ -34,6 +35,9 @@ function internalCompile(options: IOptions) {
 	}
 
 	return function(params: any) {
+		//console.log(options.path);
+		//console.log(options.root);
+		if (options.path.indexOf(options.root) !== 0) throw (new Error("Path '" + options.path + "' not inside root '" + options.root + "'"));
 		return registryTemplateParser[options.root].compileAndRenderToString(options.path.substr(options.root.length), params);
 	}
 }
@@ -50,6 +54,8 @@ export function express2Compile(templateString: string, options: any): (params: 
 	return internalCompileString(templateString, options.settings['atpl options']);
 }
 
+var rootPathCache = {};
+
 function express3RenderFile(filename: string, options: any/*IOptionsExpress*/, callback: (err: Error, output: string) => void) {
     // handle callback in options
     if ('function' == typeof options) {
@@ -64,9 +70,12 @@ function express3RenderFile(filename: string, options: any/*IOptionsExpress*/, c
 
     options = options || {};
 
+    var rootPath = options.settings['views'];
+    if (rootPathCache[rootPath] === undefined) rootPathCache[rootPath] = fs.realpathSync(rootPath);
+
     var params: IOptions = {
         path: filename,
-        root: options.settings['views'],
+        root: rootPathCache[rootPath],
 		cache: options.cache,
     };
 

@@ -16,9 +16,15 @@ export class FileSystemTemplateProvider implements TemplateProvider {
 	constructor(basePath: string, public cache: bool = true) {
 		this.basePath = utils.normalizePath(basePath);
 		this.basePathComponents = this.basePath.split('/');
+		//console.log(this.basePath);
+		//process.exit(0);
 	}
 
 	getSync(path: string) {
+		if (!this.cache) delete this.cacheObject[path];
+
+		//console.log(path);
+
 		if (this.cacheObject[path] === undefined) {
 			var normalizedPath = utils.normalizePath(this.basePath + '/' + path);
 

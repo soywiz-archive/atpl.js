@@ -17,7 +17,7 @@ app.engine('html', atpl.__express);
 app.set('devel', false);
 app.set('view engine', 'html');
 app.set('view cache', true);
-app.set('views', __dirname + '/views');
+app.set('views', __dirname + '/../test/templates');
 
 app.get('/raw', (req, res) => {
 	//res.render('simple', { name : 'Test' });

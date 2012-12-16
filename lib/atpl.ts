@@ -97,6 +97,7 @@ function express3RenderFile(filename: string, options: any/*IOptionsExpress*/, c
     }
 }
 
+export function registerExtension(items: any) { return languageContext.registerExtension(items); }
 export function registerTags(items: any) { return languageContext.registerTags(items); }
 export function registerFunctions(items: any) { return languageContext.registerFunctions(items); }
 export function registerFilters(items: any) { return languageContext.registerFilters(items); }

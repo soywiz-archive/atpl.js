@@ -122,4 +122,15 @@ describe('extra fixtures', function () {
 			'a=1,b=2,c=3,testClassValue=17,'
 		);
 	});
+
+	it('method accessed as property', function () {
+		var templateParser = createTemplateParser({
+			main: '{{ test.func[2] }}',
+		});
+
+		assert.equal(
+			templateParser.compileAndRenderToString('main', { test: { func: function () { return [0, 1, 2, 3]; } } }),
+			'2'
+		);
+	});
 });

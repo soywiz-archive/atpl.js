@@ -1,0 +1,11 @@
+﻿=== TITLE
+length
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ [7, 5, 3, 10, 9, -3, 4, 3]|length }}
+
+=== OUTPUT
+8

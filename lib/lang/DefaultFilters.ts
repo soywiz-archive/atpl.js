@@ -69,7 +69,7 @@ export class DefaultFilters {
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/length.html
-	static length(value: any) {
+	static $length(value: any) {
 		if (!RuntimeUtils.defined(value)) return 0;
 		return value.length;
 	}

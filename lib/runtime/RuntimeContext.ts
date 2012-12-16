@@ -198,7 +198,10 @@ export class RuntimeContext {
 
 	access(object: any, key: any) {
 		if (object === undefined || object === null) return null;
-		return object[key];
+		if (object instanceof Function) object = object();
+		var ret = object[key];
+		//if (ret instanceof Function) ret = ret();
+		return ret;
 	}
 
 	emptyList(value: any) {

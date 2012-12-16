@@ -27,18 +27,29 @@ app.get('/simple_extends', function (req, res) {
     res.render('simple_extends', {
     });
 });
-var totalRequests = 1000;
+var startMeasure = 200;
+var totalRequests = 2000;
 var test = supertest(app);
+function roundDecimals(number, decimals) {
+    var disp = Math.pow(10, decimals);
+    return Math.round(number * disp) / disp;
+}
 function measure(path, done) {
     var start = moment();
     var requestCount = 0;
+    var measure = true;
     function doRequest() {
         requestCount++;
         test.get(path).end(function (err, res) {
+            if(requestCount == startMeasure) {
+                start = moment();
+            }
             if(requestCount > totalRequests) {
                 var end = moment();
-                console.log(path + ':' + end.diff(start));
-                console.log(res.text);
+                if(measure) {
+                    var measuredRequests = (totalRequests - startMeasure);
+                    console.log(path + '(' + measuredRequests + '): total: ' + end.diff(start) + 'ms; per request: ' + roundDecimals(end.diff(start) / measuredRequests, 3) + "ms");
+                }
                 return done();
             } else {
                 process.nextTick(doRequest);

@@ -4,15 +4,23 @@ Install with NPM:
 npm install atpl
 ```
 	
-Using with express:
+Using with express3:
 
 ```
-app.set('view engine', 'atpl');
-app.set('view options', { layout : false });
+app.engine('html', require('atpl').__express);
+app.set('devel', false);
+app.set('view engine', 'html');
+app.set('view cache', true);
+app.set('views', __dirname + '/templates');
+
+app.get('/simple', function(req, res) {
+	res.render('simple', { name : 'Test' });
+});
 ```
 
 This project is designed to be compatible with twig.
 So the documentation about tags, filters, functions and tests is on the twig page:
+
  * http://twig.sensiolabs.org/documentation
  
 I have continued working on it because there are several projects implementing twig templates

@@ -7,7 +7,7 @@ MemoryTemplateProvider     = tp.MemoryTemplateProvider;
 describe('TemplateProvider', function() {
 	it('test file system', function(done) {
 		var templateProvider = new FileSystemTemplateProvider(__dirname + '/templates');
-		assert.equal('Hello World!', templateProvider.getSync('simple.html'));
+		assert.equal('Hello {{ name }}!', templateProvider.getSync('simple.html'));
 
 		//templateProvider.getAsync('simple.atpl', function(data) {
 		//	assert.equal('Hello World!', data);

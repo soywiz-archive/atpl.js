@@ -1,3 +1,7 @@
+Build status on Travis:
+
+[![Build Status](https://secure.travis-ci.org/soywiz/atpl.js.png)](http://travis-ci.org/#!/soywiz/atpl.js)
+
 Install with NPM:
 
 ```
@@ -78,7 +82,3 @@ Not-implemented-yet syntax:
 ```
 ...
 ```
-
-Build status on Travis:
-
-[![Build Status](https://secure.travis-ci.org/soywiz/atpl.js.png)](http://travis-ci.org/#!/soywiz/atpl.js)

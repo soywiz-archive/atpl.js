@@ -1,0 +1,14 @@
+﻿=== TITLE
+embed
+
+=== INPUT
+{ }
+
+=== TEMPLATE:include
+[{% block a %}A{% endblock %},{% block b %}B{% endblock %}]
+
+=== TEMPLATE:main
+({% embed "include" %}{% block b %}b{% endblock %}{% endembed %})
+
+=== OUTPUT
+([A,b])

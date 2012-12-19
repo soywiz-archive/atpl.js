@@ -57,7 +57,9 @@ export class TemplateParser {
 		var tokenParserContext = new TokenParserContext();
 	
 		try {
-			this.parseTemplateSync(tokenParserContext, new TokenReader.TokenReader(templateTokens));
+			tokenParserContext.setBlock('__main', () => {
+				this.parseTemplateSync(tokenParserContext, new TokenReader.TokenReader(templateTokens));
+			});
 		} catch (e) {
 			if (e instanceof FlowException) {
 				//console.log(e);

@@ -2,26 +2,35 @@
 
 export class TokenParserContext {
 	blocksOutput: any = {};
-	currentBlockName: string = '__main';
-	parentName: string = '';
+	macrosOutput: any = {};
 
 	constructor() {
-	};
+	}
 
-	write(data) {
-		if (this.blocksOutput[this.currentBlockName] === undefined) this.blocksOutput[this.currentBlockName] = '';
-		this.blocksOutput[this.currentBlockName] += data;
-	};
+	private out: string = '';
 
-	setBlock(newBlockName, callback) {
-		var previousBlockName = this.currentBlockName;
-		this.currentBlockName = newBlockName;
-		{
-			this.write('');
+	write(data: string) {
+		this.out += data;
+	}
+
+	captureOutput(callback) {
+		var backOut = this.out;
+		this.out = '';
+		try {
 			callback();
+			return this.out;
+		} finally {
+			this.out = backOut;
 		}
-		this.currentBlockName = previousBlockName;
-	};
+	}
+
+	setBlock(blockName, callback) {
+		this.blocksOutput[blockName] = this.captureOutput(callback);
+	}
+
+	setMacro(macroName, callback) {
+		this.macrosOutput[macroName] = this.captureOutput(callback);
+	}
 
 	/*
 	addAsyncCallback(callback) {

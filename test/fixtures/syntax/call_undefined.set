@@ -1,0 +1,10 @@
+﻿=== TITLE
+call undefined
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ test.test() }}
+
+=== OUTPUT

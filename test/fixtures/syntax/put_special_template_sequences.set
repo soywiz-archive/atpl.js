@@ -1,0 +1,11 @@
+﻿=== TITLE
+special template sequences
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ '{{' }}{{ '}}' }}{{ '{#' }}{{ '#}' }}{{ '{%' }}{{ '%}' }}
+
+=== OUTPUT
+{{}}{##}{%%}

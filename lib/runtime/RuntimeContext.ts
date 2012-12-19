@@ -100,9 +100,12 @@ export class RuntimeContext {
 	}
 
 	callContext($context: any, $functionName: any, $arguments: any[]) {
-		var $function = $context[$functionName];
-		if ($function instanceof Function) {
-			return $function.apply($context, $arguments);
+		if ($context !== undefined && $context !== null)
+		{
+			var $function = $context[$functionName];
+			if ($function instanceof Function) {
+				return $function.apply($context, $arguments);
+			}
 		}
 		return null;
 	}
@@ -122,6 +125,11 @@ export class RuntimeContext {
 	include(name: string) {
 		var IncludeTemplate = new ((this.templateParser.compile(name)).class)();
 		IncludeTemplate.__main(this);
+	}
+
+	import(name: string) {
+		var IncludeTemplate = new ((this.templateParser.compile(name)).class)();
+		return IncludeTemplate.macros;
 	}
 
 	extends(name: string) {

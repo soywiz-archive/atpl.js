@@ -1,6 +1,7 @@
 ﻿export import ExpressionParser = module('../parser/ExpressionParser');
 export import FlowException = module('../parser/FlowException');
 export import ParserNode = module('../parser/ParserNode');
+export import TokenReader = module('../lexer/TokenReader');
 
 export interface ITemplateParser {
 	addBlockFlowExceptionHandler(name: string);
@@ -28,6 +29,25 @@ function _flowexception(blockType, templateParser, tokenParserContext, templateT
 	throw(new FlowException.FlowException(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader));
 }
 
+function handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, handlers) {
+	while (true) {
+		try {
+			var keys = []; for (var key in handlers) keys.push(key);
+			if (!templateParser.parseTemplateSync(tokenParserContext, templateTokenReader)) {
+				throw (new Error("Unexpected end of '" + blockType + "' no any of [" + keys.map((key) => "'" + key + "'").join(', ') + "]"));
+			}
+		} catch (e) {
+			if (!(e instanceof FlowException.FlowException)) throw (e);
+			var handler = handlers[e.blockType];
+			if (handler !== undefined) {
+				if (handler(e)) return;
+			} else {
+				throw (new Error("Unexpected '" + e.blockType + "' for '" + blockType + "'"));
+			}
+		}
+	}
+}
+
 // @TODO: blockHandlers should return a ParserNode/AstNode and the output should be generated at the end instead of writing now.
 export class DefaultTags {
 	// autoescape
@@ -38,21 +58,12 @@ export class DefaultTags {
 
 		tokenParserContext.write('runtimeContext.autoescape(' + expressionNode.generateCode() + ', function() {');
 
-		while (true) {
-			try {
-				if (!templateParser.parseTemplateSync(tokenParserContext, templateTokenReader)) {
-					throw (new Error("Unexpected end of 'autoescape' no closing 'endautoescape'"));
-				}
-			} catch (e) {
-				if (!(e instanceof FlowException.FlowException)) throw (e);
-				switch (e.blockType) {
-					case 'endautoescape':
-						tokenParserContext.write('});');
-						return;
-					default: throw (new Error("Unexpected '" + e.blockType + "' for 'autoescape'"));
-				}
-			}
-		}
+		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+			'endautoescape': (e) => {
+				tokenParserContext.write('});');
+				return true;
+			},
+		});
 	}
 
 	// DO/SET
@@ -81,21 +92,53 @@ export class DefaultTags {
 
 	// FLUSH
 	static flush(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-		throw (new Error("Not implemented tag [flush]"));
+		// do nothing (all output is buffered and can't be flushed)
 	}
 
-	// MACRO/FROM/IMPORTUSE
+	// USE
 	static use(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [use]"));
 	}
-	static macro(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-		throw (new Error("Not implemented tag [macro]"));
+
+	// MACRO/FROM/IMPORTUSE
+	static endmacro = _flowexception;
+	static macro(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader: TokenReader.TokenReader) {
+		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
+		var macroName = expressionTokenReader.read().value;
+		var paramNames = [];
+		expressionTokenReader.expectAndMoveNext(['(']);
+		if (expressionTokenReader.peek().value != ")") {
+			while (true) {
+				paramNames.push(expressionTokenReader.read().value);
+				if (expressionTokenReader.expectAndMoveNext([')', ',']) == ')') break;
+			}
+		}
+		checkNoMoreTokens(expressionTokenReader);
+
+		console.log(paramNames);
+
+		tokenParserContext.setMacro(macroName, function () {
+			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+				'endmacro': (e) => {
+					return true;
+				},
+			});
+		});
+
 	}
 	static from(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [from]"));
 	}
 	static $import(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-		throw (new Error("Not implemented tag [import]"));
+		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
+		var fileNameNode = expressionParser.parseExpression();
+		expressionTokenReader.expectAndMoveNext(['as']);
+		var aliasNode = <ParserNode.ParserNodeLeftValue>expressionParser.parseIdentifier();
+
+		checkNoMoreTokens(expressionTokenReader);
+
+		var assign = new ParserNode.ParserNodeAssignment(aliasNode, new ParserNode.ParserNodeRaw('runtimeContext.import(' + fileNameNode.generateCode() + ')'))
+		tokenParserContext.write(assign.generateCode() + ";");
 	}
 
 	// INCLUDE
@@ -135,33 +178,24 @@ export class DefaultTags {
 
 		//parseExpressionExpressionSync
 
-		while (true) {
-			try {
-				if (!templateParser.parseTemplateSync(tokenParserContext, templateTokenReader)) {
-					throw (new Error("Unexpected end of 'if' no closing 'endif'"));
-				}
-			} catch (e) {
-				if (!(e instanceof FlowException.FlowException)) throw (e);
-				switch (e.blockType) {
-					case 'elseif':
-						if (didElse) throw (new Error("Can't put 'elseif' after the 'else'"));
+		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+			'elseif': (e) => {
+				if (didElse) throw (new Error("Can't put 'elseif' after the 'else'"));
 
-						var expressionNode = (new ExpressionParser.ExpressionParser(e.expressionTokenReader)).parseExpression();
-						checkNoMoreTokens(expressionTokenReader);
-						tokenParserContext.write('} else if (' + expressionNode.generateCode() + ') {');
-						break;
-					case 'else':
-						if (didElse) throw (new Error("Can't have two 'else'"));
-						tokenParserContext.write('} else {');
-						didElse = true;
-						break;
-					case 'endif':
-						tokenParserContext.write('}');
-						return;
-					default: throw (new Error("Unexpected '" + e.blockType + "' for 'if'"));
-				}
-			}
-		}
+				var expressionNode = (new ExpressionParser.ExpressionParser(e.expressionTokenReader)).parseExpression();
+				checkNoMoreTokens(expressionTokenReader);
+				tokenParserContext.write('} else if (' + expressionNode.generateCode() + ') {');
+			},
+			'else': (e) => {
+				if (didElse) throw (new Error("Can't have two 'else'"));
+				tokenParserContext.write('} else {');
+				didElse = true;
+			},
+			'endif': (e) => {
+				tokenParserContext.write('}');
+				return true;
+			},
+		});
 	}
 
 	// BLOCK/ENDBLOCK
@@ -169,18 +203,11 @@ export class DefaultTags {
 	static block(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var blockName = 'block_' + expressionTokenReader.read().value;
 		tokenParserContext.setBlock(blockName, function () {
-			try {
-				if (!templateParser.parseTemplateSync(tokenParserContext, templateTokenReader)) {
-					throw (new Error("Unexpected end of 'block' no closing 'endblock'"));
-				}
-			} catch (e) {
-				if (!(e instanceof FlowException.FlowException)) throw (e);
-				switch (e.blockType) {
-					case 'endblock':
-						return;
-					default: throw (new Error("Unexpected '" + e.blockType + "' for 'block'"));
-				}
-			}
+			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+				'endblock': (e) => {
+					return true;
+				},
+			});
 		});
 		tokenParserContext.write('runtimeContext.putBlock(' + JSON.stringify(blockName) + ');');
 	}
@@ -227,27 +254,19 @@ export class DefaultTags {
 		if (condId) {
 			tokenParserContext.write('   if (' + condId.generateCode() + ') { ');
 		}
-		while (true) {
-			try {
-				if (!templateParser.parseTemplateSync(tokenParserContext, templateTokenReader)) {
-					throw (new Error("Unexpected end of 'for' no closing 'endfor'"));
-				}
-			} catch (e) {
-				if (!(e instanceof FlowException.FlowException)) throw (e);
-				switch (e.blockType) {
-					case 'else':
-						if (didElse) throw (new Error("Can't have two 'else'"));
-						tokenParserContext.write('}); } else {');
-						didElse = true;
-						continue;
-					case 'endfor':
-						if (condId) tokenParserContext.write('} ');
-						if (!didElse) tokenParserContext.write('}); ');
-						tokenParserContext.write('} }));');
-						return;
-					default: throw (new Error("Unexpected '" + e.blockType + "' for 'for'"));
-				}
-			}
-		}
+		
+		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+			'else': (e) => {
+				if (didElse) throw (new Error("Can't have two 'else'"));
+				tokenParserContext.write('}); } else {');
+				didElse = true;
+			},
+			'endfor': (e) => {
+				if (condId) tokenParserContext.write('} ');
+				if (!didElse) tokenParserContext.write('}); ');
+				tokenParserContext.write('} }));');
+				return true;
+			},
+		});
 	}
 }

@@ -112,6 +112,8 @@ export class DefaultTags {
 				paramNames.push(expressionParser.parseIdentifier());
 				if (expressionTokenReader.expectAndMoveNext([')', ',']) == ')') break;
 			}
+		} else {
+			expressionTokenReader.expectAndMoveNext([')']);
 		}
 		checkNoMoreTokens(expressionTokenReader);
 
@@ -146,11 +148,10 @@ export class DefaultTags {
 		while (expressionTokenReader.peek().value != null) {
 			var fromNode = expressionTokenReader.read().value;
 			var toNode = fromNode;
-			if (expressionTokenReader.peek().value != null) {
-				var token = expressionTokenReader.expectAndMoveNext(['as', ',']);
-				if (token == 'as') {
-					toNode = expressionTokenReader.read().value;
-				}
+			var token = expressionTokenReader.expectAndMoveNext(['as', ',', null]);
+			if (token == 'as') {
+				toNode = expressionTokenReader.read().value;
+				expressionTokenReader.expectAndMoveNext([',', null]);
 			}
 			pairs.push([fromNode, toNode]);
 		}

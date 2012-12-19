@@ -42,12 +42,13 @@ export class TokenReader {
 			this.skip(1);
 			return peekValue;
 		}
-		return null;
+		return undefined;
 	}
 
 	expectAndMoveNext(values: string[]): string {
 		var ret = this.checkAndMoveNext(values);
-		if (ret === null) throw(new Error("Expected one of " + JSON.stringify(values) + " but get '" + this.peek().value + "'"));
+		//var hasNull = values.indexOf(null) != -1;
+		if (ret === undefined) throw(new Error("Expected one of " + JSON.stringify(values) + " but get '" + this.peek().value + "'"));
 		return ret;
 	}
 }

@@ -3,6 +3,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+//export class NodeBuilder {
+//	binary(left: ParserNodeExpression, op: string, right: ParserNodeExpression): ParserNodeExpression {
+//		if (op == '=') {
+//			return new ParserNodeAssignment(left, right);
+//		} else {
+//			return new ParserNodeBinaryOperation(left, op, right);
+//		}
+//	}
+//}
+
 export export class ParserNode {
 	type: string = '-';
 

@@ -1,0 +1,16 @@
+﻿=== TITLE
+from macro
+
+=== INPUT
+{}
+
+=== TEMPLATE:forms
+{% macro input(name, value, type, size) %}<input type="{{ type|default('text') }}" name="{{ name }}" value="{{ value|e }}" size="{{ size|default(20) }}" />{% endmacro %}
+
+=== TEMPLATE:main
+{% from "forms" import input %}
+
+<p>{{ input('username') }}</p>
+
+=== OUTPUT
+<p><input type="text" name="username" value="" size="20" /></p>

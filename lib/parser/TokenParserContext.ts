@@ -25,11 +25,11 @@ export class TokenParserContext {
 	}
 
 	setBlock(blockName, callback) {
-		this.blocksOutput[blockName] = this.captureOutput(callback);
+		return this.blocksOutput[blockName] = this.captureOutput(callback);
 	}
 
 	setMacro(macroName, callback) {
-		this.macrosOutput[macroName] = this.captureOutput(callback);
+		return this.macrosOutput[macroName] = this.captureOutput(callback);
 	}
 
 	/*

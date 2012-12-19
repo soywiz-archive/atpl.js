@@ -109,25 +109,55 @@ export class DefaultTags {
 		expressionTokenReader.expectAndMoveNext(['(']);
 		if (expressionTokenReader.peek().value != ")") {
 			while (true) {
-				paramNames.push(expressionTokenReader.read().value);
+				paramNames.push(expressionParser.parseIdentifier());
 				if (expressionTokenReader.expectAndMoveNext([')', ',']) == ')') break;
 			}
 		}
 		checkNoMoreTokens(expressionTokenReader);
 
-		console.log(paramNames);
-
-		tokenParserContext.setMacro(macroName, function () {
+		var macroCode = tokenParserContext.setMacro(macroName, function () {
+			tokenParserContext.write('var _arguments = arguments;');
+			tokenParserContext.write('return runtimeContext.captureOutput(function() { ');
+			tokenParserContext.write('return runtimeContext.autoescape(false, function() { ');
+			tokenParserContext.write('runtimeContext.createScope(function() { ');
+			paramNames.forEach((paramName, index) => {
+				var assign = new ParserNode.ParserNodeAssignment(paramName, new ParserNode.ParserNodeRaw('_arguments[' + index + ']'))
+				tokenParserContext.write(assign.generateCode() + ';');
+			});
 			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
 				'endmacro': (e) => {
 					return true;
 				},
 			});
+			tokenParserContext.write('});'); // createScope
+			tokenParserContext.write('});'); // autoescape
+			tokenParserContext.write('});'); // captureOutput
 		});
+		//console.log(macroCode);
 
 	}
-	static from(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-		throw (new Error("Not implemented tag [from]"));
+	static from(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader: TokenReader.TokenReader) {
+		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
+		var fileNameNode = expressionParser.parseExpression();
+		expressionTokenReader.expectAndMoveNext(['import']);
+
+		var pairs = [];
+
+		while (expressionTokenReader.peek().value != null) {
+			var fromNode = expressionTokenReader.read().value;
+			var toNode = fromNode;
+			if (expressionTokenReader.peek().value != null) {
+				var token = expressionTokenReader.expectAndMoveNext(['as', ',']);
+				if (token == 'as') {
+					toNode = expressionTokenReader.read().value;
+				}
+			}
+			pairs.push([fromNode, toNode]);
+		}
+
+		checkNoMoreTokens(expressionTokenReader);
+
+		tokenParserContext.write('runtimeContext.fromImport(' + fileNameNode.generateCode() + ', ' + JSON.stringify(pairs) + ');');
 	}
 	static $import(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);

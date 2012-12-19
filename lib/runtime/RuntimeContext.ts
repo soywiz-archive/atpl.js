@@ -87,13 +87,18 @@ export class RuntimeContext {
 	}
 
 	$call(functionList: any, $function: any, $arguments: any[]) {
-		if ($function !== undefined && $function !== null) {
+		if (functionList !== undefined && functionList !== null) {
 			//console.log('call:' + $function);
 			if (RuntimeUtils.isString($function)) $function = functionList[$function];
-			//console.log('call:' + $function);
+			return this.$call2($function, $arguments);
+		}
+		return null;
+	}
+
+	$call2($function: any, $arguments: any[]) {
+		if ($function !== undefined && $function !== null) {
 			if ($function instanceof Function) {
 				return $function.apply(this, $arguments);
-				//console.log('called!');
 			}
 		}
 		return null;
@@ -111,7 +116,12 @@ export class RuntimeContext {
 	}
 
 	call($function: any, $arguments: any[]) {
-		return this.$call(this.languageContext.functions, $function, $arguments);
+		if (this.languageContext.functions[$function] === undefined) {
+			//console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+			return this.$call2(this.scope.get($function), $arguments);
+		} else {
+			return this.$call(this.languageContext.functions, $function, $arguments);
+		}
 	}
 
 	filter($function: any, $arguments: any[]) {
@@ -123,17 +133,31 @@ export class RuntimeContext {
 	}
 
 	include(name: string) {
-		var IncludeTemplate = new ((this.templateParser.compile(name)).class)();
+		var IncludeTemplate = new ((this.templateParser.compile(name, this)).class)();
 		IncludeTemplate.__main(this);
 	}
 
 	import(name: string) {
-		var IncludeTemplate = new ((this.templateParser.compile(name)).class)();
+		var IncludeTemplate = new ((this.templateParser.compile(name, this)).class)();
+		//console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<");
+		//console.log(IncludeTemplate.macros);
+		//console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>");
 		return IncludeTemplate.macros;
+		//return 'Hello World!';
+	}
+
+	fromImport(name: string, pairs: any[]) {
+		var keys = this.import(name);
+		pairs.forEach((pair) => {
+			var from = pair[0];
+			var to = pair[1];
+			//console.log(from + " : " + to);
+			this.scope.set(to, keys[from]);
+		});
 	}
 
 	extends(name: string) {
-		var ParentTemplateInfo = (this.templateParser.compile(name));
+		var ParentTemplateInfo = (this.templateParser.compile(name, this));
 		var ParentTemplate = new (ParentTemplateInfo.class)();
 
 		//for (var key in ParentTemplate) if (this.CurrentTemplate[key] === undefined) this.CurrentTemplate[key] = ParentTemplate[key];
@@ -198,7 +222,7 @@ export class RuntimeContext {
 		try {
 			this.currentAutoescape = this.defaultAutoescape;
 			//console.log(this.currentAutoescape);
-			callback();
+			return callback();
 		} finally {
 			this.defaultAutoescape = prevDefault;
 		}

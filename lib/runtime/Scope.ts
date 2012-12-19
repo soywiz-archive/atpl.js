@@ -8,7 +8,7 @@
 		newScope['__proto__'] = oldScope;
 		this.scope = newScope;
 		try {
-			inner();
+			return inner();
 		} finally {
 			this.scope = oldScope;
 		}

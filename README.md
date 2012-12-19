@@ -33,15 +33,16 @@ Supported syntax:
 
  * Inheritance
  * Include
- * Simple if, for
- * if+elseif
- * for+else
+ * if+elseif+else
+ * for+else+loop scope variable
  * Auto-escape
  * Skip autoescape (|raw)
- * Filters
- * Functions
- * Tests
+ * Filters (all twig filters but 'convert_encoding', 'date_modify', 'merge', 'number_format', 'replace', 'reverse' (with strings), 'trim' (with special characters), 'url_encode')
+ * Functions (all twig functions but 'constant', 'attribute', 'template_from_string', 'date')
+ * Tests (all twig tests but 'constant')
+ * Tags (all twig tags but 'embed', 'filter', 'flush', 'use', 'raw', 'sandbox', 'spaceless')
  * value in array
+ * macro support (macro+import+from)
 
 ```
 {% autoescape %}
@@ -54,6 +55,7 @@ Supported syntax:
 {% for var in list %}...{% else %}...{% endfor %}
 {% for key, value in list %}...{% else %}...{% endfor %}
 {% for key, value in list if condition %}...{% else %}...{% endfor %}
+{% for key in ['a', 'b', 'c'] %}{{ loop.index0 }}{% endfor %}
 {% if condition %}...{% else %}...{% endif %}
 {% if cond1 %}...{% elseif cond2 %}...{% else %}...{% endif %}
 {{ expression }}
@@ -71,7 +73,7 @@ Supported syntax:
 Not-implemented-yet syntax:
 
  * a, b = 'a', 'b'
- * loop variable in for loops
+ * use (horizontal reuse)
 
 ```
 ...

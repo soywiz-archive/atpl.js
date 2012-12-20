@@ -238,6 +238,21 @@
   <ItemGroup>
     <Content Include="test\fixtures\filters\length.set" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\put_special_template_sequences.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\macro\macro.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\call_undefined.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\macro\from.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures.disabled\tags\embed\embed.set" />
+  </ItemGroup>
   <Target Name="BeforeBuild">
     <Message Text="Compiling TypeScript files" />
     <Message Text="Executing tsc$(TypeScriptSourceMap) @(TypeScriptCompile ->'&quot;%(fullpath)&quot;', ' ')" />

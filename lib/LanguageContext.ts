@@ -1,8 +1,14 @@
-﻿export class LanguageContext {
+﻿import TemplateConfig = module('./TemplateConfig');
+
+export class LanguageContext {
 	tags:any = {};
 	functions:any = {};
 	filters:any = {};
 	tests:any = {};
+
+	constructor (public templateConfig: TemplateConfig.TemplateConfig = undefined) {
+		if (this.templateConfig === undefined) this.templateConfig = new TemplateConfig.TemplateConfig(true);
+	}
 
 	private _registerSomethingItem(object: any, key: string, value: any) {
 		object[key.replace(/^\$+/, '')] = value;

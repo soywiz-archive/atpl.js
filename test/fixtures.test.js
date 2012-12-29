@@ -4,6 +4,7 @@ var fs = require('fs');
 var TemplateParser         = require('../lib/parser/TemplateParser.js').TemplateParser;
 var MemoryTemplateProvider = require('../lib/TemplateProvider.js').MemoryTemplateProvider;
 var LanguageContext = require('../lib/LanguageContext.js');
+var TemplateConfig = require('../lib/TemplateConfig.js').TemplateConfig;
 var RuntimeContext = require('../lib/runtime/RuntimeContext.js').RuntimeContext;
 var RuntimeUtils = require('../lib/runtime/RuntimeUtils.js');
 var Default = require('../lib/lang/Default.js');
@@ -132,5 +133,25 @@ describe('extra fixtures', function () {
 			templateParser.compileAndRenderToString('main', { test: { func: function () { return [0, 1, 2, 3]; } } }),
 			'2'
 		);
+	});
+
+	it('test cache', function () {
+		var templateProvider = new MemoryTemplateProvider();
+		var languageContext = Default.register(new LanguageContext.LanguageContext());
+		var templateParser = new TemplateParser(templateProvider, languageContext);
+
+		languageContext.templateConfig.setCacheTemporal(false, function () {
+			templateProvider.add('test', 'a');
+			assert.equal(templateParser.compileAndRenderToString('test'), 'a');
+			templateProvider.add('test', 'b');
+			assert.equal(templateParser.compileAndRenderToString('test'), 'b');
+		});
+
+		languageContext.templateConfig.setCacheTemporal(true, function () {
+			templateProvider.add('test2', 'a');
+			assert.equal(templateParser.compileAndRenderToString('test2'), 'a');
+			templateProvider.add('test2', 'b');
+			assert.equal(templateParser.compileAndRenderToString('test2'), 'a');
+		});
 	});
 });

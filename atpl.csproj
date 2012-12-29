@@ -55,6 +55,7 @@
     <Content Include="benchmarks\benchmark.ts" />
     <Content Include="lib\lang\Default.ts" />
     <Content Include="lib\LanguageContext.ts" />
+    <TypeScriptCompile Include="lib\TemplateConfig.ts" />
     <Content Include="test\templates\base\base.html" />
     <Content Include="test\templates\base\simple_extends.html" />
     <Content Include="lib\atpl.ts" />

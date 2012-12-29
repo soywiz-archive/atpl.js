@@ -2,7 +2,8 @@
 
 export import TokenReader          = module('../lexer/TokenReader');
 export import _TemplateTokenizer   = module('../lexer/TemplateTokenizer');
-export import _RuntimeContext      = module('../runtime/RuntimeContext');
+export import TemplateProvider   = module('../TemplateProvider');
+export import RuntimeContext      = module('../runtime/RuntimeContext');
 export import _FlowException       = module('./FlowException');
 export import _TokenParserContext  = module('./TokenParserContext');
 export import _ExpressionParser    = module('./ExpressionParser');
@@ -10,7 +11,6 @@ export import LanguageContext = module('../LanguageContext');
 
 var TemplateTokenizer = _TemplateTokenizer.TemplateTokenizer;
 var TokenParserContext = _TokenParserContext.TokenParserContext;
-var RuntimeContext = _RuntimeContext.RuntimeContext;
 var ExpressionParser = _ExpressionParser.ExpressionParser;
 var FlowException = _FlowException.FlowException;
 
@@ -22,30 +22,34 @@ export class TemplateParser {
 	registry:any = {};
 	registryString: any = {};
 
-	constructor(public templateProvider, public languageContext: LanguageContext.LanguageContext) {
+	constructor(public templateProvider: TemplateProvider.TemplateProvider, public languageContext: LanguageContext.LanguageContext) {
 	}
 
-	compileAndRenderStringToString(content, scope: any) {
+	private getCache(): bool {
+		return this.languageContext.templateConfig.getCache();
+	}
+
+	compileAndRenderStringToString(content: string, scope: any): string {
 		if (scope === undefined) scope = {};
-		var runtimeContext = new RuntimeContext(this, scope, this.languageContext);
+		var runtimeContext = new RuntimeContext.RuntimeContext(this, scope, this.languageContext);
 		this.compileAndRenderString(content, runtimeContext);
 		return runtimeContext.output;
 	}
 
-	compileAndRenderToString(path, scope: any) {
+	compileAndRenderToString(path: string, scope: any): string {
 		if (scope === undefined) scope = {};
-		var runtimeContext = new RuntimeContext(this, scope, this.languageContext);
+		var runtimeContext = new RuntimeContext.RuntimeContext(this, scope, this.languageContext);
 		this.compileAndRender(path, runtimeContext);
 		return runtimeContext.output;
 	}
 
-	compileAndRenderString(content, runtimeContext) {
+	compileAndRenderString(content: string, runtimeContext: RuntimeContext.RuntimeContext) {
 		var template = new (this.compileString(content, runtimeContext).class)();
 		template.render(runtimeContext);
 		return template;
 	}
 
-	compileAndRender(path, runtimeContext) {
+	compileAndRender(path: string, runtimeContext: RuntimeContext.RuntimeContext) {
 		var template = new (this.compile(path, runtimeContext).class)();
 		template.render(runtimeContext);
 		return template;
@@ -104,18 +108,22 @@ export class TemplateParser {
 	}
 
 	getEvalCode(path: string) {
+		if (!this.getCache()) delete this.registry[path];
+
 		if (this.registry[path] !== undefined) {
 			return this.registry[path];
 		}
 	
 		//console.log("TemplateParser.prototype.compile: " + path);
 
-		var content            = this.templateProvider.getSync(path);
+		var content = this.templateProvider.getSync(path, this.getCache());
 	
 		return this.getEvalCodeString(content, path);
 	}
 
-	compileString(content: string, runtimeContext: any) {
+	compileString(content: string, runtimeContext: RuntimeContext.RuntimeContext) {
+		if (!this.getCache()) delete this.registryString[content];
+
 		if (this.registryString[content] === undefined) {
 			var info = this.getEvalCodeString(content, 'inline');
 			var output = info.output;
@@ -142,7 +150,9 @@ export class TemplateParser {
 		return this.registryString[content];
 	}
 
-	compile(path: string, runtimeContext: any) {
+	compile(path: string, runtimeContext: RuntimeContext.RuntimeContext) {
+		if (!this.getCache()) delete this.registry[path];
+
 		if (this.registry[path] === undefined) {
 			var info = this.getEvalCode(path);
 			var output = info.output;

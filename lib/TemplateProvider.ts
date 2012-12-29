@@ -5,7 +5,7 @@ import util  = module('util');
 import utils = module('./utils');
 
 export interface TemplateProvider {
-	getSync(path);
+	getSync(path: string, cached: bool): string;
 }
 
 export class FileSystemTemplateProvider implements TemplateProvider {
@@ -13,15 +13,15 @@ export class FileSystemTemplateProvider implements TemplateProvider {
 	basePathComponents;
 	cacheObject: any = {};
 
-	constructor(basePath: string, public cache: bool = true) {
+	constructor(basePath: string) {
 		this.basePath = utils.normalizePath(basePath);
 		this.basePathComponents = this.basePath.split('/');
 		//console.log(this.basePath);
 		//process.exit(0);
 	}
 
-	getSync(path: string) {
-		if (!this.cache) delete this.cacheObject[path];
+	getSync(path: string, cache: bool): string {
+		if (!cache) delete this.cacheObject[path];
 
 		//console.log(path);
 
@@ -40,6 +40,7 @@ export class FileSystemTemplateProvider implements TemplateProvider {
 
 export class MemoryTemplateProvider implements TemplateProvider {
 	registry: any = {};
+	registryCached: any = {};
 
 	constructor() {
 	}
@@ -48,8 +49,10 @@ export class MemoryTemplateProvider implements TemplateProvider {
 		this.registry[path] = data;
 	}
 
-	getSync(path: string) {
-		var data = this.registry[path];
+	getSync(path: string, cache: bool): string {
+		if (!cache) delete this.registryCached[path];
+		if (this.registryCached[path] === undefined) this.registryCached[path] = this.registry[path];
+		var data = this.registryCached[path];
 		if (data === undefined) throw(new Error("Can't find key '" + path + "'"));
 		return data;
 	}

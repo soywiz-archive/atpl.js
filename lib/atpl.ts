@@ -36,11 +36,13 @@ var languageContext = new LanguageContext.LanguageContext();
 function internalCompile(options: IOptions, absolutePath = false) {
 	if (options.root === undefined) options.root = '';
 
+	// options.cache
+
 	if (registryTemplateParser[options.root] === undefined) {
 		Default.register(languageContext);
 
 		var templateParser = new TemplateParser.TemplateParser(
-			new FileSystemTemplateProvider(options.root, options.cache),
+			new FileSystemTemplateProvider(options.root),
 			languageContext
 		);
 
@@ -48,21 +50,27 @@ function internalCompile(options: IOptions, absolutePath = false) {
 	}
 
 	return function(params: any) {
-		//console.log(options.path);
-		//console.log(options.root);
-		var templateParser = <TemplateParser.TemplateParser>registryTemplateParser[options.root];
+		var cache = options.cache;
+		
+		if (params && params.settings) cache = params.settings['view cache'];
 
-		if (options.path === undefined) {
-			if (options.content === undefined) throw (new Error("No content or path"));
-			return templateParser.compileAndRenderStringToString(options.content, params);
-		} else {
-			if (absolutePath) {
-				return templateParser.compileAndRenderToString(options.path, params);
+		return languageContext.templateConfig.setCacheTemporal(cache, () => {
+			//console.log(options.path);
+			//console.log(options.root);
+			var templateParser = <TemplateParser.TemplateParser>registryTemplateParser[options.root];
+
+			if (options.path === undefined) {
+				if (options.content === undefined) throw (new Error("No content or path"));
+				return templateParser.compileAndRenderStringToString(options.content, params);
 			} else {
-				if (options.path.indexOf(options.root) !== 0) throw (new Error("Path '" + options.path + "' not inside root '" + options.root + "'"));
-				return templateParser.compileAndRenderToString(options.path.substr(options.root.length), params);
+				if (absolutePath) {
+					return templateParser.compileAndRenderToString(options.path, params);
+				} else {
+					if (options.path.indexOf(options.root) !== 0) throw (new Error("Path '" + options.path + "' not inside root '" + options.root + "'"));
+					return templateParser.compileAndRenderToString(options.path.substr(options.root.length), params);
+				}
 			}
-		}
+		});
 	}
 }
 

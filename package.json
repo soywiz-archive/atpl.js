@@ -1,7 +1,7 @@
 {
   "name": "atpl",
   "description": "A complete and fast template engine full compatible with twig.",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "author": "Carlos Ballesteros <cballesterosvelasco@gmail.com> (http://cballesterosvelasco.es/)",
   "contributors": [ 
   ],

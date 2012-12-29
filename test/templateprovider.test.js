@@ -7,7 +7,7 @@ MemoryTemplateProvider     = tp.MemoryTemplateProvider;
 describe('TemplateProvider', function() {
 	it('test file system', function(done) {
 		var templateProvider = new FileSystemTemplateProvider(__dirname + '/templates');
-		assert.equal('Hello {{ name }}!', templateProvider.getSync('simple.html'));
+		assert.equal('Hello {{ name }}!', templateProvider.getSync('simple.html', false));
 
 		//templateProvider.getAsync('simple.atpl', function(data) {
 		//	assert.equal('Hello World!', data);
@@ -18,7 +18,7 @@ describe('TemplateProvider', function() {
 	it('test memory', function() {
 		var templateProvider = new MemoryTemplateProvider();
 		try {
-			templateProvider.getSync('simple.atpl');
+			templateProvider.getSync('simple.atpl', false);
 			assert.fail();
 		} catch (e) {
 		}
@@ -28,6 +28,6 @@ describe('TemplateProvider', function() {
 		//console.log(templateProvider.registry);
 		templateProvider.add('simple.atpl', templateContent);
 		//console.log(templateProvider.registry);
-		assert.equal(templateContent, templateProvider.getSync('simple.atpl'));
+		assert.equal(templateContent, templateProvider.getSync('simple.atpl', false));
 	});
 });

@@ -60,7 +60,7 @@ export class DefaultTags {
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
 			'endautoescape': (e) => {
-				tokenParserContext.write('});');
+				tokenParserContext.write('}, true);');
 				return true;
 			},
 		});

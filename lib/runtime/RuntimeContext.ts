@@ -70,7 +70,8 @@ export class RuntimeContext {
 				this.write(text);
 			break;
 			case 'js':
-				throw (new Error("Not implemented"));
+				this.write(RuntimeContext.escapeJsString(text));
+			break;
 			case 'css':
 				throw (new Error("Not implemented"));
 			case 'url':
@@ -214,7 +215,7 @@ export class RuntimeContext {
 		//throw (new Error("Not implemented"));
 	}
 
-	autoescape(temporalValue: any, callback: () => void) {
+	autoescape(temporalValue: any, callback: () => void, setCurrentAfter: bool = false) {
 		if (temporalValue === undefined) temporalValue = true;
 		var prevDefault = this.defaultAutoescape;
 		
@@ -225,6 +226,7 @@ export class RuntimeContext {
 			return callback();
 		} finally {
 			this.defaultAutoescape = prevDefault;
+			if (setCurrentAfter) this.currentAutoescape = prevDefault;
 		}
 	}
 
@@ -253,5 +255,42 @@ export class RuntimeContext {
 
 	static escapeHtmlEntities(text: string) {
 		return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	}
+
+	static escapeJsString(text: string) {
+		return text.replace(/\W/g, (match) => {
+			switch (match) {
+				case '\'': return '\\\'';
+				case '"': return '\\\"';
+				case ' ': return ' ';
+				case "\n": return '\\n';
+				case "\r": return '\\r';
+				case "\t": return '\\t';
+				default:
+					var charCode = match.charCodeAt(0);
+					//if (charCode <= 0xFF) return '\\x' + charCode.toString(16);
+					var retCode = charCode.toString(16);
+					while (retCode.length < 4) retCode = '0' + retCode;
+					return '\\u' + retCode;
+				break;
+			}
+		});
+
+		/*
+		function _twig_escape_js_callback($matches)
+		{
+			$char = $matches[0];
+
+			// \xHH
+			if (!isset($char[1])) {
+				return '\\x'.strtoupper(substr('00'.bin2hex($char), -2));
+			}
+
+			// \uHHHH
+			$char = twig_convert_encoding($char, 'UTF-16BE', 'UTF-8');
+
+			return '\\u'.strtoupper(substr('0000'.bin2hex($char), -4));
+		}
+		*/
 	}
 }

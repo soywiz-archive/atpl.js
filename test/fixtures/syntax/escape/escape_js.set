@@ -1,0 +1,13 @@
+﻿=== TITLE
+escape js
+
+=== INPUT
+{ "msg": "Test \u0000'\"\r\n\t世界" }
+
+=== TEMPLATE:main
+{{ msg|e('js') }}
+{% autoescape "js" %}{{ msg }}{% endautoescape %}
+
+=== OUTPUT
+Test \u0000\'\"\r\n\t\u4e16\u754c
+Test \u0000\'\"\r\n\t\u4e16\u754c

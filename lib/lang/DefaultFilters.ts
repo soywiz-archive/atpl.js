@@ -33,8 +33,11 @@ export class DefaultFilters {
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/escape.html
-	static e(value: string, strategy?: string, charset?: string) { return DefaultFilters.escape(value, strategy, charset); }
-	static escape(value: string, strategy: any = true, charset?: string = 'utf-8') {
+	static e(value: string, strategy?: string) {
+		this['currentAutoescape'] = strategy;
+		return value;
+	}
+	static escape(value: string, strategy: any = true) {
 		this['currentAutoescape'] = strategy;
 		return value;
 	}

@@ -254,6 +254,9 @@
   <ItemGroup>
     <Content Include="test\fixtures.disabled\tags\embed\embed.set" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\macro\_self.set" />
+  </ItemGroup>
   <Target Name="BeforeBuild">
     <Message Text="Compiling TypeScript files" />
     <Message Text="Executing tsc$(TypeScriptSourceMap) @(TypeScriptCompile ->'&quot;%(fullpath)&quot;', ' ')" />

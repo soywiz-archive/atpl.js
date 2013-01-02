@@ -20,7 +20,7 @@ export class ExpressionTokenizer {
 
 	static operators2 = [
 		'++', '--', '&&', '||', '..', '//', '**',
-		'==', '>=', '<=', '!=',
+		'==', '>=', '<=', '!=', '?:',
 	];
 
 	static operators1 = [

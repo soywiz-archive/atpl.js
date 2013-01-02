@@ -1,0 +1,13 @@
+﻿=== TITLE
+ternary operator
+
+=== INPUT
+{ "value": 1 }
+
+=== TEMPLATE:main
+{{ value ? "yes" : "no" }}
+{{ not value ? "yes" : "no" }}
+
+=== OUTPUT
+yes
+no

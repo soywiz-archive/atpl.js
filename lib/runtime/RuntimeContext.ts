@@ -247,6 +247,10 @@ export class RuntimeContext {
 		return false;
 	}
 
+	ternaryShortcut(value: any, _default: any) {
+		return value ? value : _default;
+	}
+
 	static escapeHtmlEntities(text: string) {
 		return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 	}

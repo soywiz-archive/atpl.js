@@ -29,7 +29,7 @@ export class ExpressionParser {
 	}
 
 	parseTernary() {
-		var left = this.parseLogicOr();
+		var left = this.parseTernaryShortcut();
 		if (this.tokenReader.peek().value == '?') {
 			this.tokenReader.skip();
 			var middle = this.parseExpression();
@@ -39,6 +39,10 @@ export class ExpressionParser {
 			left = new ParserNode.ParserNodeTernaryOperation(left, middle, right);
 		}
 		return left;
+	}
+
+	parseTernaryShortcut() {
+		return this._parseBinary('parseTernaryShortcut', this.parseLogicOr, ['?:']);
 	}
 
 	parseLogicOr() {

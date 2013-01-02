@@ -1,0 +1,17 @@
+﻿=== TITLE
+ternary operator shortcut
+
+=== INPUT
+{ "value1": "", "value2": null, "value3": false, "value4": "Hello World" }
+
+=== TEMPLATE:main
+{{ value1 ?: "ok" }}
+{{ value2 ?: "ok" }}
+{{ value3 ?: "ok" }}
+{{ value4 ?: "ko" }}
+
+=== OUTPUT
+ok
+ok
+ok
+Hello World

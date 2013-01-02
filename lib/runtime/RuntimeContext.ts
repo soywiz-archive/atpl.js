@@ -230,6 +230,19 @@ export class RuntimeContext {
 		}
 	}
 
+	scopeGet(key) {
+		switch (key) {
+			case '_self':
+				// FIXME?: Probably not CurrentTemplate but the template that contains this functions.
+				return this.CurrentTemplate.macros;
+		}
+		return this.scope.get(key);
+	}
+
+	scopeSet(key, value) {
+		return this.scope.set(key, value);
+	}
+
 	access(object: any, key: any) {
 		if (object === undefined || object === null) return null;
 		if (object instanceof Function) object = object();

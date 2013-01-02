@@ -122,11 +122,11 @@ export class ParserNodeIdentifier extends ParserNodeLeftValue {
 	}
 
 	generateAssign(expr: ParserNodeExpression) {
-		return 'runtimeContext.scope.set(' + JSON.stringify(this.value) + ', ' + expr.generateCode() + ')';
+		return 'runtimeContext.scopeSet(' + JSON.stringify(this.value) + ', ' + expr.generateCode() + ')';
 	}
 
 	generateCode() {
-		return 'runtimeContext.scope.get(' + JSON.stringify(this.value) + ')';
+		return 'runtimeContext.scopeGet(' + JSON.stringify(this.value) + ')';
 	}
 }
 

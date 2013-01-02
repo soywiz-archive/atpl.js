@@ -52,7 +52,11 @@ function internalCompile(options: IOptions, absolutePath = false) {
 	return function(params: any) {
 		var cache = options.cache;
 		
-		if (params && params.settings) cache = params.settings['view cache'];
+		if (params && params.settings) {
+			if (options.cache === undefined) {
+				cache = params.settings['view cache'];
+			}
+		}
 
 		return languageContext.templateConfig.setCacheTemporal(cache, () => {
 			//console.log(options.path);
@@ -123,11 +127,13 @@ function express3RenderFile(filename: string, options: any/*IOptionsExpress*/, c
         options = {};
     }
 
+    var err = null;
+    var result = null;
     try {
-    	callback(null, internalRender(filename, options));
+    	result = internalRender(filename, options);
     } catch (err) {
-    	callback(err);
     }
+    return callback(null, result);
 }
 
 export function registerExtension(items: any) { return languageContext.registerExtension(items); }

@@ -1,0 +1,14 @@
+﻿=== TITLE
+_self macros
+
+=== INPUT
+{}
+
+=== TEMPLATE:forms
+
+=== TEMPLATE:main
+{% macro test(v) %}1{{ v }}{% endmacro %}
+{{ _self.test('a') }}
+
+=== OUTPUT
+1a

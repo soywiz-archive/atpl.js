@@ -22,6 +22,18 @@
 		return this.scope[key];
 	}
 
+	getAll() {
+		var object = {};
+		var parentScope = this.scope['__proto__'];
+		if (parentScope instanceof Scope) {
+			object = parentScope.getAll();
+		}
+		for (var key in this.scope) {
+			object[key] = this.scope[key];
+		}
+		return object;
+	}
+
 	set(key, value) {
 		return this.scope[key] = value;
 	}

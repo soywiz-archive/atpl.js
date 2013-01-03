@@ -1,0 +1,11 @@
+﻿=== TITLE
+_context
+
+=== INPUT
+{ "a" : 5, "b" : 6 }
+
+=== TEMPLATE:main
+{% for n in [1] %}{{ _context|raw }}{% endfor %}
+
+=== OUTPUT
+{"loop":{"index0":0,"index":1,"revindex0":1,"revindex":0,"first":true,"last":true,"parent":{"a":5,"b":6},"length":1},"n":1,"a":5,"b":6}

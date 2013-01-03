@@ -235,6 +235,9 @@ export class RuntimeContext {
 			case '_self':
 				// FIXME?: Probably not CurrentTemplate but the template that contains this functions.
 				return this.CurrentTemplate.macros;
+			case '_context':
+				// INFO: This will be SLOW.
+				return this.scope.getAll();
 		}
 		return this.scope.get(key);
 	}

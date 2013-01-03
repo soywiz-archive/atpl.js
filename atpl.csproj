@@ -157,7 +157,6 @@
     <Content Include="test\fixtures\functions\range.set" />
     <Content Include="test\fixtures\syntax\0.set" />
     <Content Include="test\fixtures\syntax\array_access.set" />
-    <Content Include="test\fixtures\syntax\autoescape.set" />
     <Content Include="test\fixtures\syntax\constants.set" />
     <Content Include="test\fixtures\syntax\exceptions\end_tag.set" />
     <Content Include="test\fixtures\syntax\exceptions\start_tag.set" />
@@ -256,6 +255,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="test\fixtures\tags\macro\_self.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\escape\autoescape.set" />
+    <Content Include="test\fixtures\syntax\escape\escape_js.set" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Message Text="Compiling TypeScript files" />

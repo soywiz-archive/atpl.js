@@ -1,4 +1,5 @@
 ﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
+import util = module('util');
 
 export class DefaultFunctions {
 	// http://twig.sensiolabs.org/doc/functions/range.html
@@ -65,5 +66,10 @@ export class DefaultFunctions {
 	// http://twig.sensiolabs.org/doc/functions/template_from_string.html
 	static template_from_string(template: string) {
 		throw (new Error("Not implemented function [template_from_string]"));
-	}	
+	}
+
+	// https://github.com/soywiz/atpl.js/issues/13
+	static inspect(object, showHidden?, depth?, color?) {
+		return util.inspect(object, showHidden, depth, color);
+	}
 }

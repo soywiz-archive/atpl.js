@@ -1,0 +1,13 @@
+﻿=== TITLE
+dump
+
+=== INPUT
+{"a":1,"b":{"test":2}}
+
+=== TEMPLATE:main
+{{ dump(a, b)|raw }}
+{{ dump()|raw }}
+
+=== OUTPUT
+1{"test":2}
+{"a":1,"b":{"test":2}}

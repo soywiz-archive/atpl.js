@@ -47,8 +47,14 @@ export class DefaultFunctions {
 	}
 
 	// http://twig.sensiolabs.org/doc/functions/dump.html
-	static dump(object: any) {
-		return JSON.stringify(object);
+	static dump(...objects: any[]) {
+		if (objects.length > 0) {
+			var result = '';
+			for (var n = 0; n < objects.length; n++) result += JSON.stringify(objects[n]);
+			return result;
+		} else {
+			return JSON.stringify(this.scope.getAll());
+		}
 	}
 
 	// http://twig.sensiolabs.org/doc/functions/date.html

@@ -172,13 +172,39 @@ export class ExpressionParser {
 					expr = new ParserNode.ParserNodeFunctionCall(expr, arguments);
 				}
 			}
-			// Array access
+			// Array access/slicing
 			if (this.tokenReader.peek().value == '[') {
 				this.tokenReader.skip();
-				var key;
-				key = this.parseExpression();
-				this.tokenReader.expectAndMoveNext([']']);
-				expr = new ParserNode.ParserNodeArrayAccess(expr, key);
+				var parts = [];
+
+				// Slicing without first expression
+				if (this.tokenReader.peek().value == ':') {
+					this.tokenReader.skip();
+					parts.push(new ParserNode.ParserNodeLiteral(undefined));
+				}
+
+				parts.push(this.parseExpression());
+
+				// Slicing with at least first expression
+				if (this.tokenReader.peek().value == ':') {
+					this.tokenReader.skip();
+					if (parts.length != 1) throw (new Error("Unexpected ':' again"));
+					if (this.tokenReader.peek().value == ']') {
+						this.tokenReader.skip();
+						parts.push(new ParserNode.ParserNodeLiteral(undefined));
+					} else {
+						parts.push(this.parseExpression());
+						this.tokenReader.expectAndMoveNext([']']);
+					}
+				} else {
+					this.tokenReader.expectAndMoveNext([']']);
+				}
+
+				if (parts.length == 1) {
+					expr = new ParserNode.ParserNodeArrayAccess(expr, parts[0]);
+				} else {
+					expr = new ParserNode.ParserNodeArraySlice(expr, parts[0], parts[1]);
+				}
 			}
 			// Field access
 			if (this.tokenReader.peek().value == '.') {

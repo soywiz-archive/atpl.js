@@ -188,6 +188,18 @@ export class ParserNodeArrayAccess extends ParserNodeExpression {
 	}
 }
 
+export class ParserNodeArraySlice extends ParserNodeExpression {
+	type: string = 'ParserNodeArraySlice';
+
+	constructor(public object: ParserNodeExpression, public left: ParserNodeExpression, public right: ParserNodeExpression) {
+		super();
+	}
+
+	generateCode() {
+		return 'runtimeContext.slice(' + this.object.generateCode() + ', ' + this.left.generateCode() + ', ' + this.right.generateCode() + ')';
+	}
+}
+
 export class ParserNodeFunctionCall extends ParserNodeExpression {
 	type: string = 'ParserNodeFunctionCall';
 

@@ -246,6 +246,16 @@ export class RuntimeContext {
 		return this.scope.set(key, value);
 	}
 
+	slice(object: any, left: any, right: any):any {
+		if (RuntimeUtils.isString(object)) {
+			return (<String>object).substr(left, right);
+		}
+		if (RuntimeUtils.isArray(object)) {
+			return (<any[]>object).slice(left, right);
+		}
+		return undefined;
+	}
+
 	access(object: any, key: any) {
 		if (object === undefined || object === null) return null;
 		if (object instanceof Function) object = object();

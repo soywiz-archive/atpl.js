@@ -69,5 +69,11 @@ export function empty(value: any) {
 }
 
 export function isString(obj) {
-  return toString.call(obj) == '[object String]';
+	if (empty(obj)) return false;
+	return toString.call(obj) == '[object String]';
+}
+
+export function isArray(obj) {
+	if (empty(obj)) return false;
+	return obj instanceof Array;
 }

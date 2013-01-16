@@ -1,0 +1,16 @@
+﻿=== TITLE
+dump circular
+
+=== INPUT
+{}
+
+=== EVAL
+test.input.a = {};
+test.input.b = {a: test.input.a};
+test.input.a.b = test.input.b;
+
+=== TEMPLATE:main
+{{ dump(a) }}
+
+=== OUTPUT
+{ b: { a: [Circular] } }

@@ -9,5 +9,5 @@ dump
 {{ dump()|raw }}
 
 === OUTPUT
-1{"test":2}
-{"a":1,"b":{"test":2}}
+1{ test: 2 }
+{ a: 1, b: { test: 2 } }

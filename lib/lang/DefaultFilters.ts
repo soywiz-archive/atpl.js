@@ -59,7 +59,7 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/json_encode.html
 	static json_encode(value: any) {
-		return JSON.stringify(value);
+		return RuntimeUtils.json_encode_circular(value);
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/keys.html

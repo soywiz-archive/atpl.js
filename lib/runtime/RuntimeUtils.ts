@@ -1,5 +1,6 @@
 ﻿export import DateFormat = module('./lib/DateFormat');
 export import Format = module('./lib/Format');
+import util = module('util');
 
 export function capitalize(str: string) {
 	str = String(str);
@@ -76,4 +77,36 @@ export function isString(obj) {
 export function isArray(obj) {
 	if (empty(obj)) return false;
 	return obj instanceof Array;
+}
+
+export function isObject(obj) {
+	return typeof obj === 'object';
+}
+
+export function inspect_json(obj) {
+	return util.inspect(obj, false, null, false);
+}
+
+export function json_encode_circular(obj, already_encoded: any[] = undefined) {
+	if (already_encoded === undefined) already_encoded = [];
+	if (already_encoded.indexOf(obj) != -1) return 'null';
+	var ret = '';
+	if (isArray(obj)) {
+		already_encoded.push(obj);
+		for (var n = 0; n < obj.length; n++) {
+			if (n != 0) ret += ',';
+			ret += json_encode_circular(obj[n], already_encoded);
+		}
+		ret = '[' + ret + ']';
+	} else if (isObject(obj)) {
+		already_encoded.push(obj);
+		for (var key in obj) {
+			if (ret.length != 0) ret += ',';
+			ret += JSON.stringify(key) + ':' + json_encode_circular(obj[key], already_encoded);
+		}
+		ret = '{' + ret + '}';
+	} else {
+		ret = JSON.stringify(obj);
+	}
+	return ret;
 }

@@ -50,10 +50,10 @@ export class DefaultFunctions {
 	static dump(...objects: any[]) {
 		if (objects.length > 0) {
 			var result = '';
-			for (var n = 0; n < objects.length; n++) result += JSON.stringify(objects[n]);
+			for (var n = 0; n < objects.length; n++) result += RuntimeUtils.inspect_json(objects[n]);
 			return result;
 		} else {
-			return JSON.stringify(this.scope.getAll());
+			return RuntimeUtils.inspect_json(this.scope.getAll());
 		}
 	}
 

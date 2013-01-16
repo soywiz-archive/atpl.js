@@ -269,6 +269,12 @@
   <ItemGroup>
     <Content Include="test\fixtures\functions\dump.set" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\functions\dump_circular.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\functions\json_encode.set" />
+  </ItemGroup>
   <Target Name="BeforeBuild">
     <Message Text="Compiling TypeScript files" />
     <Message Text="Executing tsc$(TypeScriptSourceMap) @(TypeScriptCompile ->'&quot;%(fullpath)&quot;', ' ')" />

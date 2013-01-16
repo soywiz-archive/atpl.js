@@ -1,0 +1,11 @@
+﻿=== TITLE
+filter simple
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{% filter lower%}SOME TEXT{% endfilter %}
+
+=== OUTPUT
+some text

@@ -86,8 +86,20 @@ export class DefaultTags {
 	}
 
 	// FILTER
+	// http://twig.sensiolabs.org/doc/tags/filter.html
+	static endfilter = _flowexception;
 	static filter(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-		throw (new Error("Not implemented tag [filter]"));
+		// TODO: Simple filtering without multiple filters or additional parameters
+		var filterName = expressionTokenReader.read().value;
+
+		tokenParserContext.write('runtimeContext.write(runtimeContext.filter(' + JSON.stringify(filterName) + ', [runtimeContext.captureOutput(function() { ');
+
+		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+			'endfilter': (e) => {
+				tokenParserContext.write('})]));');
+				return true;
+			},
+		});
 	}
 
 	// FLUSH

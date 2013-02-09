@@ -267,6 +267,8 @@ export class ParserNodeBinaryOperation extends ParserNode {
 				return 'runtimeContext.range(' + this.left.generateCode() + ', ' + this.right.generateCode() + ')';
 			case '?:':
 				return 'runtimeContext.ternaryShortcut(' + this.left.generateCode() + ', ' + this.right.generateCode() + ')';
+			case '//':
+				return 'Math.floor(' + this.left.generateCode() + ' / ' + this.right.generateCode() + ')';
 			case '**':
 				return 'Math.pow(' + this.left.generateCode() + ',' + this.right.generateCode() + ')';
 			case 'not in':

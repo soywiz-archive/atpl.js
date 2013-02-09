@@ -8,8 +8,12 @@ operators
 {{ 1 + 2 ** 8 * 2 }}
 {{ not true }}
 {{ 1 is not defined }}
+{{ 1 / 2 }}
+{{ 10 // 3 }}
 
 === OUTPUT
 513
 false
 false
+0.5
+3

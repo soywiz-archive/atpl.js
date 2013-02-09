@@ -74,7 +74,7 @@ export class ExpressionParser {
 	}
 
 	parseMulDiv() {
-		return this._parseBinary('parseMulDiv', this.parsePow, ['*', '/', '%']);
+		return this._parseBinary('parseMulDiv', this.parsePow, ['*', '/', '//', '%']);
 	}
 
 	parsePow() {

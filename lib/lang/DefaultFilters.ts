@@ -26,8 +26,8 @@ export class DefaultFilters {
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/date_modify.html
-	static date_modify(value: string, modifier?) {
-		throw (new Error("Not implemented filter [date_modify]"));
+	static date_modify(value: any, modifier: any) {
+		return RuntimeUtils.strtotime(modifier, value);
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/default.html

@@ -1,0 +1,11 @@
+﻿=== TITLE
+date_modify filter
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ 1355661966|date_modify('+1day')|date('d-m-Y') }}
+
+=== OUTPUT
+17-12-2012

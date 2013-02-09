@@ -3,8 +3,8 @@
 // http://docs.python.org/reference/expressions.html#summary
 // https://developer.mozilla.org/en/JavaScript/Reference/Operators/Operator_Precedence
 
-export import ParserNode = module('./ParserNode');
-export import TokenReader = module('../lexer/TokenReader');
+import ParserNode = module('./ParserNode');
+import TokenReader = module('../lexer/TokenReader');
 
 export class ExpressionParser {
 	constructor(public tokenReader: TokenReader.TokenReader) {

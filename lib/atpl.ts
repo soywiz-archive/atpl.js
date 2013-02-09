@@ -1,7 +1,7 @@
 ﻿///<reference path='imports.d.ts'/>
 ///<reference path='TemplateProvider.ts'/>
 
-export import TemplateParser = module('./parser/TemplateParser');
+import TemplateParser = module('./parser/TemplateParser');
 import TemplateProvider = module('./TemplateProvider');
 import LanguageContext = module('./LanguageContext');
 import Default = module('./lang/Default');

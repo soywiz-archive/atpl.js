@@ -1,7 +1,11 @@
 ﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
 
 export class DefaultFilters {
-	// http://twig.sensiolabs.org/doc/filters/abs.html
+	/**
+	 * Filter that obtains the absolute value of a number.
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/abs.html
+	 */
 	static abs(value: number) {
 		return Math.abs(value);
 	}

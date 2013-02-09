@@ -1,6 +1,6 @@
 ///<reference path='../imports.d.ts'/>
 
-export import StringReader = module('./StringReader');
+import StringReader = module('./StringReader');
 import utils = module('../utils');
 
 export interface Token {
@@ -8,7 +8,6 @@ export interface Token {
 	value: any;
 	rawValue: any;
 }
-
 
 export class ExpressionTokenizer {
 	constructor(public stringReader: StringReader.StringReader) {

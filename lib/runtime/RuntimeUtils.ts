@@ -1,5 +1,5 @@
-﻿export import DateFormat = module('./lib/DateFormat');
-export import Format = module('./lib/Format');
+﻿import DateFormat = module('./lib/DateFormat');
+import Format = module('./lib/Format');
 import util = module('util');
 
 export function capitalize(str: string) {

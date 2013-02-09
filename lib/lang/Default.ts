@@ -2,7 +2,7 @@
 import DefaultFunctions = module('./DefaultFunctions');
 import DefaultFilters = module('./DefaultFilters');
 import DefaultTests = module('./DefaultTests');
-export import LanguageContext = module('../LanguageContext');
+import LanguageContext = module('../LanguageContext');
 
 export function register(languageContext: LanguageContext.LanguageContext): LanguageContext.LanguageContext {
 	languageContext.registerTags(DefaultTags.DefaultTags);

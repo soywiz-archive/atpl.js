@@ -1,13 +1,13 @@
 ///<reference path='../imports.d.ts'/>
 
-export import TokenReader          = module('../lexer/TokenReader');
-export import _TemplateTokenizer   = module('../lexer/TemplateTokenizer');
-export import TemplateProvider   = module('../TemplateProvider');
-export import RuntimeContext      = module('../runtime/RuntimeContext');
-export import _FlowException       = module('./FlowException');
-export import _TokenParserContext  = module('./TokenParserContext');
-export import _ExpressionParser    = module('./ExpressionParser');
-export import LanguageContext = module('../LanguageContext');
+import TokenReader          = module('../lexer/TokenReader');
+import _TemplateTokenizer   = module('../lexer/TemplateTokenizer');
+import TemplateProvider   = module('../TemplateProvider');
+import RuntimeContext      = module('../runtime/RuntimeContext');
+import _FlowException       = module('./FlowException');
+import _TokenParserContext = module('./TokenParserContext');
+import _ExpressionParser    = module('./ExpressionParser');
+import LanguageContext = module('../LanguageContext');
 
 var TemplateTokenizer = _TemplateTokenizer.TemplateTokenizer;
 var TokenParserContext = _TokenParserContext.TokenParserContext;
@@ -227,4 +227,3 @@ export class TemplateParser {
 		throw(new Error("Invalid block type '" + blockTypeToken.value + "'"));
 	}
 }
-

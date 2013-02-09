@@ -65,5 +65,4 @@ export class TemplateTokenizer {
 		//console.log(tokens);
 		return tokens;
 	};
-
 }

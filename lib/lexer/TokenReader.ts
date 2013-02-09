@@ -1,6 +1,6 @@
 ///<reference path='../imports.d.ts'/>
 
-export import ExpressionTokenizer = module('./ExpressionTokenizer');
+import ExpressionTokenizer = module('./ExpressionTokenizer');
 
 export class TokenReader {
 	length: number;

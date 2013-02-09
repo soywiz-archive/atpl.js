@@ -1,7 +1,7 @@
 ///<reference path='../imports.d.ts'/>
 
 import RuntimeUtils = module('./RuntimeUtils');
-export import LanguageContext = module('../LanguageContext');
+import LanguageContext = module('../LanguageContext');
 import Scope = module('./Scope');
 
 export class RuntimeContext {

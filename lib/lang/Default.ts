@@ -1,4 +1,6 @@
-﻿import DefaultTags = module('./DefaultTags');
+﻿///<reference path='../imports.d.ts'/>
+
+import DefaultTags = module('./DefaultTags');
 import DefaultFunctions = module('./DefaultFunctions');
 import DefaultFilters = module('./DefaultFilters');
 import DefaultTests = module('./DefaultTests');

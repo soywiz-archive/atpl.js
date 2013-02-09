@@ -1,17 +1,4 @@
 @echo off
 
-GOTO start
-
-:add_test
-SET TESTS=%TESTS% "%1"
-EXIT /B
-
-:start
-
-SET TESTS=
-FOR %%X IN (test\*.js) DO CALL :add_test %%X
-
-REM echo %TESTS%
-REM SET REPORTER=spec
 SET REPORTER=dot
-.\node_modules\.bin\mocha --ui exports --globals name --reporter %REPORTER% %TESTS% -g ".*%1.*"
+.\node_modules\.bin\mocha --ui exports --globals name --reporter %REPORTER% -g ".*%1.*"

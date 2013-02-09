@@ -46,7 +46,7 @@ export function random(min: number = 0, max: number = 2147483647): number {
 	return Math.round(Math.random() * (max - min)) + min;
 }
 
-export function sprintf() {
+export function sprintf(..._arguments: any[]) {
 	return Format.sprintf.apply(null, arguments);
 }
 

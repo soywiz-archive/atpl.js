@@ -1,5 +1,7 @@
-var assert = require('assert');
-var fs = require('fs');
+///<reference path='./imports.d.ts'/>
+
+import assert = module('assert');
+import fs = module('fs');
 
 var TemplateParser         = require('../lib/parser/TemplateParser.js').TemplateParser;
 var MemoryTemplateProvider = require('../lib/TemplateProvider.js').MemoryTemplateProvider;
@@ -8,8 +10,6 @@ var TemplateConfig = require('../lib/TemplateConfig.js').TemplateConfig;
 var RuntimeContext = require('../lib/runtime/RuntimeContext.js').RuntimeContext;
 var RuntimeUtils = require('../lib/runtime/RuntimeUtils.js');
 var Default = require('../lib/lang/Default.js');
-
-module.exports = {};
 
 function handleSet(name, data) {
 	var parts = data.split('===');
@@ -58,7 +58,7 @@ function handleSet(name, data) {
 				templateParser.compileAndRenderToString('main', test.input).trim().replace(/\r\n/g, '\n'),
 				test.expected.trim().replace(/\r\n/g, '\n')
 			);
-			if (test.exception !== undefined) assert.fail('Excepting exception "' + test.exception + '"');
+			if (test.exception !== undefined) (<any>assert.fail)('Excepting exception "' + test.exception + '"');
 		} catch (e) {
 			if (test.exception === undefined) {
 				console.log(test);

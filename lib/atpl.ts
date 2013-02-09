@@ -1,5 +1,4 @@
 ﻿///<reference path='imports.d.ts'/>
-///<reference path='TemplateProvider.ts'/>
 
 import TemplateParser = module('./parser/TemplateParser');
 import TemplateProvider = module('./TemplateProvider');
@@ -114,7 +113,7 @@ export function internalCompileString(content: string, options: IOptions) {
 }
 
 
-export function express2Compile(templateString: string, options: any): (params: any) => string {
+export function express2Compile(templateString: string, options?: any): (params: any) => string {
 	options = options || {};
 	if (options.settings === undefined) options.settings = {};
 	return internalCompileString(templateString, options.settings['atpl options']);

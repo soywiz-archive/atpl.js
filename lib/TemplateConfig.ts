@@ -1,3 +1,5 @@
+///<reference path='imports.d.ts'/>
+
 export class TemplateConfig {
 	constructor(public cache: bool = true) {
 	}

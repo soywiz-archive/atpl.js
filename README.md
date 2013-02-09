@@ -46,6 +46,7 @@ Supported syntax:
  * Tests (all twig tests but 'constant')
  * Tags (all twig tags but 'embed', 'filter', 'flush', 'use', 'raw', 'sandbox', 'spaceless')
  * value in array
+ * value in string
  * macro support (macro+import+from)
 
 ```

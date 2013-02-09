@@ -1,6 +1,6 @@
 ///<reference path='../imports.d.ts'/>
 
-import TokenReader          = module('../lexer/TokenReader');
+import TokenReader = module('../lexer/TokenReader');
 import _TemplateTokenizer   = module('../lexer/TemplateTokenizer');
 import TemplateProvider   = module('../TemplateProvider');
 import RuntimeContext      = module('../runtime/RuntimeContext');
@@ -186,7 +186,12 @@ export class TemplateParser {
 					tokenParserContext.write(
 						'runtimeContext.write(' + JSON.stringify(String(item.value)) + ');'
 					);
-				break;
+					break;
+				case 'trimSpacesAfter':
+				case 'trimSpacesBefore':
+					item = tokenReader.read();
+					tokenParserContext.write('runtimeContext.trimSpaces();');
+					break;
 				case 'expression':
 					item = tokenReader.read();
 					// Propagate the "not done".

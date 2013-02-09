@@ -1,0 +1,24 @@
+﻿=== TITLE
+whitespace control
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{% set value = 'no spaces' %}
+<li>    {{- value }}    </li>
+<li>    {{ value -}}    </li>
+<li>    {{- value -}}    </li>
+[
+{% set value = 'no spaces' %}
+{#- No leading/trailing whitespace -#}
+{%- if true -%}
+	{{- value -}}
+{%- endif -%}
+]
+
+=== OUTPUT
+<li>no spaces    </li>
+<li>    no spaces</li>
+<li>no spaces</li>
+[no spaces]

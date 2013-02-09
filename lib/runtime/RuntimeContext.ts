@@ -10,6 +10,7 @@ export class RuntimeContext {
 	currentAutoescape: any = true;
 	defaultAutoescape: any = true;
 	currentBlockName: string = 'none';
+	removeFollowingSpaces: bool = false;
 
 	LeafTemplate: any;
 	CurrentTemplate: any;
@@ -56,8 +57,17 @@ export class RuntimeContext {
 		}
 	}
 
-	write(text: any) {
+	trimSpaces() {
+		this.output = this.output.replace(/\s+$/, '');
+		this.removeFollowingSpaces = true;
+	}
+
+	write(text: string) {
 		if (text === undefined || text === null) return;
+		if (this.removeFollowingSpaces) {
+			text = text.replace(/^\s+/, '');
+			this.removeFollowingSpaces = (text.match(/^\s+$/) != null);
+		}
 		this.output += text;
 	}
 

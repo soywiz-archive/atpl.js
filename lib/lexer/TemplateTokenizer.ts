@@ -13,14 +13,15 @@ export class TemplateTokenizer {
 		this.stringReader = new StringReader.StringReader(this.string);
 
 		var tokens = [];
-		var regExp = /\{[\{%#]/;
-	
-		var emitToken = function(type, value) {
+		var regExp = /\{[\{%#]-?/;
+
+		var emitToken = function(type, value?, params?) {
 			if (type == 'text' && value == '') return;
 
 			tokens.push({
 				type  : type,
-				value : value,
+				value: value,
+				params: params,
 			});
 		};
 	
@@ -33,17 +34,28 @@ export class TemplateTokenizer {
 			// At least one more tag.
 			else {
 				emitToken('text', this.stringReader.readChars(openMatch.position));
-				var openChars = this.stringReader.readChars(openMatch.length);
+				var openChars3 = this.stringReader.readChars(openMatch.length);
+				var openChars = openChars3.substr(0, 2);
+				var removeSpacesBefore = (openChars3.substr(2, 1) == '-');
+				var removeSpacesAfter;
+
+				if (removeSpacesBefore) emitToken('trimSpacesBefore');
+
+				//if (openChars.length == 3)
 				switch (openChars) {
 					// A comment.
 					case '{#':
-						var closeMatch = this.stringReader.findRegexp(/#}/);
+						var closeMatch = this.stringReader.findRegexp(/\-?#}/);
 						if (closeMatch.position === null) throw(new Error("Comment not closed!"));
 						this.stringReader.skipChars(closeMatch.position + closeMatch.length);
+						removeSpacesAfter = (closeMatch.length == 3);
 					break;
 					case '{{':
 					case '{%':
 						var expressionTokens = (new ExpressionTokenizer.ExpressionTokenizer(this.stringReader)).tokenize();
+						var peekMinus = this.stringReader.peekChars(1);
+						if (peekMinus == '-') this.stringReader.skipChars(1);
+						removeSpacesAfter = (peekMinus == '-');
 						var closeChars = this.stringReader.readChars(2);
 						if (
 							(openChars == '{{' && closeChars != '}}') ||
@@ -60,6 +72,8 @@ export class TemplateTokenizer {
 					default:
 						throw(new Error('Unknown open type "' + openChars + '"!'));
 				}
+
+				if (removeSpacesAfter) emitToken('trimSpacesAfter');
 			}
 		}
 		//console.log(tokens);

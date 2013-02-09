@@ -42,11 +42,9 @@ export class ExpressionTokenizer {
 		var end = false;
 
 		while (!end && this.stringReader.hasMore()) {
-			switch (this.stringReader.peekChars(2)) {
-				case '%}':
-				case '}}':
-					end = true;
-					continue;
+			if (this.stringReader.findRegexp(/^\-?[%\}]\}/).position == 0) {
+				end = true;
+				continue;
 			}
 			var currentChar = this.stringReader.peekChars(1);
 			//console.log(currentChar);

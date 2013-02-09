@@ -19,11 +19,11 @@ export class TokenReader {
 		return this.tokens.length - this.position;
 	}
 
-	peek(): ExpressionTokenizer.Token {
-		if (this.position >= this.length) {
+	peek(offset: number = 0): ExpressionTokenizer.Token {
+		if (this.position + offset >= this.length) {
 			return { type: 'eof', value: null, rawValue: null };
 		}
-		return this.tokens[this.position];
+		return this.tokens[this.position + offset];
 	}
 
 	skip(count: number = 1): void {
@@ -42,6 +42,23 @@ export class TokenReader {
 			this.skip(1);
 			return peekValue;
 		}
+		return undefined;
+	}
+
+	checkAndMoveNextMultiToken(values: string[]): string {
+		var peekValue1 = this.peek(0).value;
+		var peekValue2 = peekValue1 + ' ' + this.peek(1).value;
+
+		if (values.indexOf(peekValue2) != -1) {
+			this.skip(2);
+			return peekValue2;
+		}
+
+		if (values.indexOf(peekValue1) != -1) {
+			this.skip(1);
+			return peekValue1;
+		}
+
 		return undefined;
 	}
 

@@ -143,8 +143,9 @@ export class TemplateParser {
 			}
 
 			//console.log(output);
+			//console.log(content);
 
-			this.registryString[content] = { output : output, class : CurrentTemplate };
+			this.registryString[content] = { 'output' : output, 'class' : CurrentTemplate };
 		}
 	
 		return this.registryString[content];

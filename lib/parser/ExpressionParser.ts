@@ -66,7 +66,7 @@ export class ExpressionParser {
 	//}
 
 	parseCompare() {
-		return this._parseBinary('parseCompare', this.parseAddSub, ['==', '!=', '>=', '<=', '>', '<', '===', '!==', 'is', 'in']);
+		return this._parseBinary('parseCompare', this.parseAddSub, ['==', '!=', '>=', '<=', '>', '<', '===', '!==', 'is not', 'not in', 'is', 'in']);
 	}
 
 	parseAddSub() {
@@ -260,18 +260,13 @@ export class ExpressionParser {
 		throw(new Error("Unexpected token : " + JSON.stringify(token.value) + " type:'" + token.type + "'"));
 	}
 
-	_parseBinary(levelName, nextParseLevel, validOperators) {
+	_parseBinary(levelName: string, nextParseLevel: () => void, validOperators: string[]) {
 		var leftNode = nextParseLevel.apply(this);
 		var rightNode;
 		var currentOperator;
 
 		while (this.tokenReader.hasMore()) {
-			if (validOperators.indexOf(this.tokenReader.peek().value) != -1) {
-				currentOperator = this.tokenReader.peek().value;
-				this.tokenReader.skip();
-			} else {
-				break;
-			}
+			if ((currentOperator = this.tokenReader.checkAndMoveNextMultiToken(validOperators)) === undefined) break;
 
 			rightNode = nextParseLevel.apply(this);
 			leftNode = new ParserNode.ParserNodeBinaryOperation(currentOperator, leftNode, rightNode);

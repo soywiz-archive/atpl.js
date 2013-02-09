@@ -269,9 +269,14 @@ export class ParserNodeBinaryOperation extends ParserNode {
 				return 'runtimeContext.ternaryShortcut(' + this.left.generateCode() + ', ' + this.right.generateCode() + ')';
 			case '**':
 				return 'Math.pow(' + this.left.generateCode() + ',' + this.right.generateCode() + ')';
+			case 'not in':
 			case 'in':
-				return 'runtimeContext.inArray(' + this.left.generateCode() + ',' + this.right.generateCode() + ')';
+				var ret = 'runtimeContext.inArray(' + this.left.generateCode() + ',' + this.right.generateCode() + ')';
+				if ((this.operator == 'not in')) ret = '!(' + ret + ')';
+
+				return ret;
 			case 'is':
+			case 'is not':
 				var ret = '';
 				var left = this.left;
 				var right = this.right;
@@ -289,15 +294,7 @@ export class ParserNodeBinaryOperation extends ParserNode {
 					throw (new Error("ParserNodeBinaryOperation: Not implemented 'is' operator for tests with " + JSON.stringify(right)));
 				}
 
-				if (this.right instanceof ParserNodeUnaryOperation) {
-					switch (this.right.operator) {
-						case 'not':
-							ret = '!(' + ret + ')';
-						break;
-						default:
-							throw (new Error("ParserNodeBinaryOperation: Not implemented 'is' operator for tests with unary operator '" + this.right.operator + "'"));
-					}
-				}
+				if (this.operator == 'is not') ret = '!(' + ret + ')';
 
 				return ret;
 			default:

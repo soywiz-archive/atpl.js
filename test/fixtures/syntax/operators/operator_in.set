@@ -1,0 +1,13 @@
+﻿=== TITLE
+operator in
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ 2 in [1, 2, 3] }}
+{{ 0 not in [1, 2, 3] }}
+
+=== OUTPUT
+true
+true

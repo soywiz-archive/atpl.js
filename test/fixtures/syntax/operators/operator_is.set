@@ -1,0 +1,13 @@
+﻿=== TITLE
+operator is
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ 3 is sameas(3) }}
+{{ 3 is not sameas(3) }}
+
+=== OUTPUT
+true
+false

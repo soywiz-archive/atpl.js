@@ -1,0 +1,21 @@
+﻿=== TITLE
+is empty
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ 1 is empty }}
+{{ 0 is empty }}
+{{ false is empty }}
+{{ null is empty }}
+{{ '' is empty }}
+{{ [] is empty }}
+
+=== OUTPUT
+false
+false
+true
+true
+true
+true

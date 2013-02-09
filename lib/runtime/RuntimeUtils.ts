@@ -63,8 +63,17 @@ export function defined(value: any) {
 	return (value !== null) && (value !== undefined);
 }
 
+export function $default(value: any, default_value: any) {
+	if (value === undefined || value === null) return default_value;
+	return value;
+}
+
 export function empty(value: any) {
-	if (!defined(value)) return true;
+	if (value === null || value === undefined || value === false) return true;
+	//if (isArray(value)) return (value.length == 0);
+	//if (value instanceof String) return (value.length == 0);
+	if (value instanceof Array) return (value.length == 0);
+	if (toString.call(value) == '[object String]') return (value.length == 0);
 	if (value.prototype == Array.prototype || value.prototype == String.prototype) return (value.length == 0);
 	return false;
 }

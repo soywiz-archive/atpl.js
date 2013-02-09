@@ -32,8 +32,7 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/default.html
 	static $default(value: string, default_value: any) {
-		if (RuntimeUtils.empty(value)) return default_value;
-		return value;
+		return RuntimeUtils.$default(value, default_value);
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/escape.html

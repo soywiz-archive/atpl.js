@@ -158,8 +158,9 @@ export class DefaultFilters {
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/split.html
-	static split(value: any, delimiter: string, limit: number) {
-		throw (new Error("Not implemented filter [split]"));
+	static split(_value: any, delimiter: string, limit: number) {
+		var value = RuntimeUtils.toString(_value);
+		return RuntimeUtils.split(value, delimiter, limit);
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/striptags.html

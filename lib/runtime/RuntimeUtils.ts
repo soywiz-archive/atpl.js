@@ -26,6 +26,21 @@ export function strip_tags(input: string, allowed?: string): string {
 	return _strip_tags.strip_tags(input, allowed);
 }
 
+export function split(value: string, delimiter: string, limit?: number): string[]{
+	if (delimiter == '') {
+		if (limit === undefined) limit = 1;
+		var ret = [];
+		for (var n = 0; n < value.length; n += limit) ret.push(value.substr(n, limit));
+		return ret;
+	} else {
+		if (limit === undefined) limit = 9999999999;
+		var extraArray = value.split(delimiter).slice(limit - 1);
+		var parts = value.split(delimiter, limit - 1);
+		if (extraArray.length) parts.push(extraArray.join(delimiter));
+		return parts;
+	}
+}
+
 export function strtotime(text: string, now?: any): any {
 	return _strtotime.strtotime(text, now);
 }

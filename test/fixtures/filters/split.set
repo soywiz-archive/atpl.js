@@ -1,0 +1,17 @@
+﻿=== TITLE
+split filter
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ "one,two,three"|split(',')|raw }}
+{{ "one,two,three,four,five"|split(',', 3)|raw }}
+{{ "123"|split('')|raw }}
+{{ "aabbcc"|split('', 2)|raw }}
+
+=== OUTPUT
+["one","two","three"]
+["one","two","three,four,five"]
+["1","2","3"]
+["aa","bb","cc"]

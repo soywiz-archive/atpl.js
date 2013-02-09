@@ -2,12 +2,24 @@
 first and last filters
 
 === INPUT
-{ "array" : [ 1, 2, 3, 4 ] }
+{
+	"array" : [ 1, 2, 3, 4 ],
+	"object" : { "a": "n", "b": 2, "c": 3, "d": "m" },
+	"string" : "ABCDEF"
+}
 
 === TEMPLATE:main
 {{ array|first }}
 {{ array|last }}
+{{ object|first }}
+{{ object|last }}
+{{ string|first }}
+{{ string|last }}
 
 === OUTPUT
 1
 4
+n
+m
+A
+F

@@ -81,16 +81,20 @@ export class DefaultFilters {
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/first.html
-	static first(value: any[]) {
+	static first(value: any) {
 		if (!RuntimeUtils.defined(value)) return undefined;
 		if (RuntimeUtils.isArray(value)) return value[0];
+		if (RuntimeUtils.isString(value)) return value.substr(0, 1);
+		if (RuntimeUtils.isObject(value)) for (var k in value) return value[k];
 		return undefined;
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/last.html
-	static last(value: any[]) {
+	static last(value: any) {
 		if (!RuntimeUtils.defined(value)) return undefined;
 		if (RuntimeUtils.isArray(value)) return value[value.length - 1];
+		if (RuntimeUtils.isString(value)) return value.substr(-1, 1);
+		if (RuntimeUtils.isObject(value)) { var last; for (var k in value) last = value[k]; return last; }
 		return undefined;
 	}
 

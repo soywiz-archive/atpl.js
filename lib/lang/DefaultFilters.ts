@@ -144,9 +144,9 @@ export class DefaultFilters {
 		throw (new Error("Not implemented filter [split]"));
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/strip_tags.html
-	static strip_tags(value: any) {
-		throw (new Error("Not implemented filter [strip_tags]"));
+	// http://twig.sensiolabs.org/doc/filters/striptags.html
+	static striptags(value: any) {
+		return RuntimeUtils.strip_tags(value);
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/title.html

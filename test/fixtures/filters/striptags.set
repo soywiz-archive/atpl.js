@@ -1,0 +1,11 @@
+﻿=== TITLE
+striptags filter
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ '<strong>this is a<br /> <em>test</em></strong>'|striptags }}
+
+=== OUTPUT
+this is a test

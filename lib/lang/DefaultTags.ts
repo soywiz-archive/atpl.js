@@ -195,10 +195,12 @@ export class DefaultTags {
 		tokenParserContext.write('runtimeContext.include(' + expressionNode.generateCode() + ');');
 	}
 
-	// RAW
+	// RAW/VERBATIM
+	// http://twig.sensiolabs.org/doc/tags/verbatim.html
 	static raw(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-		throw (new Error("Not implemented tag [raw]"));
+		throw (new Error("Not implemented tag [raw/verbatim]"));
 	}
+	verbatim = DefaultTags.raw;
 
 	// SANDBOX
 	static sandbox(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {

@@ -114,18 +114,22 @@ export class DefaultFilters {
 	// http://twig.sensiolabs.org/doc/filters/reverse.html
 	static reverse(value: any) {
 		if (!RuntimeUtils.defined(value)) return value;
-		if (value instanceof Array) {
-			return value.reverse();
+		if (value instanceof Array) return value.reverse();
+		if (RuntimeUtils.isNumber(value)) value = value.toString();
+		if (RuntimeUtils.isString(value)) {
+			var ret = '';
+			for (var n = 0; n < value.length; n++) ret += value.charAt(value.length - n - 1);
+			return ret;
 		}
-		else if (value instanceof String) {
-			throw (new Error("Not implemented filter [reverse]"));
-		}
+		//if (typeof value == 'string')
+		throw (new Error("Not implemented filter [reverse] with value type [" + (typeof value) + ']'));
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/slice.html
 	static slice(value: any, start, length, preserve_keys?) {
-		if (value instanceof Array) return value.slice(start, length);
-		if (value instanceof String) return value.substr(start, length);
+		if (RuntimeUtils.isArray(value)) return (<any[]>value).slice(start, start + length);
+		if (RuntimeUtils.isNumber(value)) value = value.toString();
+		if (RuntimeUtils.isString(value)) return (<string>value).substr(start, length);
 		return value;
 	}
 

@@ -1,0 +1,15 @@
+﻿=== TITLE
+slice filter
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ [1,2,3,4]|slice(1, 2) }}
+{{ 'abcde'|slice(1, 2) }}
+{{ 1234|slice(1, 2) }}
+
+=== OUTPUT
+[2,3]
+bc
+23

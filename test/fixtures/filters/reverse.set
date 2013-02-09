@@ -1,0 +1,15 @@
+﻿=== TITLE
+reverse filter
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ [1,2,3,4]|reverse }}
+{{ 'abcde'|reverse }}
+{{ 1234|reverse }}
+
+=== OUTPUT
+[4,3,2,1]
+edcba
+4321

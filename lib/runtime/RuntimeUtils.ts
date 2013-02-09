@@ -83,9 +83,14 @@ export function empty(value: any) {
 	return false;
 }
 
+export function isNumber(obj) {
+	return typeof obj == 'number';
+}
+
 export function isString(obj) {
-	if (empty(obj)) return false;
-	return toString.call(obj) == '[object String]';
+	//if (empty(obj)) return false;
+	//return toString.call(obj) == '[object String]';
+	return typeof obj == 'string';
 }
 
 export function isArray(obj) {

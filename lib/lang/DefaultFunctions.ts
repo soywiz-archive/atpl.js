@@ -60,7 +60,8 @@ export class DefaultFunctions {
 
 	// http://twig.sensiolabs.org/doc/functions/date.html
 	static date(date?, timezone?) {
-		throw (new Error("Not implemented function [date]"));
+		if (timezone !== undefined) throw (new Error("Not implemented function [date] with [timezone] parameter"));
+		return RuntimeUtils.strtotime(date);
 	}
 
 	// http://twig.sensiolabs.org/doc/functions/template_from_string.html

@@ -1,5 +1,6 @@
 ﻿import DateFormat = module('./lib/DateFormat');
 import Format = module('./lib/Format');
+import _strtotime = module('./lib/strtotime');
 import util = module('util');
 
 export function capitalize(str: string) {
@@ -18,6 +19,10 @@ export function range(from: any, to: any, step: number = 1): any[] {
 		return rangeString(String(from), String(to), step);
 	}
 	return rangeNumbers(from, to, step);
+}
+
+export function strtotime(text: string, now?: any): any {
+	return _strtotime.strtotime(text, now);
 }
 
 export function rangeNumbers(from: any, to: any, step: any = 1): number[] {

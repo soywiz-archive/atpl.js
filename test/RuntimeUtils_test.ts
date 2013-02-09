@@ -12,4 +12,8 @@ describe('RuntimeUtils', () => {
 	it('date', () => {
 		assert.equal(RuntimeUtils.date('d-m-Y', new Date(2010, 3 - 1, 1)), '01-03-2010');
 	});
+	it('strtotime', () => {
+		assert.equal(RuntimeUtils.date('d-m-Y', RuntimeUtils.strtotime('+2days', new Date(2010, 3 - 1, 1))), '03-03-2010');
+		assert.equal(RuntimeUtils.date('d-m-Y', RuntimeUtils.strtotime('2013-02-09 + 2days')), '11-02-2013');
+	});
 });

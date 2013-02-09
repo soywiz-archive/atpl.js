@@ -1,0 +1,13 @@
+﻿=== TITLE
+date function
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ date('2013-02-09') < date('2013-02-09 +2days') }}
+{{ date('2013-02-12') < date('2013-02-09 +2days') }}
+
+=== OUTPUT
+true
+false

@@ -80,6 +80,20 @@ export class DefaultFilters {
 		return value.length;
 	}
 
+	// http://twig.sensiolabs.org/doc/filters/first.html
+	static first(value: any[]) {
+		if (!RuntimeUtils.defined(value)) return undefined;
+		if (RuntimeUtils.isArray(value)) return value[0];
+		return undefined;
+	}
+
+	// http://twig.sensiolabs.org/doc/filters/last.html
+	static last(value: any[]) {
+		if (!RuntimeUtils.defined(value)) return undefined;
+		if (RuntimeUtils.isArray(value)) return value[value.length - 1];
+		return undefined;
+	}
+
 	// http://twig.sensiolabs.org/doc/filters/lower.html
 	static lower(value: any) {
 		return String(value).toLowerCase();

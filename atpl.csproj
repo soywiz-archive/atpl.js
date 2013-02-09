@@ -56,6 +56,8 @@
     <Content Include="lib\lang\Default.ts" />
     <Content Include="lib\LanguageContext.ts" />
     <TypeScriptCompile Include="lib\TemplateConfig.ts" />
+    <Content Include="lib\runtime\lib\strip_tags.ts" />
+    <Content Include="lib\runtime\lib\strtotime.ts" />
     <Content Include="test\templates\base\base.html" />
     <Content Include="test\templates\base\simple_extends.html" />
     <Content Include="lib\atpl.ts" />
@@ -162,7 +164,7 @@
     <Content Include="test\fixtures\syntax\exceptions\start_tag.set" />
     <Content Include="test\fixtures\syntax\field_access.set" />
     <Content Include="test\fixtures\syntax\in_array.set" />
-    <Content Include="test\fixtures\syntax\operators.set" />
+    <Content Include="test\fixtures\syntax\operators\operators.set" />
     <Content Include="test\fixtures\syntax\range_letters.set" />
     <Content Include="test\fixtures\syntax\undefined_key.set" />
     <Content Include="test\fixtures\tags\autoescape\autoescape.set" />
@@ -283,6 +285,51 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="test\fixtures\tags\filter\filter_simple.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\in_string.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\whitespace_control.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\operators\operator_in.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\operators\operator_is.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tests\null.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tests\empty.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\functions\date.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\filters\reverse.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\filters\slice.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\filters\date_modify.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\filters\striptags.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\filters\first_last.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\spaceless\spaceless.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\filters\split.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\do\do.set" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptTarget>ES3</TypeScriptTarget>

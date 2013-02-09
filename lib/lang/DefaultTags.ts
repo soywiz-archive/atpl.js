@@ -77,7 +77,10 @@ export class DefaultTags {
 		tokenParserContext.write('runtimeContext.scope.set(' + JSON.stringify(nodeId.value) + ', ' + nodeValue.generateCode()  + ');');
 	}
 	static $do(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-		throw (new Error("Not implemented tag [do]"));
+		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+		checkNoMoreTokens(expressionTokenReader);
+
+		tokenParserContext.write(expressionNode.generateCode() + ';');
 	}
 
 	// EMBED

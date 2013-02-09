@@ -1,0 +1,18 @@
+﻿=== TITLE
+do tag
+
+=== INPUT
+{}
+
+=== EVAL
+test.input.executedDoTest = false;
+test.input.doTest = function() { test.input.executedDoTest = true; };
+
+=== EVAL_AFTER
+assert.equal(test.input.executedDoTest, true);
+
+=== TEMPLATE:main
+{% do 1 + 2 %}
+{% do doTest() %}
+
+=== OUTPUT

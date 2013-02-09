@@ -13,7 +13,7 @@ var Default = require('../lib/lang/Default.js');
 
 function handleSet(name, data) {
 	var parts = data.split('===');
-	var test = { title: 'untitled: ' + name, input: {}, expected: '', templates: {}, eval: undefined, exception: undefined };
+	var test = { title: 'untitled: ' + name, input: {}, expected: '', templates: {}, eval: undefined, eval_after: undefined, exception: undefined };
 	for (var n = 0; n < parts.length; n++) {
 		var part = parts[n].trim();
 		var token = /^([\w:]+)\s+([\S\s]*)$/igm.exec(part);
@@ -28,6 +28,7 @@ function handleSet(name, data) {
 				case 'input': test.input = JSON.parse(value); break;
 				case 'output': test.expected = value; break;
 				case 'eval': test.eval = value; break;
+				case 'eval_after': test.eval_after = value; break;
 				case 'exception': test.exception = value; break;
 				default: {
 					var pp = key.split(':');
@@ -59,6 +60,7 @@ function handleSet(name, data) {
 				test.expected.trim().replace(/\r\n/g, '\n')
 			);
 			if (test.exception !== undefined) (<any>assert.fail)('Excepting exception "' + test.exception + '"');
+			if (test.eval_after) eval(test.eval_after);
 		} catch (e) {
 			if (test.exception === undefined) {
 				console.log(test);

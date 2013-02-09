@@ -17,6 +17,7 @@ function handleSet(name, data) {
         templates: {
         },
         eval: undefined,
+        eval_after: undefined,
         exception: undefined
     };
     for(var n = 0; n < parts.length; n++) {
@@ -37,6 +38,9 @@ function handleSet(name, data) {
                     break;
                 case 'eval':
                     test.eval = value;
+                    break;
+                case 'eval_after':
+                    test.eval_after = value;
                     break;
                 case 'exception':
                     test.exception = value;
@@ -66,6 +70,9 @@ function handleSet(name, data) {
             assert.equal(templateParser.compileAndRenderToString('main', test.input).trim().replace(/\r\n/g, '\n'), test.expected.trim().replace(/\r\n/g, '\n'));
             if(test.exception !== undefined) {
                 (assert.fail)('Excepting exception "' + test.exception + '"');
+            }
+            if(test.eval_after) {
+                eval(test.eval_after);
             }
         } catch (e) {
             if(test.exception === undefined) {

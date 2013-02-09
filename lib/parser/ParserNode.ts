@@ -278,8 +278,8 @@ export class ParserNodeBinaryOperation extends ParserNode {
 			case 'is':
 			case 'is not':
 				var ret = '';
-				var left = this.left;
-				var right = this.right;
+				var left:ParserNodeExpression = this.left;
+				var right:ParserNodeExpression = this.right;
 
 				if (this.right instanceof ParserNodeUnaryOperation) {
 					right = this.right.right;
@@ -287,9 +287,11 @@ export class ParserNodeBinaryOperation extends ParserNode {
 
 				if (right instanceof ParserNodeFunctionCall) {
 					//throw (new Error("Not implemented ParserNodeFunctionCall"));
-					ret = 'runtimeContext.test(' + right.functionExpr.generateCode() + ', [' + left.generateCode() + ',' + right.arguments.generateCode() + '])';
+					ret = 'runtimeContext.test(' + (<ParserNodeFunctionCall>right).functionExpr.generateCode() + ', [' + left.generateCode() + ',' + (<ParserNodeFunctionCall>right).arguments.generateCode() + '])';
 				} else if (right instanceof ParserNodeIdentifier) {
-					ret = 'runtimeContext.test(' + JSON.stringify(right.value) + ', [' + left.generateCode() + '])';
+					ret = 'runtimeContext.test(' + JSON.stringify((<ParserNodeIdentifier>right).value) + ', [' + left.generateCode() + '])';
+				} else if (right instanceof ParserNodeLiteral && (<ParserNodeLiteral>right).value === null) {
+					ret = 'runtimeContext.test("null", [' + left.generateCode() + '])';
 				} else {
 					throw (new Error("ParserNodeBinaryOperation: Not implemented 'is' operator for tests with " + JSON.stringify(right)));
 				}

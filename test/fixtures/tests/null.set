@@ -1,0 +1,13 @@
+﻿=== TITLE
+null
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ 1 is null }}
+{{ null is null }}
+
+=== OUTPUT
+false
+true

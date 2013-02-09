@@ -272,6 +272,9 @@ export class RuntimeContext {
 
 	inArray(value: any, array: any) {
 		if (array instanceof Array) return array.indexOf(value) != -1;
+		if (RuntimeUtils.isString(value) && RuntimeUtils.isString(array)) {
+			return (<string>array).indexOf(<string>value) != -1;
+		}
 		return false;
 	}
 

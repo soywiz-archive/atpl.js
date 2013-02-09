@@ -80,30 +80,29 @@ export function $default(value: any, default_value: any) {
 
 export function empty(value: any) {
 	if (value === null || value === undefined || value === false) return true;
-	//if (isArray(value)) return (value.length == 0);
-	//if (value instanceof String) return (value.length == 0);
-	if (value instanceof Array) return (value.length == 0);
-	if (toString.call(value) == '[object String]') return (value.length == 0);
-	if (value.prototype == Array.prototype || value.prototype == String.prototype) return (value.length == 0);
+	if (isArray(value) || isString(value)) return (value.length == 0);
 	return false;
 }
 
-export function isNumber(obj) {
+export function isNumber(obj: any): bool {
 	return typeof obj == 'number';
 }
 
-export function isString(obj) {
-	//if (empty(obj)) return false;
-	//return toString.call(obj) == '[object String]';
+export function toString(obj: any): string {
+	if (!defined(obj)) return '';
+	return '' + obj;
+}
+
+export function isString(obj: any): bool {
 	return typeof obj == 'string';
 }
 
-export function isArray(obj) {
-	if (empty(obj)) return false;
+export function isArray(obj: any): bool {
+	if (!defined(obj)) return false;
 	return obj instanceof Array;
 }
 
-export function isObject(obj) {
+export function isObject(obj: any): bool {
 	return typeof obj === 'object';
 }
 

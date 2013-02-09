@@ -230,6 +230,7 @@ export class TemplateParser {
 			return blockHandler(blockType, this, tokenParserContext, templateTokenReader, expressionTokenReader);
 		}
 
-		throw(new Error("Invalid block type '" + blockTypeToken.value + "'"));
+		//throw (new Error("Invalid block type '" + blockTypeToken.value + "' just can handle " + JSON.stringify(Object.keys(this.languageContext.tags))));
+		throw (new Error("Invalid block type '" + blockTypeToken.value + "'"));
 	}
 }

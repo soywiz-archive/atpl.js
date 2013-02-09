@@ -203,8 +203,19 @@ export class DefaultTags {
 	}
 
 	// SPACELESS
+	// http://twig.sensiolabs.org/doc/tags/spaceless.html
+	static endspaceless = _flowexception;
 	static spaceless(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-		throw (new Error("Not implemented tag [spaceless]"));
+		checkNoMoreTokens(expressionTokenReader);
+
+		tokenParserContext.write('runtimeContext.write(runtimeContext.filter("spaceless", [runtimeContext.captureOutput(function() { ');
+
+		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+			'endspaceless': (e) => {
+				tokenParserContext.write('})]));');
+				return true;
+			},
+		});
 	}
 
 	// IF/ELSEIF/ELSE/ENDIF

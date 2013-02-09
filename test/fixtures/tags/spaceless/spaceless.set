@@ -1,0 +1,15 @@
+﻿=== TITLE
+spaceless tag
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{% spaceless %}
+    <div>
+        <strong>foo</strong>
+    </div>
+{% endspaceless %}
+
+=== OUTPUT
+<div><strong>foo</strong></div>

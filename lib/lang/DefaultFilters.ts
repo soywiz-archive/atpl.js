@@ -183,4 +183,8 @@ export class DefaultFilters {
 	static url_encode(value: any) {
 		throw (new Error("Not implemented filter [url_encode]"));
 	}
+
+	static spaceless(value: any) {
+		return RuntimeUtils.toString(value).replace(/>\s+</g, '><');
+	}
 }

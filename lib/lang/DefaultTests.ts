@@ -28,7 +28,8 @@ export class DefaultTests {
 
 	// http://twig.sensiolabs.org/doc/tests/iterable.html
 	static iterable(value: any) {
-		if (value instanceof Array) return true;
+		if (RuntimeUtils.isArray(value)) return true;
+		if (RuntimeUtils.isObject(value) && (value !== null)) return true;
 		return false;
 	}
 

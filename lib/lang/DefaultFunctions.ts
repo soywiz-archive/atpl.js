@@ -26,11 +26,13 @@ export class DefaultFunctions {
 
 	// http://twig.sensiolabs.org/doc/functions/random.html
 	static random(values: any) {
-		if (values === undefined || values === null) return RuntimeUtils.random();
-		if ((values.prototype == Array.prototype) || (values.prototype == String.prototype)) {
-			return values[Math.round(RuntimeUtils.random() * (values.length - 1))];
+		if (values === undefined || values === null) {
+			return RuntimeUtils.random();
+		} else if (RuntimeUtils.isArray(values) || RuntimeUtils.isString(values)) {
+			return values[RuntimeUtils.random(0, values.length)];
+		} else {
+			return RuntimeUtils.random(0, values);
 		}
-		return RuntimeUtils.random(0, values);
 	}
 
 	// http://twig.sensiolabs.org/doc/functions/attribute.html

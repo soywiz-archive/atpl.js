@@ -5,10 +5,16 @@ block
 {}
 
 === EVAL
-RuntimeUtils.random = function(min, max) { return 777; }
+RuntimeUtils.random = function(min, max) { if (min == undefined) return 777; return (777 % (max - min)) + min; }
 
 === TEMPLATE:main
+{{ random(['apple', 'orange', 'citrus']) }}
+{{ random('ABC') }}
 {{ random() }}
+{{ random(5) }}
 
 === OUTPUT
+apple
+A
 777
+2

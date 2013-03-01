@@ -4,6 +4,7 @@
 // https://developer.mozilla.org/en/JavaScript/Reference/Operators/Operator_Precedence
 
 import ParserNode = module('./ParserNode');
+import ExpressionTokenizer = module('../lexer/ExpressionTokenizer');
 import TokenReader = module('../lexer/TokenReader');
 
 export class ExpressionParser {
@@ -147,7 +148,40 @@ export class ExpressionParser {
 		// Numeric or string literal.
 		else if (token.type == 'number' || token.type == 'string') {
 			this.tokenReader.skip();
-			expr = new ParserNode.ParserNodeLiteral(token.value);
+
+			expr = null;
+
+			if (token.type == 'string' && token.rawValue.substr(0, 1) == '"') {
+				var regexp = /\#\{[^\}]*\}/g;
+				var parts2 = (<string>token.value).split(regexp);
+				var matches = (<string>token.value).match(regexp);
+				if (matches && parts2) {
+					//console.log(token.value);
+					//console.log(matches);
+					for (var n = 0; n < parts2.length; n++) {
+						var p1 = new ParserNode.ParserNodeLiteral(parts2[n]);
+						if (expr == null) {
+							expr = p1;
+						} else {
+							expr = new ParserNode.ParserNodeBinaryOperation('~', expr, p1);
+						}
+						if (n < matches.length) {
+							var expressionString = matches[n].substr(2, matches[n].length - 2 - 1);
+							expr = new ParserNode.ParserNodeBinaryOperation(
+								'~',
+								expr,
+								new ExpressionParser(new TokenReader.TokenReader(ExpressionTokenizer.ExpressionTokenizer.tokenizeString(expressionString))).parseExpression()
+							);
+						}
+					}
+					//console.log(parts);
+					//console.log(matches);
+				} 
+			}
+
+			if (expr == null) {
+				expr = new ParserNode.ParserNodeLiteral(token.value);
+			}
 		}
 		else {
 			expr = this.parseIdentifier();

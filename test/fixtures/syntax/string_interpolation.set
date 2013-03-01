@@ -1,0 +1,13 @@
+﻿=== TITLE
+string interpolation
+
+=== INPUT
+{ "data" : "rld" }
+
+=== TEMPLATE:main
+{{ "Hello #{ 'Wo' + data } #{ 1 + 2 }" }}
+{{ 'Hello #{ 1 + 2 }' }}
+
+=== OUTPUT
+Hello World 3
+Hello #{ 1 + 2 }

@@ -24,6 +24,10 @@ export function normalizePath(path) {
 	return retval;
 }
 
+export function quoteRegExp(str: string): string {
+	return (str + '').replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
+};
+
 export function pathIsInside(basePath, path) {
 	basePath = normalizePath(basePath) + '/';
 	path     = normalizePath(path) + '/';

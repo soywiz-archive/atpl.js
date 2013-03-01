@@ -1,0 +1,15 @@
+﻿=== TITLE
+trim
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+[{{ '  Hello World		'|trim }}]
+[{{ '.  Hello World		'|trim }}]
+[{{ '.  Hello World...""//'|trim('."/') }}]
+
+=== OUTPUT
+[Hello World]
+[.  Hello World]
+[  Hello World]

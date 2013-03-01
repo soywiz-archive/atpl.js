@@ -1,4 +1,5 @@
 ﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
+import utils = module('../utils');
 
 export class DefaultFilters {
 	/**
@@ -175,8 +176,17 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/trim.html
 	static trim(value: any, characters?: string) {
-		if (characters !== undefined) throw (new Error("Not implemented filter [trim] with special characters"));
-		return String(value).trim();
+		if (characters !== undefined) {
+			var regExpQuoted = '[' + utils.quoteRegExp(characters) + ']';
+			var regExpStart = new RegExp('^' + regExpQuoted + '+', '');
+			var regExpEnd = new RegExp('' + regExpQuoted + '+$', '');
+			return String(value)
+				.replace(regExpStart, '')
+				.replace(regExpEnd, '')
+			;
+		} else {
+			return String(value).trim();
+		}
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/upper.html

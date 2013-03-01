@@ -116,7 +116,32 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/number_format.html
 	static number_format(value: any, decimal: number = 0, decimal_point: string = '.', decimal_sep: string = ',') {
-		throw (new Error("Not implemented filter [number_format]"));
+		var precision = Math.pow(10, decimal);
+		var zeroPad = (decimal > 0) ? Array(decimal - 1).join('0') : '';
+		value = Math.round(value * precision) / precision;
+		//console.log('***************');
+		//console.log(value);
+		var valueString = String(value);
+		var partsString = valueString.split('.');
+		var integerString = String(partsString[0]);
+		var decimalString = String((partsString.length >= 2) ? partsString[1] : '0');
+		var paddedDecimalString = (decimalString + zeroPad).substr(0, decimal);
+		var outputString = '';
+		//console.log(integerString);
+		for (var n = integerString.length; n >= 0; n -= 3) {
+			//console.log(n);
+			if (n - 3 < 0) {
+				//console.log('  ' + (3 + (n - 3)));
+				outputString = integerString.substr(0, 3 + (n - 3)) + outputString;
+			} else {
+				outputString = integerString.substr(n - 3, 3) + outputString;
+			}
+			if (n - 3 > 0) outputString = decimal_sep + outputString;
+		}
+		if (decimal > 0) {
+			outputString += decimal_point + paddedDecimalString;
+		}
+		return outputString;
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/raw.html

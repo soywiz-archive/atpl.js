@@ -25,6 +25,8 @@
 
 	if (text instanceof Date) return text;
 
+	text = String(text);
+
 	// Unecessary spaces
 	text = text.trim()
 		.replace(/\s{2,}/g, ' ')
@@ -33,29 +35,7 @@
 
 	var parse;
 	var parsed;
-
-	if (text === 'now')
-		return now === null || isNaN(now) ? new Date().getTime() / 1000 | 0 : now | 0;
-	else if (!isNaN(parse = Date.parse(text)))
-		return parse / 1000 | 0;
-	if (text == 'now')
-		return new Date().getTime() / 1000; // Return seconds, not milli-seconds
-	else if (!isNaN(parsed = Date.parse(text)))
-		return parsed / 1000;
-
-	var match = text.match(/^(\d{2,4})-(\d{2})-(\d{2})(?:\s(\d{1,2}):(\d{2})(?::\d{2})?)?(?:\.(\d+)?)?$/);
-	if (match) {
-		var year = (<any>match[1] >= 0 && <any>match[1] <= 69) ? <any>(+match[1] + 2000) : <any>(match[1]);
-		return new Date(
-			year,
-			parseInt(match[2], 10) - 1,
-			(<any>match[3]),
-			(<any>match[4]) || 0,
-			(<any>match[5]) || 0,
-			(<any>match[6]) || 0,
-			(<any>match[7]) || 0
-		).getTime() / 1000;
-	}
+	var match;
 
 	var date;
 	if (now instanceof Date) {
@@ -65,23 +45,33 @@
 	} else {
 		date = new Date();
 	}
-	var days = {
-		'sun': 0,
-		'mon': 1,
-		'tue': 2,
-		'wed': 3,
-		'thu': 4,
-		'fri': 5,
-		'sat': 6
-	};
-	var ranges = {
-		'yea': 'FullYear',
-		'mon': 'Month',
-		'day': 'Date',
-		'hou': 'Hours',
-		'min': 'Minutes',
-		'sec': 'Seconds'
-	};
+
+	if (match = text.match(/^now\s*/i)) {
+		text = text.substr(match[0].length);
+		date = new Date();
+	}
+
+	if (!isNaN(parse = Date.parse(text))) {
+		date = new Date(parse);
+		text = '';
+	}
+
+	if (match = text.match(/^(\d{2,4})-(\d{2})-(\d{2})(?:\s(\d{1,2}):(\d{2})(?::\d{2})?)?(?:\.(\d+)?)?/)) {
+		text = text.substr(match[0].length);
+		var year = (<any>match[1] >= 0 && <any>match[1] <= 69) ? <any>(+match[1] + 2000) : <any>(match[1]);
+		date = new Date(
+			year,
+			parseInt(match[2], 10) - 1,
+			(<any>match[3]),
+			(<any>match[4]) || 0,
+			(<any>match[5]) || 0,
+			(<any>match[6]) || 0,
+			(<any>match[7]) || 0
+		);
+	}
+
+	var days = { 'sun': 0, 'mon': 1, 'tue': 2, 'wed': 3, 'thu': 4, 'fri': 5, 'sat': 6 };
+	var ranges = { 'yea': 'FullYear', 'mon': 'Month', 'day': 'Date', 'hou': 'Hours', 'min': 'Minutes', 'sec': 'Seconds' };
 
 	function lastNext(type, range, modifier) {
 		var day = days[range];
@@ -89,12 +79,9 @@
 		if (typeof(day) !== 'undefined') {
 			var diff = day - date.getDay();
 
-			if (diff === 0)
-				diff = 7 * modifier;
-			else if (diff > 0 && type === 'last')
-				diff -= 7;
-			else if (diff < 0 && type === 'next')
-				diff += 7;
+			if (diff === 0) diff = 7 * modifier;
+			else if (diff > 0 && type === 'last') diff -= 7;
+			else if (diff < 0 && type === 'next') diff += 7;
 
 			date.setDate(date.getDate() + diff);
 		}
@@ -133,17 +120,19 @@
 		'|sun\\.?|sunday|mon\\.?|monday|tue\\.?|tuesday|wed\\.?|wednesday' +
 		'|thu\\.?|thursday|fri\\.?|friday|sat\\.?|saturday))(\\sago)?';
 
-	match = text.match(new RegExp(regex, 'gi'));
-	if (!match)
-		return false;
-
-	for (var i = 0, len = match.length; i < len; i++)
-		if (!process(match[i]))
+	if (text.length > 0) {
+		match = text.match(new RegExp(regex, 'gi'));
+		if (!match)
 			return false;
 
-	// ECMAScript 5 only
-	//if (!match.every(process))
-	//	return false;
+		for (var i = 0, len = match.length; i < len; i++)
+			if (!process(match[i]))
+				return false;
+
+		// ECMAScript 5 only
+		//if (!match.every(process))
+		//	return false;
+	}
 
 	return (date.getTime() / 1000);
 }

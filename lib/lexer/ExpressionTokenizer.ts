@@ -3,31 +3,53 @@
 import StringReader = module('./StringReader');
 import utils = module('../utils');
 
+/**
+ * Token
+ */
 export interface Token {
 	type: string;
 	value: any;
 	rawValue: any;
 }
 
+/**
+ * ExpressionTokenizer
+ */
 export class ExpressionTokenizer {
+	/**
+	 * Creates a new ExpressionTokenizer.
+	 */
 	constructor(public stringReader: StringReader.StringReader) {
 	}
 
-	static operators3 = [
+	private static operators3 = [
 		'===', '!==',
 	];
 
-	static operators2 = [
+	private static operators2 = [
 		'++', '--', '&&', '||', '..', '//', '**',
 		'==', '>=', '<=', '!=', '?:',
 	];
 
-	static operators1 = [
+	private static operators1 = [
 		'+', '-', '*', '/', '%', '|', '(', ')',
 		'{', '}', '[', ']', '.', ':', ',', '<', '>', '?', '=', '~',
 	];
 
-	tokenize() {
+	static tokenizeString(string: string) {
+		return tokenizeStringReader(new StringReader.StringReader(string));
+	}
+
+	static tokenizeStringReader(stringReader: StringReader.StringReader) {
+		return new ExpressionTokenizer(stringReader).tokenize();
+	}
+
+	/**
+	 * Return a list of tokens.
+	 *
+	 * @return list of tokenized tokens.
+	 */
+	tokenize(): Token[] {
 		var tokens = [];
 	
 		function emitToken(type, value, rawValue?) {
@@ -74,7 +96,7 @@ export class ExpressionTokenizer {
 				default:
 					// Numbers
 					if (currentChar.match(/^\d$/)) {
-						var result = this.stringReader.findRegexp(/^(0b[0-1]+|0x[0-9A-F]+|0[0-7]*|[1-9]\d*(\.\d+)?)/i);
+						var result = this.stringReader.findRegexp(/^(0b[0-1]+|0x[0-9A-Fa-f]+|0[0-7]*|[1-9]\d*(\.\d+)?)/);
 						if (result.position !== 0) throw(new Error("Invalid numeric"));
 						var value = this.stringReader.readChars(result.length);
 						emitToken('number', utils.interpretNumber(value), value);

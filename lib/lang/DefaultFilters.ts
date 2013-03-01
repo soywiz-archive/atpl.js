@@ -159,7 +159,9 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/replace.html
 	static replace(value: string, replace_pairs: any) {
-		throw (new Error("Not implemented filter [replace]"));
+		return String(value).replace(new RegExp("(" + Object.keys(replace_pairs).map(item => utils.quoteRegExp(item)).join('|') + ")", "g"), (match) => {
+			return replace_pairs[match];
+		});
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/reverse.html

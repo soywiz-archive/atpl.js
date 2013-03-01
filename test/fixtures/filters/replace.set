@@ -1,0 +1,11 @@
+﻿=== TITLE
+replace filter
+
+=== INPUT
+{ "foo" : "typescript" }
+
+=== TEMPLATE:main
+{{ "I like %this% and %that%."|replace({'%this%': foo, '%that%': "bar"}) }}
+
+=== OUTPUT
+I like typescript and bar.

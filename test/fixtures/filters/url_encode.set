@@ -1,0 +1,11 @@
+﻿=== TITLE
+url_encode filter
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ 'this is a test/to check %what to do'|url_encode }}
+
+=== OUTPUT
+this+is%20a%20test%2Fto%20check%20%25what%20to%20do

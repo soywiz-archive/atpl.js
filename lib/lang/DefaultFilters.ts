@@ -1,4 +1,5 @@
 ﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
+import RuntimeContext = module('../runtime/RuntimeContext');
 import utils = module('../utils');
 
 export class DefaultFilters {
@@ -38,11 +39,13 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/escape.html
 	static e(value: string, strategy?: string) {
-		this['currentAutoescape'] = strategy;
+		var runtimeContext: RuntimeContext.RuntimeContext = this;
+		runtimeContext.currentAutoescape = strategy;
 		return value;
 	}
 	static escape(value: string, strategy: any = true) {
-		this['currentAutoescape'] = strategy;
+		var runtimeContext: RuntimeContext.RuntimeContext = this;
+		runtimeContext.currentAutoescape = strategy;
 		return value;
 	}
 
@@ -153,7 +156,8 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/raw.html
 	static raw(value: string) {
-		this['currentAutoescape'] = false;
+		var runtimeContext: RuntimeContext.RuntimeContext = this;
+		runtimeContext.currentAutoescape = false;
 		return value;
 	}
 
@@ -230,7 +234,7 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/url_encode.html
 	static url_encode(value: any) {
-		throw (new Error("Not implemented filter [url_encode]"));
+		return RuntimeUtils.escapeUrlString(String(value)).replace('%20', '+');
 	}
 
 	static spaceless(value: any) {

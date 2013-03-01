@@ -1,0 +1,11 @@
+﻿=== TITLE
+template_from_string function
+
+=== INPUT
+{ "name" : "typescript" }
+
+=== TEMPLATE:main
+{{ include(template_from_string("Hello {{ name }}")) }}
+
+=== OUTPUT
+Hello typescript

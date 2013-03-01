@@ -19,6 +19,11 @@ function debug(data) {
 	//console.log(data);
 }
 
+export interface CompiledTemplate {
+	ouput: string;
+	class: any;
+}
+
 export class TemplateParser {
 	registry:any = {};
 	registryString: any = {};
@@ -140,10 +145,10 @@ export class TemplateParser {
 			//console.log(output);
 			//console.log(content);
 
-			this.registryString[content] = { 'output' : output, 'class' : CurrentTemplate };
+			this.registryString[content] = { output : output, class : CurrentTemplate };
 		}
 	
-		return this.registryString[content];
+		return <CompiledTemplate>this.registryString[content];
 	}
 
 	compile(path: string, runtimeContext: RuntimeContext.RuntimeContext) {
@@ -169,7 +174,7 @@ export class TemplateParser {
 			this.registry[path] = { output : output, class : CurrentTemplate };
 		}
 	
-		return this.registry[path];
+		return <CompiledTemplate>this.registry[path];
 	}
 
 	parseTemplateSyncOne(tokenParserContext, tokenReader: TokenReader.TokenReader) {

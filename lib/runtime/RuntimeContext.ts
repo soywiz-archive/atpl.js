@@ -2,6 +2,7 @@
 
 import RuntimeUtils = module('./RuntimeUtils');
 import LanguageContext = module('../LanguageContext');
+//import TemplateParser = module('../parser/TemplateParser');
 import Scope = module('./Scope');
 
 export class RuntimeContext {
@@ -133,9 +134,15 @@ export class RuntimeContext {
 		return this.$call(this.languageContext.tests, $function, $arguments);
 	}
 
-	include(name: string) {
-		var IncludeTemplate = new ((this.templateParser.compile(name, this)).class)();
-		IncludeTemplate.__main(this);
+	include(info: any) {
+		if (RuntimeUtils.isString(info)) {
+			var name = <string>info;
+			var IncludeTemplate = new ((this.templateParser.compile(name, this)).class)();
+			IncludeTemplate.__main(this);
+		} else {
+			var IncludeTemplate = new (info.class )();
+			IncludeTemplate.__main(this);
+		}
 	}
 
 	import(name: string) {

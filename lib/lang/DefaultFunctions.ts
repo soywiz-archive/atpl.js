@@ -1,5 +1,6 @@
 ﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
 import RuntimeContext = module('../runtime/RuntimeContext');
+import TemplateParser = module('../parser/TemplateParser');
 import util = module('util');
 
 export class DefaultFunctions {
@@ -76,7 +77,9 @@ export class DefaultFunctions {
 
 	// http://twig.sensiolabs.org/doc/functions/template_from_string.html
 	static template_from_string(template: string) {
-		throw (new Error("Not implemented function [template_from_string]"));
+		var runtimeContext: RuntimeContext.RuntimeContext = this;
+		var templateParser = <TemplateParser.TemplateParser>runtimeContext.templateParser;
+		return templateParser.compileString(template, runtimeContext);
 	}
 
 	// https://github.com/soywiz/atpl.js/issues/13

@@ -28,6 +28,26 @@ export export class ParserNode {
 export export class ParserNodeExpression extends ParserNode {
 }
 
+export export class ParserNodeWriteExpression extends ParserNode {
+	constructor(public expression: ParserNodeExpression) {
+		super();
+	}
+
+	generateCode() {
+		return 'runtimeContext.writeExpression(' + this.expression.generateCode() + ');';
+	}
+}
+
+export export class ParserNodeReturnExtends extends ParserNode {
+	constructor(public expression: ParserNodeExpression) {
+		super();
+	}
+
+	generateCode() {
+		return 'return runtimeContext.extends(' + this.expression.generateCode() + ');';
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 

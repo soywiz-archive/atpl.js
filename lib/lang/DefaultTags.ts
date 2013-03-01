@@ -198,9 +198,11 @@ export class DefaultTags {
 	// RAW/VERBATIM
 	// http://twig.sensiolabs.org/doc/tags/verbatim.html
 	static raw(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+		checkNoMoreTokens(expressionTokenReader);
+
 		throw (new Error("Not implemented tag [raw/verbatim]"));
 	}
-	verbatim = DefaultTags.raw;
+	static verbatim = DefaultTags.raw;
 
 	// SANDBOX
 	static sandbox(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
@@ -276,7 +278,7 @@ export class DefaultTags {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
-		tokenParserContext.write('return runtimeContext.extends(' + expressionNode.generateCode() + ');');
+		return new ParserNode.ParserNodeReturnExtends(expressionNode);
 	}
 
 	// http://twig.sensiolabs.org/doc/tags/for.html

@@ -1,6 +1,7 @@
 ﻿import ExpressionParser = module('../parser/ExpressionParser');
 import FlowException = module('../parser/FlowException');
 import ParserNode = module('../parser/ParserNode');
+import TemplateParser = module('../parser/TemplateParser');
 import TokenReader = module('../lexer/TokenReader');
 
 export interface ITemplateParser {
@@ -29,13 +30,16 @@ function _flowexception(blockType, templateParser, tokenParserContext, templateT
 	throw(new FlowException.FlowException(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader));
 }
 
-function handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, handlers) {
+function handleOpenedTag(blockType, templateParser: TemplateParser.TemplateParser, tokenParserContext, templateTokenReader, expressionTokenReader, handlers, innerNodeHandler: (node: ParserNode.ParserNode) => void) {
 	while (true) {
 		try {
 			var keys = []; for (var key in handlers) keys.push(key);
-			if (!templateParser.parseTemplateSync(tokenParserContext, templateTokenReader)) {
-				throw (new Error("Unexpected end of '" + blockType + "' no any of [" + keys.map((key) => "'" + key + "'").join(', ') + "]"));
-			}
+			//console.log("[[");
+			var node = templateParser.parseTemplateSyncOne(tokenParserContext, templateTokenReader);
+			if (node == null) throw (new Error("Unexpected end of '" + blockType + "' no any of [" + keys.map((key) => "'" + key + "'").join(', ') + "]"));
+			//console.log("]]");
+			//console.log(node);
+			innerNodeHandler(node);
 		} catch (e) {
 			if (!(e instanceof FlowException.FlowException)) throw (e);
 			var handler = handlers[e.blockType];
@@ -48,6 +52,135 @@ function handleOpenedTag(blockType, templateParser, tokenParserContext, template
 	}
 }
 
+export class ParserNodeAutoescape extends ParserNode.ParserNodeStatement {
+	constructor(public expression: ParserNode.ParserNodeExpression, public inner: ParserNode.ParserNode) {
+		super();
+	}
+
+	generateCode() {
+		return (
+			'runtimeContext.autoescape(' + this.expression.generateCode() + ', function() {' +
+				this.inner.generateCode() +
+			'}, true);'
+		);
+	}
+}
+
+export class ParserNodeStatementFilter extends ParserNode.ParserNodeStatement {
+	constructor(public filterName: string, public inner: ParserNode.ParserNode) {
+		super();
+	}
+
+	generateCode() {
+		return (
+			'runtimeContext.write(runtimeContext.filter(' + JSON.stringify(this.filterName) + ', [runtimeContext.captureOutput(function() { ' +
+				this.inner.generateCode() +
+			'})]));'
+		);
+	}
+}
+
+export class ParserNodeScopeSet extends ParserNode.ParserNodeStatement {
+	constructor(public key: string, public value: ParserNode.ParserNodeExpression) {
+		super();
+	}
+
+	generateCode() {
+		return 'runtimeContext.scope.set(' + JSON.stringify(this.key) + ', ' + this.value.generateCode() + ');';
+	}
+}
+
+export class ParserNodeIf extends ParserNode.ParserNodeStatement {
+	conditions: { expression: ParserNode.ParserNodeExpression; code: ParserNode.ParserNodeContainer; }[] = [];
+
+	addCaseCondition(expression: ParserNode.ParserNodeExpression) {
+		this.conditions.push({
+			expression: expression,
+			code: new ParserNode.ParserNodeContainer(),
+		});
+	}
+
+	addElseCondition() {
+		this.conditions.push({
+			expression: null,
+			code: new ParserNode.ParserNodeContainer(),
+		});
+	}
+
+	addCodeToCondition(node: ParserNode.ParserNode) {
+		this.conditions[this.conditions.length - 1].code.add(node);
+	}
+
+	generateCode() {
+		var out = '';
+
+		for (var n = 0; n < this.conditions.length; n++) {
+			var condition = this.conditions[n];
+			if (out != '') out += 'else ';
+			if (condition.expression != null) out += 'if (' + condition.expression.generateCode() + ')';
+			out += '{ ';
+			out += condition.code.generateCode();
+			out += '}';
+		}
+
+		return out;
+	}
+}
+
+export class ParserNodeFor extends ParserNode.ParserNodeStatement {
+	constructor(public keyId: any, public condId: any, public valueId: ParserNode.ParserNodeLeftValue, public nodeList: ParserNode.ParserNodeExpression, public forCode: ParserNode.ParserNode, public elseCode: ParserNode.ParserNode) {
+		super();
+	}
+
+	generateCode() {
+		var out = '';
+		out += ('runtimeContext.createScope((function() { ');
+		out += (' var list = ' + this.nodeList.generateCode() + ';');
+		out += (' if (!runtimeContext.emptyList(list)) {');
+		out += ('  runtimeContext.each(list, function(k, v) { ');
+		out += ('   ' + (new ParserNode.ParserNodeAssignment(this.valueId, new ParserNode.ParserNodeRaw("v"))).generateCode() + ';');
+		if (this.keyId !== undefined) {
+			out += ('   ' + (new ParserNode.ParserNodeAssignment(this.keyId, new ParserNode.ParserNodeRaw("k"))).generateCode() + ';');
+		}
+		if (this.condId) {
+			out += ('   if (' + this.condId.generateCode() + ') { ');
+		} else {
+			out += ('   if (true) { ');
+		}
+		
+		out += this.forCode.generateCode();
+
+		out += ('}'); // if condition
+		
+		out += ('  });'); // each
+		out += ('} else {');
+		{
+			out += this.elseCode.generateCode();
+		}
+		out += ('} '); // if/else
+		out += ('}));'); // createScope
+
+		return out;
+	}
+
+	/*
+
+	handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+		'else': (e) => {
+			if (didElse) throw (new Error("Can't have two 'else'"));
+			tokenParserContext.write('}); } else {');
+			didElse = true;
+		},
+		'endfor': (e) => {
+			if (condId) tokenParserContext.write('} ');
+			if (!didElse) tokenParserContext.write('}); ');
+			tokenParserContext.write('} }));');
+			return true;
+		},
+	});
+	*/
+}
+
 // @TODO: blockHandlers should return a ParserNode/AstNode and the output should be generated at the end instead of writing now.
 export class DefaultTags {
 	// autoescape
@@ -56,14 +189,17 @@ export class DefaultTags {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
-		tokenParserContext.write('runtimeContext.autoescape(' + expressionNode.generateCode() + ', function() {');
+		var innerNode = new ParserNode.ParserNodeContainer();
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
 			'endautoescape': (e) => {
-				tokenParserContext.write('}, true);');
 				return true;
 			},
+		}, (node) => {
+			innerNode.add(node);
 		});
+
+		return new ParserNodeAutoescape(expressionNode, innerNode);
 	}
 
 	// DO/SET
@@ -74,13 +210,13 @@ export class DefaultTags {
 		var nodeValue = expressionParser.parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
-		tokenParserContext.write('runtimeContext.scope.set(' + JSON.stringify(nodeId.value) + ', ' + nodeValue.generateCode()  + ');');
+		return new ParserNodeScopeSet(String(nodeId.value), nodeValue);
 	}
 	static $do(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
-		tokenParserContext.write(expressionNode.generateCode() + ';');
+		return new ParserNode.ParserNodeStatementExpression(expressionNode);
 	}
 
 	// EMBED
@@ -95,14 +231,17 @@ export class DefaultTags {
 		// TODO: Simple filtering without multiple filters or additional parameters
 		var filterName = expressionTokenReader.read().value;
 
-		tokenParserContext.write('runtimeContext.write(runtimeContext.filter(' + JSON.stringify(filterName) + ', [runtimeContext.captureOutput(function() { ');
+		var innerNode = new ParserNode.ParserNodeContainer();
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
 			'endfilter': (e) => {
-				tokenParserContext.write('})]));');
 				return true;
 			},
+		}, (node) => {
+			innerNode.add(node);
 		});
+
+		return new ParserNodeStatementFilter(filterName, innerNode);
 	}
 
 	// FLUSH
@@ -132,25 +271,32 @@ export class DefaultTags {
 		}
 		checkNoMoreTokens(expressionTokenReader);
 
-		var macroCode = tokenParserContext.setMacro(macroName, function () {
-			tokenParserContext.write('var _arguments = arguments;');
-			tokenParserContext.write('return runtimeContext.captureOutput(function() { ');
-			tokenParserContext.write('return runtimeContext.autoescape(false, function() { ');
-			tokenParserContext.write('runtimeContext.createScope(function() { ');
-			paramNames.forEach((paramName, index) => {
-				var assign = new ParserNode.ParserNodeAssignment(paramName, new ParserNode.ParserNodeRaw('_arguments[' + index + ']'))
-				tokenParserContext.write(assign.generateCode() + ';');
-			});
-			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-				'endmacro': (e) => {
-					return true;
-				},
-			});
-			tokenParserContext.write('});'); // createScope
-			tokenParserContext.write('});'); // autoescape
-			tokenParserContext.write('});'); // captureOutput
+		var macroNode = new ParserNode.ParserNodeContainer();
+		macroNode.add(new ParserNode.ParserNodeRaw('var _arguments = arguments;'));
+		macroNode.add(new ParserNode.ParserNodeRaw('return runtimeContext.captureOutput(function() { '));
+		macroNode.add(new ParserNode.ParserNodeRaw('return runtimeContext.autoescape(false, function() { '));
+		macroNode.add(new ParserNode.ParserNodeRaw('runtimeContext.createScope(function() { '));
+
+		paramNames.forEach((paramName, index) => {
+			var assign = new ParserNode.ParserNodeAssignment(paramName, new ParserNode.ParserNodeRaw('_arguments[' + index + ']'))
+			macroNode.add(new ParserNode.ParserNodeStatementExpression(assign));
 		});
+
+		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+			'endmacro': (e) => {
+				return true;
+			},
+		}, (node) => {
+			macroNode.add(node);
+		});
+
+		macroNode.add(new ParserNode.ParserNodeRaw('});')); // createScope
+		macroNode.add(new ParserNode.ParserNodeRaw('});')); // autoescape
+		macroNode.add(new ParserNode.ParserNodeRaw('});')); // captureOutput
+
+		var macroCode = tokenParserContext.setMacro(macroName, macroNode);
 		//console.log(macroCode);
+		return new ParserNode.ParserNodeRaw('');
 
 	}
 	static from(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader: TokenReader.TokenReader) {
@@ -173,7 +319,11 @@ export class DefaultTags {
 
 		checkNoMoreTokens(expressionTokenReader);
 
-		tokenParserContext.write('runtimeContext.fromImport(' + fileNameNode.generateCode() + ', ' + JSON.stringify(pairs) + ');');
+		return new ParserNode.ParserNodeContainer([
+			new ParserNode.ParserNodeRaw('runtimeContext.fromImport('),
+			fileNameNode,
+			new ParserNode.ParserNodeRaw(', ' + JSON.stringify(pairs) + ');')
+		]);
 	}
 	static $import(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
@@ -183,8 +333,9 @@ export class DefaultTags {
 
 		checkNoMoreTokens(expressionTokenReader);
 
-		var assign = new ParserNode.ParserNodeAssignment(aliasNode, new ParserNode.ParserNodeRaw('runtimeContext.import(' + fileNameNode.generateCode() + ')'))
-		tokenParserContext.write(assign.generateCode() + ";");
+		return new ParserNode.ParserNodeStatementExpression(
+			new ParserNode.ParserNodeAssignment(aliasNode, new ParserNode.ParserNodeRaw('runtimeContext.import(' + fileNameNode.generateCode() + ')'))
+		);
 	}
 
 	// INCLUDE
@@ -192,7 +343,11 @@ export class DefaultTags {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
-		tokenParserContext.write('runtimeContext.include(' + expressionNode.generateCode() + ');');
+		return new ParserNode.ParserNodeContainer([
+			new ParserNode.ParserNodeRaw('runtimeContext.include('),
+			expressionNode,
+			new ParserNode.ParserNodeRaw(');')
+		]);
 	}
 
 	// RAW/VERBATIM
@@ -215,14 +370,24 @@ export class DefaultTags {
 	static spaceless(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		checkNoMoreTokens(expressionTokenReader);
 
-		tokenParserContext.write('runtimeContext.write(runtimeContext.filter("spaceless", [runtimeContext.captureOutput(function() { ');
+		var innerNode = new ParserNode.ParserNodeContainer();
 
+		//console.log('************************');
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
 			'endspaceless': (e) => {
-				tokenParserContext.write('})]));');
 				return true;
 			},
+		}, (node) => {
+			//console.log(node);
+			innerNode.add(node);
 		});
+		//console.log('************************');
+
+		return new ParserNode.ParserNodeContainer([
+			new ParserNode.ParserNodeRaw('runtimeContext.write(runtimeContext.filter("spaceless", [runtimeContext.captureOutput(function() { '),
+			innerNode,
+			new ParserNode.ParserNodeRaw('})]));')
+		]);
 	}
 
 	// IF/ELSEIF/ELSE/ENDIF
@@ -235,7 +400,12 @@ export class DefaultTags {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
-		tokenParserContext.write('if (' + expressionNode.generateCode() + ') {');
+
+		var parserNodeIf = new ParserNodeIf();
+
+		parserNodeIf.addCaseCondition(expressionNode);
+
+		//tokenParserContext.write('if (' + expressionNode.generateCode() + ') {');
 
 		//parseExpressionExpressionSync
 
@@ -245,32 +415,41 @@ export class DefaultTags {
 
 				var expressionNode = (new ExpressionParser.ExpressionParser(e.expressionTokenReader)).parseExpression();
 				checkNoMoreTokens(expressionTokenReader);
-				tokenParserContext.write('} else if (' + expressionNode.generateCode() + ') {');
+				parserNodeIf.addCaseCondition(expressionNode);
 			},
 			'else': (e) => {
 				if (didElse) throw (new Error("Can't have two 'else'"));
-				tokenParserContext.write('} else {');
+				parserNodeIf.addElseCondition();
 				didElse = true;
 			},
 			'endif': (e) => {
-				tokenParserContext.write('}');
 				return true;
 			},
+		}, (node) => {
+			parserNodeIf.addCodeToCondition(node);
 		});
+
+		return parserNodeIf;
 	}
 
 	// BLOCK/ENDBLOCK
 	static endblock = _flowexception;
 	static block(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var blockName = 'block_' + expressionTokenReader.read().value;
-		tokenParserContext.setBlock(blockName, function () {
-			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-				'endblock': (e) => {
-					return true;
-				},
-			});
+
+		var innerNode = new ParserNode.ParserNodeContainer();
+
+		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+			'endblock': (e) => {
+				return true;
+			},
+		}, (node) => {
+			innerNode.add(node);
 		});
-		tokenParserContext.write('runtimeContext.putBlock(' + JSON.stringify(blockName) + ');');
+
+		tokenParserContext.setBlock(blockName, innerNode);
+
+		return new ParserNode.ParserNodeRaw('runtimeContext.putBlock(' + JSON.stringify(blockName) + ');');
 	}
 
 	// EXTENDS
@@ -278,7 +457,11 @@ export class DefaultTags {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
-		return new ParserNode.ParserNodeReturnExtends(expressionNode);
+		return new ParserNode.ParserNodeContainer([
+			new ParserNode.ParserNodeRaw('return runtimeContext.extends('),
+			expressionNode,
+			new ParserNode.ParserNodeRaw(');')
+		]);
 	}
 
 	// http://twig.sensiolabs.org/doc/tags/for.html
@@ -304,30 +487,25 @@ export class DefaultTags {
 
 		checkNoMoreTokens(expressionTokenReader);
 
-		tokenParserContext.write('runtimeContext.createScope((function() { ');
-		tokenParserContext.write(' var list = ' + nodeList.generateCode() + ';'); 
-		tokenParserContext.write(' if (!runtimeContext.emptyList(list)) {'); 
-		tokenParserContext.write('  runtimeContext.each(list, function(k, v) { '); 
-		tokenParserContext.write('   ' + (new ParserNode.ParserNodeAssignment(valueId, new ParserNode.ParserNodeRaw("v"))).generateCode() + ';');
-		if (keyId !== undefined) {
-			tokenParserContext.write('   ' + (new ParserNode.ParserNodeAssignment(keyId, new ParserNode.ParserNodeRaw("k"))).generateCode() + ';');
-		}
-		if (condId) {
-			tokenParserContext.write('   if (' + condId.generateCode() + ') { ');
-		}
-		
+		var forCode = new ParserNode.ParserNodeContainer();
+		var elseCode = new ParserNode.ParserNodeContainer();
+
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
 			'else': (e) => {
 				if (didElse) throw (new Error("Can't have two 'else'"));
-				tokenParserContext.write('}); } else {');
 				didElse = true;
 			},
 			'endfor': (e) => {
-				if (condId) tokenParserContext.write('} ');
-				if (!didElse) tokenParserContext.write('}); ');
-				tokenParserContext.write('} }));');
 				return true;
 			},
+		}, (node) => {
+			if (!didElse) {
+				forCode.add(node);
+			} else {
+				elseCode.add(node);
+			}
 		});
+
+		return new ParserNodeFor(keyId, condId, valueId, nodeList, forCode, elseCode);
 	}
 }

@@ -38,24 +38,18 @@ export export class ParserNodeWriteExpression extends ParserNode {
 	}
 }
 
-export export class ParserNodeReturnExtends extends ParserNode {
-	constructor(public expression: ParserNodeExpression) {
-		super();
-	}
-
-	generateCode() {
-		return 'return runtimeContext.extends(' + this.expression.generateCode() + ');';
-	}
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 export class ParserNodeContainer extends ParserNode {
-	nodes:ParserNode[] = [];
 	type: string = 'ParserNodeContainer';
 
-	add(node) {
+	constructor(public nodes: ParserNode[] = null) {
+		super();
+		if (this.nodes == null) this.nodes = [];
+	}
+
+	add(node: ParserNode) {
 		this.nodes.push(node);
 	}
 
@@ -166,7 +160,19 @@ export class ParserNodeRaw extends ParserNodeExpression {
 	}
 }
 
-export class ParserNodeAssignment extends ParserNodeStatement {
+export class ParserNodeStatementExpression extends ParserNodeStatement {
+	type: string = 'ParserNodeStatementExpression';
+
+	constructor(public expression: ParserNodeExpression) {
+		super();
+	}
+
+	generateCode() {
+		return this.expression.generateCode() + ';';
+	}
+}
+
+export class ParserNodeAssignment extends ParserNodeExpression {
 	type: string = 'ParserNodeAssignment';
 
 	constructor(public leftValue: ParserNodeLeftValue, public rightValue: ParserNodeExpression) {

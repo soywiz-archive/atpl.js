@@ -4,8 +4,8 @@ import ParserNode = module('./ParserNode');
 import TokenReader = module('../lexer/TokenReader');
 import _TemplateTokenizer   = module('../lexer/TemplateTokenizer');
 import TemplateProvider   = module('../TemplateProvider');
-import RuntimeContext      = module('../runtime/RuntimeContext');
-import _FlowException       = module('./FlowException');
+import RuntimeContext  = module('../runtime/RuntimeContext');
+import _FlowException = module('./FlowException');
 import _TokenParserContext = module('./TokenParserContext');
 import _ExpressionParser    = module('./ExpressionParser');
 import LanguageContext = module('../LanguageContext');
@@ -62,9 +62,7 @@ export class TemplateParser {
 		var tokenParserContext = new TokenParserContext();
 	
 		try {
-			tokenParserContext.setBlock('__main', () => {
-				this.parseTemplateSync(tokenParserContext, new TokenReader.TokenReader(templateTokens));
-			});
+			tokenParserContext.setBlock('__main', this.parseTemplateSync(tokenParserContext, new TokenReader.TokenReader(templateTokens)));
 		} catch (e) {
 			if (e instanceof FlowException) {
 				//console.log(e);
@@ -76,33 +74,29 @@ export class TemplateParser {
 		output += 'CurrentTemplate = function() { this.name = ' + JSON.stringify(path) + '; };\n';
 		output += 'CurrentTemplate.prototype.render = function(runtimeContext) { runtimeContext.setTemplate(this); this.__main(runtimeContext); };\n';
 
-		var blocks = tokenParserContext.blocksOutput;
-		for (var blockName in blocks) {
-			var block = blocks[blockName];
+		tokenParserContext.iterateBlocks((blockNode, blockName) => {
 			output += 'CurrentTemplate.prototype.' + blockName + ' = function(runtimeContext) {\n';
 			{
 				output += 'var that = this;\n';
 				output += 'runtimeContext.setCurrentBlock(that, ' + JSON.stringify(blockName) + ', function() {';
 				{
-					output += block + "\n";
+					output += blockNode.generateCode() + "\n";
 				}
 				output += '});';
 			}
 			output += '};\n';
-		}
+		});
 
 		output += 'CurrentTemplate.prototype.macros = {};\n';
 		output += 'CurrentTemplate.prototype.macros.$runtimeContext = runtimeContext;\n';
 		
-		var macros = tokenParserContext.macrosOutput;
-		for (var macroName in macros) {
-			var macro = macros[macroName];
+		tokenParserContext.iterateMacros((macroNode, macroName) => {
 			output += 'CurrentTemplate.prototype.macros.' + macroName + ' = function() {\n';
 			output += 'var runtimeContext = this.$runtimeContext || this;\n';
 			//output += 'console.log("<<<<<<<<<<<<<<<<<<<<<<");console.log(this);\n';
-			output += macro;
+			output += macroNode.generateCode();
 			output += '};\n';
-		}
+		});
 
 		debug(output);
 		return { output: output, tokenParserContext: tokenParserContext };
@@ -178,52 +172,46 @@ export class TemplateParser {
 		return this.registry[path];
 	}
 
+	parseTemplateSyncOne(tokenParserContext, tokenReader: TokenReader.TokenReader) {
+		if (!tokenReader.hasMore()) return null;
+		var item = tokenReader.peek();
+		debug('parseTemplateSync: ' + item.type);
+		switch (item.type) {
+			case 'text':
+				item = tokenReader.read();
+				return new ParserNode.ParserNodeRaw('runtimeContext.write(' + JSON.stringify(String(item.value)) + ');');
+			case 'trimSpacesAfter':
+			case 'trimSpacesBefore':
+				item = tokenReader.read();
+				return (new ParserNode.ParserNodeRaw('runtimeContext.trimSpaces();'));
+			case 'expression':
+				item = tokenReader.read();
+				// Propagate the "not done".
+				return (new ParserNode.ParserNodeRaw(this.parseTemplateExpressionSync(tokenParserContext, tokenReader, new TokenReader.TokenReader(item.value)).generateCode()));
+			case 'block':
+				item = tokenReader.read();
+				// Propagate the "not done".
+				return (this.parseTemplateBlockSync(tokenParserContext, tokenReader, new TokenReader.TokenReader(item.value)));
+		}
+
+		throw (new Error("Invalid item.type == '" + item.type + "'"));
+	}
+
 	parseTemplateSync(tokenParserContext, tokenReader: TokenReader.TokenReader) {
+		var nodes = new ParserNode.ParserNodeContainer();
+
 		while (tokenReader.hasMore()) {
-			var item = tokenReader.peek();
-			debug('parseTemplateSync: ' + item.type);
-			switch (item.type) {
-				case 'text':
-					item = tokenReader.read();
-					tokenParserContext.write(
-						'runtimeContext.write(' + JSON.stringify(String(item.value)) + ');'
-					);
-					break;
-				case 'trimSpacesAfter':
-				case 'trimSpacesBefore':
-					item = tokenReader.read();
-					tokenParserContext.write('runtimeContext.trimSpaces();');
-					break;
-				case 'expression':
-					item = tokenReader.read();
-					// Propagate the "not done".
-					tokenParserContext.write(this.parseTemplateExpressionSync(tokenParserContext, tokenReader, new TokenReader.TokenReader(item.value)).generateCode());
-				break;
-				case 'block':
-					item = tokenReader.read();
-					// Propagate the "not done".
-					var blockResult = <ParserNode.ParserNode>this.parseTemplateBlockSync(tokenParserContext, tokenReader, new TokenReader.TokenReader(item.value));
-					if (blockResult instanceof ParserNode.ParserNode) {
-						//console.log('great!');
-						tokenParserContext.write(blockResult.generateCode());
-					} else {
-						// @TODO!
-						//console.log('warning block not returning a ParserNode, just writting directly!');
-					}
-				break;
-				default:
-					throw(new Error("Invalid item.type == '" + item.type + "'"));
-			}
+			nodes.add(this.parseTemplateSyncOne(tokenParserContext, tokenReader));
 		}
 	
-		return tokenReader.hasMore();
+		return nodes;
 	}
 
 	parseTemplateExpressionSync(tokenParserContext, templateTokenReader, expressionTokenReader): ParserNode.ParserNodeWriteExpression {
 		return new ParserNode.ParserNodeWriteExpression((new ExpressionParser(expressionTokenReader)).parseExpression());
 	}
 
-	parseTemplateBlockSync(tokenParserContext, templateTokenReader, expressionTokenReader) {
+	parseTemplateBlockSync(tokenParserContext, templateTokenReader, expressionTokenReader): ParserNode.ParserNode {
 		var that = this;
 		var blockTypeToken = expressionTokenReader.read();
 		var blockType = blockTypeToken.value;

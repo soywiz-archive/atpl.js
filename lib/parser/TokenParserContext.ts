@@ -1,12 +1,15 @@
 ///<reference path='../imports.d.ts'/>
 
+import ParserNode = module('./ParserNode');
+
 export class TokenParserContext {
-	blocksOutput: any = {};
-	macrosOutput: any = {};
+	private blocksOutput: any = {};
+	private macrosOutput: any = {};
 
 	constructor() {
 	}
 
+	/*
 	private out: string = '';
 
 	write(data: string) {
@@ -23,13 +26,22 @@ export class TokenParserContext {
 			this.out = backOut;
 		}
 	}
+	*/
 
-	setBlock(blockName, callback) {
-		return this.blocksOutput[blockName] = this.captureOutput(callback);
+	iterateBlocks(callback: (node: ParserNode.ParserNode, name: string) => void) {
+		for (var name in this.blocksOutput) callback(this.blocksOutput[name], name);
 	}
 
-	setMacro(macroName, callback) {
-		return this.macrosOutput[macroName] = this.captureOutput(callback);
+	iterateMacros(callback: (node: ParserNode.ParserNode, name: string) => void ) {
+		for (var name in this.macrosOutput) callback(this.macrosOutput[name], name);
+	}
+
+	setBlock(blockName, node: ParserNode.ParserNode) {
+		return this.blocksOutput[blockName] = node;
+	}
+
+	setMacro(macroName, node: ParserNode.ParserNode) {
+		return this.macrosOutput[macroName] = node;
 	}
 
 	/*

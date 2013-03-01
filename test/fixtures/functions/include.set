@@ -1,5 +1,5 @@
 ﻿=== TITLE
-include tag
+include function
 
 === INPUT
 {}
@@ -8,7 +8,7 @@ include tag
 {{ "Hello" }} World
 
 === TEMPLATE:main
-[{% include "include" %}]
+[{{ include("include") }}]
 
 === OUTPUT
 [Hello World]

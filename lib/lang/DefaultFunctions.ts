@@ -1,4 +1,5 @@
 ﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
+import RuntimeContext = module('../runtime/RuntimeContext');
 import util = module('util');
 
 export class DefaultFunctions {
@@ -17,6 +18,12 @@ export class DefaultFunctions {
 		throw (new Error("Not implemented function [constant] [no use on javascript]"));
 	}
 
+	// http://twig.sensiolabs.org/doc/functions/include.html
+	static include(name: string) {
+		var runtimeContext: RuntimeContext.RuntimeContext = this;
+		runtimeContext.include(name);
+	}
+
 	// http://twig.sensiolabs.org/doc/functions/random.html
 	static random(values: any) {
 		if (values === undefined || values === null) return RuntimeUtils.random();
@@ -33,28 +40,29 @@ export class DefaultFunctions {
 
 	// http://twig.sensiolabs.org/doc/functions/block.html
 	static block(name: string) {
-		var that = this;
-		return that.captureOutput(() => {
-			that.putBlock('block_' + name);
+		var runtimeContext: RuntimeContext.RuntimeContext = this;
+		return runtimeContext.captureOutput(() => {
+			runtimeContext.putBlock('block_' + name);
 		});
 	}
 
 	// http://twig.sensiolabs.org/doc/functions/parent.html
 	static parent() {
-		var that = this;
-		return that.captureOutput(() => {
-			that.putBlockParent(that.currentBlockName);
+		var runtimeContext: RuntimeContext.RuntimeContext = this;
+		return runtimeContext.captureOutput(() => {
+			runtimeContext.putBlockParent(runtimeContext.currentBlockName);
 		});
 	}
 
 	// http://twig.sensiolabs.org/doc/functions/dump.html
 	static dump(...objects: any[]) {
+		var runtimeContext: RuntimeContext.RuntimeContext = this;
 		if (objects.length > 0) {
 			var result = '';
 			for (var n = 0; n < objects.length; n++) result += RuntimeUtils.inspect_json(objects[n]);
 			return result;
 		} else {
-			return RuntimeUtils.inspect_json(this.scope.getAll());
+			return RuntimeUtils.inspect_json(runtimeContext.scope.getAll());
 		}
 	}
 

@@ -40,11 +40,12 @@ Supported syntax:
  * if+elseif+else
  * for+else+loop scope variable
  * Auto-escape
+ * Escape (|e) (|e('js')) (|e('css'))...
  * Skip autoescape (|raw)
- * Filters (all twig filters but 'convert_encoding', 'date_modify', 'merge', 'number_format', 'replace', 'reverse' (with strings), 'trim' (with special characters), 'url_encode')
- * Functions (all twig functions but 'constant', 'attribute', 'template_from_string', 'date')
+ * Filters (all twig filters but 'convert_encoding' that is not required because javascript strings are unicode)
+ * Functions (all twig functions but 'constant', 'attribute', 'template_from_string')
  * Tests (all twig tests but 'constant')
- * Tags (all twig tags but 'embed', 'filter', 'flush', 'use', 'raw', 'sandbox', 'spaceless')
+ * Tags (all twig tags but 'embed', 'flush', 'use', 'sandbox')
  * value in array
  * value in string
  * macro support (macro+import+from)

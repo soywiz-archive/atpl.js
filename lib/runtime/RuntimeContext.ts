@@ -6,7 +6,7 @@ import Scope = module('./Scope');
 
 export class RuntimeContext {
 	output: string = '';
-	private scope: Scope.Scope;
+	scope: Scope.Scope;
 	currentAutoescape: any = true;
 	defaultAutoescape: any = true;
 	currentBlockName: string = 'none';

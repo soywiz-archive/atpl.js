@@ -3,6 +3,17 @@
 import StringReader        = module('./StringReader');
 import ExpressionTokenizer = module('./ExpressionTokenizer');
 
+/*
+export interface TemplateToken {
+	type: string;
+	value: string;
+	params: any;
+	offsetStart: number;
+	offsetEnd: number;
+	rawText: string;
+}
+*/
+
 export class TemplateTokenizer {
 	private stringReader: StringReader.StringReader;
 
@@ -12,20 +23,31 @@ export class TemplateTokenizer {
 	tokenize() {
 		this.stringReader = new StringReader.StringReader(this.string);
 
-		var tokens = [];
+		var tokens = <any[]>[];
 		var regExp = /\{[\{%#]-?/;
+		var stringOffsetStart = 0;
+		var stringOffsetEnd = 0;
 
-		var emitToken = function(type, value?, params?) {
+		var emitToken = (type, value?, params?) => {
 			if (type == 'text' && value == '') return;
+
+			stringOffsetEnd = this.stringReader.getOffset();
 
 			tokens.push({
 				type  : type,
 				value: value,
 				params: params,
+				offsetStart: stringOffsetStart,
+				offsetEnd: stringOffsetEnd,
+				rawText: this.stringReader.getSlice(stringOffsetStart, stringOffsetEnd),
 			});
+
+			stringOffsetStart = stringOffsetEnd;
 		};
 	
 		while (this.stringReader.hasMore()) {
+			stringOffsetStart = this.stringReader.getOffset();
+
 			var openMatch = this.stringReader.findRegexp(regExp);
 			// No more tags.
 			if (openMatch.position === null) {

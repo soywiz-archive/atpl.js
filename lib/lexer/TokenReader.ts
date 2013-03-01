@@ -11,6 +11,14 @@ export class TokenReader {
 		this.position = 0;
 	}
 
+	getOffset(): number {
+		return this.position;
+	}
+
+	getSlice(start: number, end: number): ExpressionTokenizer.Token[] {
+		return this.tokens.slice(start, end);
+	}
+
 	hasMore(): bool {
 		return this.getLeftCount() > 0;
 	}
@@ -21,7 +29,7 @@ export class TokenReader {
 
 	peek(offset: number = 0): ExpressionTokenizer.Token {
 		if (this.position + offset >= this.length) {
-			return { type: 'eof', value: null, rawValue: null };
+			return { type: 'eof', value: null, rawValue: null, stringOffset: this.length };
 		}
 		return this.tokens[this.position + offset];
 	}

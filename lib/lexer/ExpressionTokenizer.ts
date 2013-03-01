@@ -10,6 +10,7 @@ export interface Token {
 	type: string;
 	value: any;
 	rawValue: any;
+	stringOffset: any;
 }
 
 /**
@@ -51,13 +52,15 @@ export class ExpressionTokenizer {
 	 */
 	tokenize(): Token[] {
 		var tokens = [];
+		var stringOffset: number = 0;
 	
-		function emitToken(type, value, rawValue?) {
-			if (rawValue === undefined) rawValue = value;
+		function emitToken(type, rawValue, value?) {
+			if (value === undefined) value = rawValue;
 			tokens.push({
 				type     : type,
-				value    : value,
-				rawValue : rawValue,
+				value: value,
+				rawValue: rawValue,
+				stringOffset: stringOffset,
 			});
 		};
 	
@@ -68,6 +71,8 @@ export class ExpressionTokenizer {
 				end = true;
 				continue;
 			}
+
+			stringOffset = this.stringReader.getOffset();
 			var currentChar = this.stringReader.peekChars(1);
 			//console.log(currentChar);
 		
@@ -85,9 +90,9 @@ export class ExpressionTokenizer {
 					try {
 						if (value.charAt(0) == "'") {
 							// @TODO: fix ' escape characters
-							emitToken('string', value.substr(1, value.length - 2), value);
+							emitToken('string', value, value.substr(1, value.length - 2));
 						} else {
-							emitToken('string', JSON.parse(value), value);
+							emitToken('string', value, JSON.parse(value));
 						}
 					} catch (e) {
 						throw (new Error("Can't parse [" + value + "]"));
@@ -97,9 +102,9 @@ export class ExpressionTokenizer {
 					// Numbers
 					if (currentChar.match(/^\d$/)) {
 						var result = this.stringReader.findRegexp(/^(0b[0-1]+|0x[0-9A-Fa-f]+|0[0-7]*|[1-9]\d*(\.\d+)?)/);
-						if (result.position !== 0) throw(new Error("Invalid numeric"));
+						if (result.position !== 0) throw (new Error("Invalid numeric"));
 						var value = this.stringReader.readChars(result.length);
-						emitToken('number', utils.interpretNumber(value), value);
+						emitToken('number', value, utils.interpretNumber(value));
 					}
 					else {
 						var operatorIndex = -1;

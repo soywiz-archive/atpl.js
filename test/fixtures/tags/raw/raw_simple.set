@@ -1,0 +1,21 @@
+﻿=== TITLE
+raw
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{% verbatim %}
+<ul>
+{% for item in seq %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+{% endverbatim %}
+
+=== OUTPUT
+<ul>
+{% for item in seq %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>

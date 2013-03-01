@@ -331,6 +331,9 @@
   <ItemGroup>
     <Content Include="test\fixtures\tags\do\do.set" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\raw\raw_simple.set" />
+  </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptTarget>ES3</TypeScriptTarget>
     <TypeScriptIncludeComments>false</TypeScriptIncludeComments>

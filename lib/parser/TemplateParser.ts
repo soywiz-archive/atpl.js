@@ -2,7 +2,7 @@
 
 import ParserNode = module('./ParserNode');
 import TokenReader = module('../lexer/TokenReader');
-import _TemplateTokenizer   = module('../lexer/TemplateTokenizer');
+import _TemplateTokenizer = module('../lexer/TemplateTokenizer');
 import TemplateProvider   = module('../TemplateProvider');
 import RuntimeContext  = module('../runtime/RuntimeContext');
 import _FlowException = module('./FlowException');

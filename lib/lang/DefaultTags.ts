@@ -352,10 +352,32 @@ export class DefaultTags {
 
 	// RAW/VERBATIM
 	// http://twig.sensiolabs.org/doc/tags/verbatim.html
-	static raw(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static endraw = _flowexception;
+	static endverbatim = _flowexception;
+	static raw(blockType, templateParser, tokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader) {
 		checkNoMoreTokens(expressionTokenReader);
+		//console.log(templateTokenReader);
 
-		throw (new Error("Not implemented tag [raw/verbatim]"));
+		//var rawText = templateTokenReader.tokens
+
+		var offsetStart = templateTokenReader.getOffset();
+		var offsetEnd = offsetStart;
+
+		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+			'endverbatim': (e) => { offsetEnd = templateTokenReader.getOffset() - 1; return true; },
+			'endraw': (e) => { offsetEnd = templateTokenReader.getOffset() - 1; return true; },
+		}, (node) => {
+		});
+
+		var rawText = templateTokenReader.getSlice(offsetStart, offsetEnd).map((item) => (<any>item).rawText).join('');
+		//console.log('-----------------------------');
+		//console.log(templateTokenReader.getSlice(offsetStart, offsetEnd));
+		//console.log('-----------------------------');
+		//console.log(rawText);
+		//console.log('-----------------------------');
+
+		return new ParserNode.ParserNodeOutputText(rawText);
+		//throw (new Error("Not implemented tag [raw/verbatim]"));
 	}
 	static verbatim = DefaultTags.raw;
 

@@ -16,6 +16,17 @@ export class StringReader {
 	}
 
 	/**
+	 * Gets the position.
+	 */
+	getOffset() {
+		return this.position;
+	}
+
+	getSlice(start, end) {
+		return this.string.substr(start, end - start);
+	}
+
+	/**
 	 * Determines if the stream has more characters to read.
 	 */
 	hasMore() {

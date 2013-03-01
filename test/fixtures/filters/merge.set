@@ -1,0 +1,16 @@
+﻿=== TITLE
+merge filter
+
+=== TEMPLATE:main
+{% autoescape false %}
+{%- set values = [1, 2] -%}
+{%- set values = values|merge(['apple', 'orange']) -%}
+{%- set items = { 'apple': 'fruit', 'orange': 'fruit', 'peugeot': 'unknown' } -%}
+{%- set items = items|merge({ 'peugeot': 'car', 'renault': 'car' }) -%}
+{{ values }}
+{{ items }}
+{% endautoescape %}
+
+=== OUTPUT
+[1,2,"apple","orange"]
+{"apple":"fruit","orange":"fruit","peugeot":"car","renault":"car"}

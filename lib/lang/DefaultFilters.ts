@@ -105,8 +105,15 @@ export class DefaultFilters {
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/merge.html
-	static merge(value: any, add: any) {
-		throw (new Error("Not implemented filter [merge]"));
+	static merge(value: any, add: any): any {
+		if (RuntimeUtils.isArray(value)) {
+			return (<any[]>value).concat(add);
+		} else {
+			var object = {};
+			for (var key in value) object[key] = value[key];
+			for (var key in add) object[key] = add[key];
+			return object;
+		}
 	}
 
 	// http://twig.sensiolabs.org/doc/filters/nl2br.html

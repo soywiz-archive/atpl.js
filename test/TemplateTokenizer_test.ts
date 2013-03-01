@@ -13,7 +13,7 @@ describe('TemplateTokenizer', function() {
 		var tokens = templateTokenizer.tokenize();
 		assert.equal(
 			JSON.stringify([
-				{ type: "text", value: "plain text", "offsetStart":0,"offsetEnd":10,"rawText":"plain text"}
+				{ type: "text", value: "plain text", "offsetStart" : 0, "offsetEnd" : 10, "rawText" : "plain text"}
 			]),
 			JSON.stringify(tokens)
 		);

@@ -1,0 +1,11 @@
+﻿=== TITLE
+escape css
+
+=== INPUT
+{ "msg": "Test \u0000'\"\r\n\t世界" }
+
+=== TEMPLATE:main
+{{ msg|e('css') }}
+
+=== OUTPUT
+Test\20 \0 \27 \22 \D \A \9 \4E16 \754C

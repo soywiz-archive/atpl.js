@@ -1,0 +1,11 @@
+﻿=== TITLE
+escape url
+
+=== INPUT
+{ "msg": "Test \u0000'\"\r\n\t世界ñ~" }
+
+=== TEMPLATE:main
+{{ msg|e('url') }}
+
+=== OUTPUT
+Test%20%00%27%22%0D%0A%09%E4%B8%96%E7%95%8C%C3%B1~

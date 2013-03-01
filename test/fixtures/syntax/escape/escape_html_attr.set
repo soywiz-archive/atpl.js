@@ -1,0 +1,11 @@
+﻿=== TITLE
+escape html_attr
+
+=== INPUT
+{ "msg": "Test \u0000'\"\r\n\t世界ñ~<>&" }
+
+=== TEMPLATE:main
+{{ msg|e('html_attr') }}
+
+=== OUTPUT
+Test&#x20;&#xFFFD;&#x27;&quot;&#x0d;&#x0a;&#x09;&#x4e16;&#x754c;&#xf1;&#x7e;&lt;&gt;&amp;

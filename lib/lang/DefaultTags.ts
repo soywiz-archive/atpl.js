@@ -205,12 +205,20 @@ export class DefaultTags {
 	// DO/SET
 	static set(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
-		var nodeId: any = expressionParser.parseIdentifier();
+		var nodeIds = expressionParser.parseIdentifierCommaList();
 		expressionTokenReader.expectAndMoveNext('=');
-		var nodeValue = expressionParser.parseExpression();
+		var nodeValues = expressionParser.parseCommaExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
-		return new ParserNodeScopeSet(String(nodeId.value), nodeValue);
+		if (nodeIds.length != nodeValues.expressions.length) throw (new Error("variables doesn't match values"));
+
+		var container = new ParserNode.ParserNodeContainer();
+
+		for (var n = 0; n < nodeIds.length; n++) {
+			container.add(new ParserNodeScopeSet(String((<any>nodeIds[n]).value), nodeValues.expressions[n]));
+		}
+
+		return container;
 	}
 	static $do(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();

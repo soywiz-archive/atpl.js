@@ -144,7 +144,7 @@ export class RuntimeContext {
 		return this.$call(this.languageContext.tests, $function, $arguments);
 	}
 
-	include(info: any, scope: any, only: bool = false) {
+	include(info: any, scope: any = {}, only: bool = false) {
 		this.createScope(() => {
 			if (scope !== undefined) this.scope.setAll(scope);
 			if (RuntimeUtils.isString(info)) {

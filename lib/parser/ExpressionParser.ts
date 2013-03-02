@@ -274,6 +274,15 @@ export class ExpressionParser {
 		}
 	}
 
+	parseIdentifierCommaList(): ParserNode.ParserNodeExpression[]{
+		var identifiers = <ParserNode.ParserNodeExpression[]>[];
+		while (true) {
+			identifiers.push(this.parseIdentifier());
+			if (this.tokenReader.checkAndMoveNext([',']) === undefined) break;
+		}
+		return identifiers;
+	}
+
 	parseIdentifier(): ParserNode.ParserNodeExpression {
 		var token = this.tokenReader.peek();
 

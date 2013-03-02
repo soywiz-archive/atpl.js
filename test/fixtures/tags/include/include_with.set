@@ -14,8 +14,10 @@ include_with tag
 [{% include "include" with { "test" : 1 } %}]
 [{% include "include" with { "test" : 'a' } only %}]
 [{% include "include" only %}]
+#{{ test }}{{ demo }}{{ lol }}#
 
 === OUTPUT
 [137]
 [a7]
 [7]
+#23#

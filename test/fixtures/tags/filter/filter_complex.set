@@ -1,0 +1,11 @@
+﻿=== TITLE
+filter complex
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{% filter trim|length %}  SOME TEXT  {% endfilter %}
+
+=== OUTPUT
+9

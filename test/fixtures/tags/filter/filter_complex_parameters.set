@@ -1,0 +1,11 @@
+﻿=== TITLE
+filter complex parameters
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{% filter trim|reverse|number_format(8, ';', ':') %}  1234567890  {% endfilter %}
+
+=== OUTPUT
+987,654,321

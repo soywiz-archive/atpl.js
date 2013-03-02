@@ -55,16 +55,42 @@ export class ParserNodeAutoescape extends ParserNode.ParserNodeStatement {
 }
 
 export class ParserNodeStatementFilter extends ParserNode.ParserNodeStatement {
-	constructor(public filterName: string, public inner: ParserNode.ParserNode) {
+	filters = <{ name: string; parameters: ParserNode.ParserNodeCommaExpression; }[]>[];
+
+	constructor(public inner: ParserNode.ParserNode) {
 		super();
 	}
 
+	addFilter(filterName: string, filterParameters: ParserNode.ParserNodeCommaExpression) {
+		this.filters.push({
+			name: filterName,
+			parameters: filterParameters,
+		});
+	}
+
 	generateCode() {
-		return (
-			'runtimeContext.write(runtimeContext.filter(' + JSON.stringify(this.filterName) + ', [runtimeContext.captureOutput(function() { ' +
-				this.inner.generateCode() +
-			'})]));'
-		);
+		var out = '';
+
+		out += 'runtimeContext.write(';
+		this.filters.reverse().forEach((filter) => {
+			out += 'runtimeContext.filter(' + JSON.stringify(filter.name) + ', [';
+		});
+
+		out += 'runtimeContext.captureOutput(function () {'
+		out += this.inner.generateCode();
+		out += '})';
+
+		this.filters.forEach((filter) => {
+			if (filter.parameters && filter.parameters.expressions.length > 0) {
+				out += ',';
+				out += filter.parameters.generateCode();
+			}
+			out += '])';
+		});
+
+		out += ');';
+
+		return out
 	}
 }
 
@@ -221,21 +247,40 @@ export class DefaultTags {
 	// FILTER
 	// http://twig.sensiolabs.org/doc/tags/filter.html
 	static endfilter = _flowexception;
-	static filter(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-		// TODO: Simple filtering without multiple filters or additional parameters
-		var filterName = expressionTokenReader.read().value;
-
+	static filter(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var innerNode = new ParserNode.ParserNodeContainer();
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'endfilter': (e) => {
-				return true;
-			},
+			'endfilter': (e) => { return true; },
 		}, (node) => {
 			innerNode.add(node);
 		});
 
-		return new ParserNodeStatementFilter(filterName, innerNode);
+		var filterNode = new ParserNodeStatementFilter(innerNode);
+
+		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
+		while (true) {
+			var filterName = (<any>expressionParser.parseIdentifier()).value;
+			var parameters = null;
+
+			//console.log(filterName);
+
+			if (expressionTokenReader.checkAndMoveNext(['('])) {
+				parameters = expressionParser.parseCommaExpression();
+				//console.log(parameters);
+				expressionTokenReader.expectAndMoveNext([')']);
+			}
+
+			filterNode.addFilter(filterName, parameters);
+
+			if (!expressionTokenReader.checkAndMoveNext(['|'])) {
+				break;
+			}
+		}
+
+		checkNoMoreTokens(expressionTokenReader);
+
+		return filterNode;
 	}
 
 	// FLUSH

@@ -337,6 +337,42 @@
   <ItemGroup>
     <Content Include="test\fixtures\filters\trim.set" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\escape\escape_css.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\escape\escape_url.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\escape\escape_html_attr.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\string_interpolation.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\filters\number_format.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\filters\merge.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\filters\replace.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tests\iterable.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\functions\include.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\functions\template_from_string.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\filters\url_encode.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\include\include_with.set" />
+  </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptTarget>ES3</TypeScriptTarget>
     <TypeScriptIncludeComments>false</TypeScriptIncludeComments>

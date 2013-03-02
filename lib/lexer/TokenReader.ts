@@ -19,6 +19,13 @@ export class TokenReader {
 		return this.tokens.slice(start, end);
 	}
 
+	getSliceWithCallback(readCallback: () => void ): ExpressionTokenizer.Token[] {
+		var start = this.getOffset();
+		readCallback();
+		var end = this.getOffset();
+		return this.getSlice(start, end);
+	}
+
 	hasMore(): bool {
 		return this.getLeftCount() > 0;
 	}

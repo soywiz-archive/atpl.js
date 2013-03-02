@@ -27,6 +27,10 @@ export class RuntimeContext {
 		this.RootTemplate = Template;
 	}
 
+	compileString(templateString: string) {
+		return this.templateParser.compileString(templateString, this);
+	}
+
 	setCurrentBlock(template: any, name: string, callback: () => void) {
 		var BackCurrentTemplate = this.CurrentTemplate;
 		var BackCurrentBlockName = this.currentBlockName;

@@ -78,8 +78,7 @@ export class DefaultFunctions {
 	// http://twig.sensiolabs.org/doc/functions/template_from_string.html
 	static template_from_string(template: string) {
 		var runtimeContext: RuntimeContext.RuntimeContext = this;
-		var templateParser = <TemplateParser.TemplateParser>runtimeContext.templateParser;
-		return templateParser.compileString(template, runtimeContext);
+		return runtimeContext.compileString(template);
 	}
 
 	// https://github.com/soywiz/atpl.js/issues/13

@@ -9,18 +9,6 @@ export interface ITemplateParser {
 	addBlockHandler(name: string, callback: (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) => void);
 }
 
-/*
-export class ParserNodeAutoescape extends ParserNode.ParserNode {
-	constructor(private expression: ParserNode.ParserNodeExpression, private innerCode: ParserNode.ParserNode) {
-		super();
-	}
-
-	generateCode() {
-		return 'runtimeContext.autoescape(' + this.expression.generateCode() + ', function() {' + this.innerCode.generateCode() + '});';
-	}
-}
-*/
-
 function checkNoMoreTokens(expressionTokenReader) {
 	if (expressionTokenReader.hasMore()) throw (new Error("Unexpected token '" + JSON.stringify(expressionTokenReader.peek()) + "'"));
 	return expressionTokenReader;
@@ -162,26 +150,8 @@ export class ParserNodeFor extends ParserNode.ParserNodeStatement {
 
 		return out;
 	}
-
-	/*
-
-	handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-		'else': (e) => {
-			if (didElse) throw (new Error("Can't have two 'else'"));
-			tokenParserContext.write('}); } else {');
-			didElse = true;
-		},
-		'endfor': (e) => {
-			if (condId) tokenParserContext.write('} ');
-			if (!didElse) tokenParserContext.write('}); ');
-			tokenParserContext.write('} }));');
-			return true;
-		},
-	});
-	*/
 }
 
-// @TODO: blockHandlers should return a ParserNode/AstNode and the output should be generated at the end instead of writing now.
 export class DefaultTags {
 	// autoescape
 	static endautoescape = _flowexception;
@@ -228,8 +198,24 @@ export class DefaultTags {
 	}
 
 	// EMBED
-	static embed(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-		throw (new Error("Not implemented tag [embed]"));
+	// http://twig.sensiolabs.org/doc/tags/embed.html
+	static endembed = _flowexception;
+	static embed(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader: TokenReader.TokenReader) {
+		var expressionString = expressionTokenReader.getSliceWithCallback(() => {
+			var includeName = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+		}).map(item => item.rawValue);
+		checkNoMoreTokens(expressionTokenReader);
+
+		var offsetStart = templateTokenReader.getOffset();
+		var offsetEnd = offsetStart;
+
+		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+			'endembed': (e) => { offsetEnd = templateTokenReader.getOffset() - 1; return true; },
+		}, (node) => {
+		});
+		var rawText = templateTokenReader.getSlice(offsetStart, offsetEnd).map((item) => (<any>item).rawText).join('');
+		var templateString = '{% extends ' + expressionString + ' %}' + rawText;
+		return new ParserNode.ParserNodeRaw('runtimeContext.include(runtimeContext.compileString(' + JSON.stringify(templateString) + '));');
 	}
 
 	// FILTER
@@ -253,11 +239,13 @@ export class DefaultTags {
 	}
 
 	// FLUSH
+	// http://twig.sensiolabs.org/doc/tags/flush.html
 	static flush(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		// do nothing (all output is buffered and can't be flushed)
 	}
 
 	// USE
+	// http://twig.sensiolabs.org/doc/tags/use.html
 	static use(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 		throw (new Error("Not implemented tag [use]"));
 	}

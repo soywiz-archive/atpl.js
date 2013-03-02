@@ -127,7 +127,8 @@ export class DefaultFilters {
 	// http://twig.sensiolabs.org/doc/filters/number_format.html
 	static number_format(value: any, decimal: number = 0, decimal_point: string = '.', decimal_sep: string = ',') {
 		var precision = Math.pow(10, decimal);
-		var zeroPad = (decimal > 0) ? Array(decimal - 1).join('0') : '';
+		var zeroPad = (decimal > 0) ? Array(decimal + 1).join('0') : '';
+		value = RuntimeUtils.ensureNumber(value);
 		value = Math.round(value * precision) / precision;
 		//console.log('***************');
 		//console.log(value);

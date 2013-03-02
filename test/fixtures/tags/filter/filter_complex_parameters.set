@@ -6,6 +6,10 @@ filter complex parameters
 
 === TEMPLATE:main
 {% filter trim|reverse|number_format(8, ';', ':') %}  1234567890  {% endfilter %}
+-
+{{ 987654321|number_format(8, ';', ':') }}
 
 === OUTPUT
-987,654,321
+987:654:321;00000000
+-
+987:654:321;00000000

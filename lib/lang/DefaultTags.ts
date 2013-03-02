@@ -80,7 +80,7 @@ export class ParserNodeStatementFilter extends ParserNode.ParserNodeStatement {
 		out += this.inner.generateCode();
 		out += '})';
 
-		this.filters.forEach((filter) => {
+		this.filters.reverse().forEach((filter) => {
 			if (filter.parameters && filter.parameters.expressions.length > 0) {
 				out += ',';
 				out += filter.parameters.generateCode();

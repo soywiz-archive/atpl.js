@@ -4,6 +4,11 @@ import _strtotime = module('./lib/strtotime');
 import _strip_tags = module('./lib/strip_tags');
 import util = module('util');
 
+export function ensureNumber(value: any) {
+	if (isNumber(value)) return value;
+	return parseFloat(String(value));
+}
+
 export function capitalize(str: string) {
 	str = String(str);
 	return str.charAt(0).toUpperCase() + str.substr(1);

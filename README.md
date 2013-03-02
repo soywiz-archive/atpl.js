@@ -36,6 +36,7 @@ This project will implement the full twig set and will be as fast as possible.
 Supported syntax:
 
  * Inheritance
+ * Conditional inheritance
  * Include
  * if+elseif+else
  * for+else+loop scope variable
@@ -45,11 +46,11 @@ Supported syntax:
  * Filters (all twig filters but 'convert_encoding' that is not required because javascript strings are unicode)
  * Functions (all twig functions but 'constant', 'attribute')
  * Tests (all twig tests but 'constant')
- * Tags (all twig tags but 'embed', 'use', 'sandbox')
+ * Tags (all twig tags but 'use', 'sandbox')
  * value in array
  * value in string
  * set a, b = 'a', 'b'
- * macro support (macro+import+from)S
+ * macro support (macro+import+from)
 
 ```
 {% autoescape %}
@@ -82,9 +83,4 @@ Supported syntax:
 Not-implemented-yet syntax:
 
  * use (horizontal reuse)
- * embed
  * sandbox
-
-```
-...
-```

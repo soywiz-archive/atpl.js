@@ -43,12 +43,13 @@ Supported syntax:
  * Escape (|e) (|e('js')) (|e('css'))...
  * Skip autoescape (|raw)
  * Filters (all twig filters but 'convert_encoding' that is not required because javascript strings are unicode)
- * Functions (all twig functions but 'constant', 'attribute', 'template_from_string')
+ * Functions (all twig functions but 'constant', 'attribute')
  * Tests (all twig tests but 'constant')
- * Tags (all twig tags but 'embed', 'flush', 'use', 'sandbox')
+ * Tags (all twig tags but 'embed', 'use', 'sandbox')
  * value in array
  * value in string
- * macro support (macro+import+from)
+ * set a, b = 'a', 'b'
+ * macro support (macro+import+from)S
 
 ```
 {% autoescape %}
@@ -56,6 +57,7 @@ Supported syntax:
 {% extends "file.atpl" %}
 {% extends cond ? "base1" : "base2" %}
 {% include "template" %}
+{% include "template" with { 'foo' : 'bar' } only %}
 {% block name %}...{% endblock %}
 {% for var in list %}...{% endfor %}
 {% for var in list %}...{% else %}...{% endfor %}
@@ -64,6 +66,7 @@ Supported syntax:
 {% for key in ['a', 'b', 'c'] %}{{ loop.index0 }}{% endfor %}
 {% if condition %}...{% else %}...{% endif %}
 {% if cond1 %}...{% elseif cond2 %}...{% else %}...{% endif %}
+{% set a, b = 'a', 'b' %}
 {{ expression }}
 {{ expression|filter }}
 {{ expression|filter(params) }}
@@ -78,8 +81,9 @@ Supported syntax:
 
 Not-implemented-yet syntax:
 
- * a, b = 'a', 'b'
  * use (horizontal reuse)
+ * embed
+ * sandbox
 
 ```
 ...

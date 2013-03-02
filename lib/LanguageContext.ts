@@ -1,5 +1,8 @@
 ﻿import TemplateConfig = module('./TemplateConfig');
 
+/**
+ * Reusable context that holds tag, function, filter and test definitions.
+ */
 export class LanguageContext {
 	tags:any = {};
 	functions:any = {};

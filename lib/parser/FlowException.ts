@@ -1,6 +1,12 @@
 ///<reference path='../imports.d.ts'/>
 
-export var FlowException = function(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+//export class FlowException extends Error {
+//	constructor(public blockType, public templateParser, public tokenParserContext, public templateTokenReader, public expressionTokenReader) {
+//		super();
+//	}
+//}
+
+export var FlowException = function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 	this.blockType             = blockType;
 	this.templateParser        = templateParser;
 	this.tokenParserContext    = tokenParserContext;

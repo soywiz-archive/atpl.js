@@ -3,6 +3,7 @@ import Format = module('./lib/Format');
 import _strtotime = module('./lib/strtotime');
 import _strip_tags = module('./lib/strip_tags');
 import util = module('util');
+import utils = module('../utils');
 
 export function ensureNumber(value: any) {
 	if (isNumber(value)) return value;
@@ -18,6 +19,50 @@ export function title(str: string) {
 	return String(str).replace(/\w+/g, (word) => {
 		return capitalize(word);
 	});
+}
+
+export function trim(value: any, characters?: string) {
+	if (characters !== undefined) {
+		var regExpQuoted = '[' + utils.quoteRegExp(characters) + ']';
+		var regExpStart = new RegExp('^' + regExpQuoted + '+', '');
+		var regExpEnd = new RegExp('' + regExpQuoted + '+$', '');
+		return String(value)
+			.replace(regExpStart, '')
+			.replace(regExpEnd, '')
+			;
+	} else {
+		return String(value).trim();
+	}
+}
+
+export function number_format(value: any, decimal: number = 0, decimal_point: string = '.', decimal_sep: string = ',') {
+	var precision = Math.pow(10, decimal);
+	var zeroPad = (decimal > 0) ? Array(decimal + 1).join('0') : '';
+	value = ensureNumber(value);
+	value = Math.round(value * precision) / precision;
+	//console.log('***************');
+	//console.log(value);
+	var valueString = String(value);
+	var partsString = valueString.split('.');
+	var integerString = String(partsString[0]);
+	var decimalString = String((partsString.length >= 2) ? partsString[1] : '0');
+	var paddedDecimalString = (decimalString + zeroPad).substr(0, decimal);
+	var outputString = '';
+	//console.log(integerString);
+	for (var n = integerString.length; n >= 0; n -= 3) {
+		//console.log(n);
+		if (n - 3 < 0) {
+			//console.log('  ' + (3 + (n - 3)));
+			outputString = integerString.substr(0, 3 + (n - 3)) + outputString;
+		} else {
+			outputString = integerString.substr(n - 3, 3) + outputString;
+		}
+		if (n - 3 > 0) outputString = decimal_sep + outputString;
+	}
+	if (decimal > 0) {
+		outputString += decimal_point + paddedDecimalString;
+	}
+	return outputString;
 }
 
 export function range(from: any, to: any, step: number = 1): any[] {
@@ -223,11 +268,10 @@ export function escapeUrlString(str: string) {
 	// *     returns 2: 'http%3A%2F%2Fkevin.vanzonneveld.net%2F'
 	// *     example 3: rawurlencode('http://www.google.nl/search?q=php.js&ie=utf-8&oe=utf-8&aq=t&rls=com.ubuntu:en-US:unofficial&client=firefox-a');
 	// *     returns 3: 'http%3A%2F%2Fwww.google.nl%2Fsearch%3Fq%3Dphp.js%26ie%3Dutf-8%26oe%3Dutf-8%26aq%3Dt%26rls%3Dcom.ubuntu%3Aen-US%3Aunofficial%26client%3Dfirefox-a'
-	str = (str + '').toString();
 
 	// Tilde should be allowed unescaped in future versions of PHP (as reflected below), but if you want to reflect current
 	// PHP behavior, you would need to add ".replace(/~/g, '%7E');" to the following.
-	return encodeURIComponent(str)
+	return encodeURIComponent(String(str))
 		.replace(/!/g, '%21')
 		.replace(/'/g, '%27')
 		.replace(/\(/g, '%28')

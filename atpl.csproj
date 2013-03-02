@@ -373,6 +373,12 @@
   <ItemGroup>
     <Content Include="test\fixtures\tags\embed\embed.set" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\filter\filter_complex.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\filter\filter_complex_parameters.set" />
+  </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptTarget>ES3</TypeScriptTarget>
     <TypeScriptIncludeComments>false</TypeScriptIncludeComments>

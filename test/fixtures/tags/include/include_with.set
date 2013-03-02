@@ -1,0 +1,21 @@
+﻿=== TITLE
+include_with tag
+
+=== INPUT
+{}
+
+=== TEMPLATE:include
+{% set lol = 7 -%}
+{{ test }}{{ demo }}{{ lol }}
+
+=== TEMPLATE:main
+{% set test = 2 %}
+{% set demo = 3 %}
+[{% include "include" with { "test" : 1 } %}]
+[{% include "include" with { "test" : 'a' } only %}]
+[{% include "include" only %}]
+
+=== OUTPUT
+[137]
+[a7]
+[7]

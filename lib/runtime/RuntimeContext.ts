@@ -43,8 +43,18 @@ export class RuntimeContext {
 		}
 	}
 
-	createScope(inner: () => void) {
-		this.scope.createScope(inner);
+	createScope(inner: () => void, only: bool = false) {
+		if (only) {
+			var oldScope = this.scope;
+			try {
+				this.scope = new Scope.Scope({});
+				inner();
+			} finally {
+				this.scope = oldScope;
+			}
+		} else {
+			this.scope.createScope(inner);
+		}
 	}
 
 	captureOutput(callback: () => void) {
@@ -134,15 +144,18 @@ export class RuntimeContext {
 		return this.$call(this.languageContext.tests, $function, $arguments);
 	}
 
-	include(info: any) {
-		if (RuntimeUtils.isString(info)) {
-			var name = <string>info;
-			var IncludeTemplate = new ((this.templateParser.compile(name, this)).class)();
-			IncludeTemplate.__main(this);
-		} else {
-			var IncludeTemplate = new (info.class )();
-			IncludeTemplate.__main(this);
-		}
+	include(info: any, scope: any, only: bool = false) {
+		this.createScope(() => {
+			if (scope !== undefined) this.scope.setAll(scope);
+			if (RuntimeUtils.isString(info)) {
+				var name = <string>info;
+				var IncludeTemplate = new ((this.templateParser.compile(name, this)).class )();
+				IncludeTemplate.__main(this);
+			} else {
+				var IncludeTemplate = new (info.class )();
+				IncludeTemplate.__main(this);
+			}
+		}, only);
 	}
 
 	import(name: string) {

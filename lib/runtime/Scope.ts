@@ -37,4 +37,8 @@
 	set(key, value) {
 		return this.scope[key] = value;
 	}
+
+	setAll(object) {
+		for (var key in object) this.set(key, object[key]);
+	}
 }

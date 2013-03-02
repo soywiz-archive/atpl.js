@@ -339,15 +339,26 @@ export class DefaultTags {
 	}
 
 	// INCLUDE
-	static include(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static include(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader: TokenReader.TokenReader) {
+		var node = new ParserNode.ParserNodeContainer();
+		node.add(new ParserNode.ParserNodeRaw('runtimeContext.include('));
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+		node.add(expressionNode);
+		if (expressionTokenReader.checkAndMoveNext(['with'])) {
+			node.add(new ParserNode.ParserNodeRaw(','));
+			node.add((new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression());
+		} else {
+			node.add(new ParserNode.ParserNodeRaw(', undefined'));
+		}
+		if (expressionTokenReader.checkAndMoveNext(['only'])) {
+			node.add(new ParserNode.ParserNodeRaw(', true'));
+		} else {
+			node.add(new ParserNode.ParserNodeRaw(', false'));
+		}
 		checkNoMoreTokens(expressionTokenReader);
+		node.add(new ParserNode.ParserNodeRaw(');'));
 
-		return new ParserNode.ParserNodeContainer([
-			new ParserNode.ParserNodeRaw('runtimeContext.include('),
-			expressionNode,
-			new ParserNode.ParserNodeRaw(');')
-		]);
+		return node;
 	}
 
 	// RAW/VERBATIM

@@ -610,3 +610,36 @@ export function inArray(value: any, array: any) {
 	}
 	return false;
 }
+
+export function getFunctionParameterNames(func: Function): string[] {
+	var funStr = func.toString();
+	return funStr.slice(funStr.indexOf('(') + 1, funStr.indexOf(')')).match(/([^\s,]+)/g);
+}
+
+export function callFunctionWithNamedArguments($context: any, $function: Function, $arguments: any[], $namedArguments: string[]) {
+	if ($namedArguments !== null && $namedArguments !== undefined) {
+		var argumentNames = getFunctionParameterNames($function);
+		var namedPairs = {};
+		var unnamedList = [];
+		//console.log('------------------');
+		for (var n = 0; n < $arguments.length; n++) {
+			//console.log($namedArguments[n]);
+			if ($namedArguments[n] === null) {
+				unnamedList.push($arguments[n]);
+			} else {
+				namedPairs[$namedArguments[n]] = $arguments[n];
+			}
+		}
+		$arguments = [];
+		//console.log(namedPairs);
+		//console.log(unnamedList);
+		argumentNames.forEach(argumentName => {
+			if ($namedArguments.indexOf(argumentName) != -1) {
+				$arguments.push(namedPairs[argumentName]);
+			} else {
+				$arguments.push(unnamedList.shift());
+			}
+		});
+	}
+	return $function.apply($context, $arguments);
+}

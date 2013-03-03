@@ -197,7 +197,7 @@ export class ParserNodeAssignment extends ParserNodeExpression {
 export class ParserNodeCommaExpression extends ParserNode {
 	type: string = 'ParserNodeCommaExpression';
 
-	constructor(public expressions: ParserNodeExpression[]) {
+	constructor(public expressions: ParserNodeExpression[], public names: string[] = null) {
 		super();
 	}
 
@@ -243,9 +243,9 @@ export class ParserNodeFunctionCall extends ParserNodeExpression {
 	generateCode() {
 		if (this.functionExpr instanceof ParserNodeArrayAccess) {
 			var arrayAccess = <ParserNodeArrayAccess>this.functionExpr;
-			return 'runtimeContext.callContext(' + arrayAccess.object.generateCode() + ', ' + arrayAccess.key.generateCode() + ', [' + this.arguments.generateCode() + '])';
+			return 'runtimeContext.callContext(' + arrayAccess.object.generateCode() + ', ' + arrayAccess.key.generateCode() + ', [' + this.arguments.generateCode() + '], ' + JSON.stringify(this.arguments.names) + ')';
 		} else {
-			return 'runtimeContext.call(' + this.functionExpr.generateCode() + ', [' + this.arguments.generateCode() + '])';
+			return 'runtimeContext.call(' + this.functionExpr.generateCode() + ', [' + this.arguments.generateCode() + '], ' + JSON.stringify(this.arguments.names) + ')';
 		}
 	}
 }

@@ -106,40 +106,40 @@ export class RuntimeContext {
 		this.currentAutoescape = this.defaultAutoescape;
 	}
 
-	$call(functionList: any, $function: any, $arguments: any[]) {
+	$call(functionList: any, $function: any, $arguments: any[], $argumentNames?: any[]) {
 		if (functionList !== undefined && functionList !== null) {
 			//console.log('call:' + $function);
 			if (RuntimeUtils.isString($function)) $function = functionList[$function];
-			return this.$call2($function, $arguments);
+			return this.$call2($function, $arguments, $argumentNames);
 		}
 		return null;
 	}
 
-	$call2($function: any, $arguments: any[]) {
+	$call2($function: any, $arguments: any[], $argumentNames?: any[]) {
 		if ($function !== undefined && $function !== null) {
 			if ($function instanceof Function) {
-				return $function.apply(this, $arguments);
+				return RuntimeUtils.callFunctionWithNamedArguments(this, $function, $arguments, $argumentNames);
 			}
 		}
 		return null;
 	}
 
-	callContext($context: any, $functionName: any, $arguments: any[]) {
+	callContext($context: any, $functionName: any, $arguments: any[], $argumentNames?: any[]) {
 		if ($context !== undefined && $context !== null)
 		{
 			var $function = $context[$functionName];
 			if ($function instanceof Function) {
-				return $function.apply($context, $arguments);
+				return RuntimeUtils.callFunctionWithNamedArguments($context, $function, $arguments, $argumentNames);
 			}
 		}
 		return null;
 	}
 
-	call($function: any, $arguments: any[]) {
+	call($function: any, $arguments: any[], $argumentNames: any[]) {
 		if (this.languageContext.functions[$function] === undefined) {
-			return this.$call2(this.scope.get($function), $arguments);
+			return this.$call2(this.scope.get($function), $arguments, $argumentNames);
 		} else {
-			return this.$call(this.languageContext.functions, $function, $arguments);
+			return this.$call(this.languageContext.functions, $function, $arguments, $argumentNames);
 		}
 	}
 

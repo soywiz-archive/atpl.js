@@ -1,0 +1,17 @@
+﻿=== TITLE
+named arguments
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{% for i in range(low=1, high=10, step=2) %}{{ i }},{% endfor %}
+{% for i in range(1, high=10, step=2) %}{{ i }},{% endfor %}
+{% for i in range(10, low=1, step=2) %}{{ i }},{% endfor %}
+{% for i in range(1, 10, 2) %}{{ i }},{% endfor %}
+
+=== OUTPUT
+1,3,5,7,9,
+1,3,5,7,9,
+1,3,5,7,9,
+1,3,5,7,9,

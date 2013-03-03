@@ -14,13 +14,32 @@ export class ExpressionParser {
 	}
 
 	parseCommaExpression(): ParserNode.ParserNodeCommaExpression {
-		var expressions: ParserNode.ParserNodeExpression[] = [];
+		var expressions: ParserNode.ParserNodeExpression[] = []; 
 		while (true) {
 			expressions.push(this.parseExpression());
 			if (this.tokenReader.peek().value != ',') break;
 			this.tokenReader.skip();
 		}
 		return new ParserNode.ParserNodeCommaExpression(expressions);
+	}
+
+	parseCommaExpressionWithNames(): ParserNode.ParserNodeCommaExpression {
+		var expressions: ParserNode.ParserNodeExpression[] = [];
+		var namedCount = 0;
+		var names: string[] = [];
+		while (true) {
+			if (this.tokenReader.peek(1).value == '=') {
+				names.push(this.parseIdentifierOnly().value);
+				namedCount++;
+				this.tokenReader.skip();
+			} else {
+				names.push(null);
+			}
+			expressions.push(this.parseExpression());
+			if (this.tokenReader.peek().value != ',') break;
+			this.tokenReader.skip();
+		}
+		return new ParserNode.ParserNodeCommaExpression(expressions, (namedCount > 0) ? names : null);
 	}
 
 	parseExpression(): ParserNode.ParserNodeExpression {
@@ -161,7 +180,7 @@ export class ExpressionParser {
 				this.tokenReader.skip();
 				var arguments;
 				if (this.tokenReader.peek().value != ')') {
-					arguments = this.parseCommaExpression();
+					arguments = this.parseCommaExpressionWithNames();
 				} else {
 					arguments = new ParserNode.ParserNodeCommaExpression([]);
 				}

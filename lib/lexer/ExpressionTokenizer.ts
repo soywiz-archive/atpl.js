@@ -1,7 +1,7 @@
 ///<reference path='../imports.d.ts'/>
 
 import StringReader = module('./StringReader');
-import utils = module('../utils');
+import RuntimeUtils = module('../runtime/RuntimeUtils');
 
 /**
  * Token
@@ -104,7 +104,7 @@ export class ExpressionTokenizer {
 						var result = this.stringReader.findRegexp(/^(0b[0-1]+|0x[0-9A-Fa-f]+|0[0-7]*|[1-9]\d*(\.\d+)?)/);
 						if (result.position !== 0) throw (new Error("Invalid numeric"));
 						var value = this.stringReader.readChars(result.length);
-						emitToken('number', value, utils.interpretNumber(value));
+						emitToken('number', value, RuntimeUtils.interpretNumber(value));
 					}
 					else {
 						var operatorIndex = -1;

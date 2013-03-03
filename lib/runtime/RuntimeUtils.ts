@@ -1,8 +1,56 @@
 ﻿import DateFormat = module('./lib/DateFormat');
 import Format = module('./lib/Format');
-import _strtotime = module('./lib/strtotime');
 import util = module('util');
-import utils = module('../utils');
+
+export function normalizePath(path) {
+	var components = [];
+	var notNormalizedComponents = path.split(/[\\\/]/g);
+	path = path.replace(/\\/g, '/');
+	for (var index in notNormalizedComponents) {
+		var component = notNormalizedComponents[index];
+		switch (component) {
+			case '':
+				break;
+			case '.':
+				break;
+			case '..':
+				if (components.length > 0) components.pop();
+				break;
+			default:
+				components.push(component);
+				break;
+		}
+	}
+	var retval = components.join('/');
+	if (path.match(/^\//)) {
+		retval = '/' + retval;
+	}
+	return retval;
+}
+
+export function quoteRegExp(str: string): string {
+	return (str + '').replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
+};
+
+export function pathIsInside(basePath, path) {
+	basePath = normalizePath(basePath) + '/';
+	path = normalizePath(path) + '/';
+
+	return (path.substr(0, basePath.length) == basePath);
+}
+
+export function interpretNumber(number, radix?) {
+	number = String(number);
+	if (number == '0') return 0;
+	if (radix === undefined) {
+		if (number.substr(0, 2).toLowerCase() == '0x') return interpretNumber(number.substr(2), 16);
+		if (number.substr(0, 2).toLowerCase() == '0b') return interpretNumber(number.substr(2), 2);
+		if (number.substr(0, 1) == '0') return interpretNumber(number.substr(1), 8);
+		radix = 10;
+	}
+	if (radix == 10) return parseFloat(number);
+	return parseInt(number, radix);
+}
 
 export function ensureArray(value: any): any[] {
 	if (isArray(value)) return value;
@@ -27,7 +75,7 @@ export function title(str: string) {
 
 export function trim(value: any, characters?: string) {
 	if (characters !== undefined) {
-		var regExpQuoted = '[' + utils.quoteRegExp(characters) + ']';
+		var regExpQuoted = '[' + quoteRegExp(characters) + ']';
 		var regExpStart = new RegExp('^' + regExpQuoted + '+', '');
 		var regExpEnd = new RegExp('' + regExpQuoted + '+$', '');
 		return String(value)
@@ -77,38 +125,6 @@ export function range(from: any, to: any, step: number = 1): any[] {
 }
 
 export function strip_tags(input: string, allowed?: string): string {
-	// http://kevin.vanzonneveld.net
-	// +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-	// +   improved by: Luke Godfrey
-	// +      input by: Pul
-	// +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-	// +   bugfixed by: Onno Marsman
-	// +      input by: Alex
-	// +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-	// +      input by: Marc Palau
-	// +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-	// +      input by: Brett Zamir (http://brett-zamir.me)
-	// +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-	// +   bugfixed by: Eric Nagel
-	// +      input by: Bobby Drake
-	// +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-	// +   bugfixed by: Tomasz Wesolowski
-	// +      input by: Evertjan Garretsen
-	// +    revised by: Rafał Kukawski (http://blog.kukawski.pl/)
-	// *     example 1: strip_tags('<p>Kevin</p> <br /><b>van</b> <i>Zonneveld</i>', '<i><b>');
-	// *     returns 1: 'Kevin <b>van</b> <i>Zonneveld</i>'
-	// *     example 2: strip_tags('<p>Kevin <img src="someimage.png" onmouseover="someFunction()">van <i>Zonneveld</i></p>', '<p>');
-	// *     returns 2: '<p>Kevin van Zonneveld</p>'
-	// *     example 3: strip_tags("<a href='http://kevin.vanzonneveld.net'>Kevin van Zonneveld</a>", "<a>");
-	// *     returns 3: '<a href='http://kevin.vanzonneveld.net'>Kevin van Zonneveld</a>'
-	// *     example 4: strip_tags('1 < 5 5 > 1');
-	// *     returns 4: '1 < 5 5 > 1'
-	// *     example 5: strip_tags('1 <br/> 1');
-	// *     returns 5: '1  1'
-	// *     example 6: strip_tags('1 <br/> 1', '<br>');
-	// *     returns 6: '1  1'
-	// *     example 7: strip_tags('1 <br/> 1', '<br><br/>');
-	// *     returns 7: '1 <br/> 1'
 	allowed = (((allowed || "") + "").toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join(''); // making sure the allowed arg is a string containing only tags in lowercase (<a><b><c>)
 	var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi,
 	  commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
@@ -132,8 +148,121 @@ export function split(value: string, delimiter: string, limit?: number): string[
 	}
 }
 
-export function strtotime(text: string, now?: any): any {
-	return _strtotime.strtotime(text, now);
+export function strtotime(text: any, now?: any): any {
+	if (!text) return null;
+
+	if (text instanceof Date) return text;
+
+	text = String(text);
+
+	// Unecessary spaces
+	text = text.trim()
+		.replace(/\s{2,}/g, ' ')
+		.replace(/[\t\r\n]/g, '')
+		.toLowerCase();
+
+	var parse;
+	var parsed;
+	var match;
+
+	var date;
+	if (now instanceof Date) {
+		date = now;
+	} else if (now) {
+		date = new Date(now * 1000);
+	} else {
+		date = new Date();
+	}
+
+	if (match = text.match(/^now\s*/i)) {
+		text = text.substr(match[0].length);
+		date = new Date();
+	}
+
+	if (!isNaN(parse = Date.parse(text))) {
+		date = new Date(parse);
+		text = '';
+	}
+
+	if (match = text.match(/^(\d{2,4})-(\d{2})-(\d{2})(?:\s(\d{1,2}):(\d{2})(?::\d{2})?)?(?:\.(\d+)?)?/)) {
+		text = text.substr(match[0].length);
+		var year = (<any>match[1] >= 0 && <any>match[1] <= 69) ? <any>(+match[1] + 2000) : <any>(match[1]);
+		date = new Date(
+			year,
+			parseInt(match[2], 10) - 1,
+			(<any>match[3]),
+			(<any>match[4]) || 0,
+			(<any>match[5]) || 0,
+			(<any>match[6]) || 0,
+			(<any>match[7]) || 0
+		);
+	}
+
+	var days = { 'sun': 0, 'mon': 1, 'tue': 2, 'wed': 3, 'thu': 4, 'fri': 5, 'sat': 6 };
+	var ranges = { 'yea': 'FullYear', 'mon': 'Month', 'day': 'Date', 'hou': 'Hours', 'min': 'Minutes', 'sec': 'Seconds' };
+
+	function lastNext(type, range, modifier) {
+		var day = days[range];
+
+		if (typeof (day) !== 'undefined') {
+			var diff = day - date.getDay();
+
+			if (diff === 0) diff = 7 * modifier;
+			else if (diff > 0 && type === 'last') diff -= 7;
+			else if (diff < 0 && type === 'next') diff += 7;
+
+			date.setDate(date.getDate() + diff);
+		}
+	}
+	function process(val: string) {
+		//console.log(val);
+		var split = val.match(/^([+-]?\d+)\s*(\w+)$/);
+		var type = split[1];
+		var range = split[2].substring(0, 3);
+		var typeIsNumber = /\d+/.test(type);
+
+		var ago = split[2] === 'ago';
+		var num = (type === 'last' ? -1 : 1) * (ago ? -1 : 1);
+
+		if (typeIsNumber)
+			num *= parseInt(type, 10);
+
+		if (ranges.hasOwnProperty(range))
+			return date['set' + ranges[range]](date['get' + ranges[range]]() + num);
+		else if (range === 'wee')
+			return date.setDate(date.getDate() + (num * 7));
+
+		if (type === 'next' || type === 'last')
+			lastNext(type, range, num);
+		else if (!typeIsNumber)
+			return false;
+
+		return true;
+	}
+
+	var regex = '([+-]?\\d+\\s*' +
+		'(years?|months?|weeks?|days?|hours?|min|minutes?|sec|seconds?' +
+		'|sun\\.?|sunday|mon\\.?|monday|tue\\.?|tuesday|wed\\.?|wednesday' +
+		'|thu\\.?|thursday|fri\\.?|friday|sat\\.?|saturday)|(last|next)\\s' +
+		'(years?|months?|weeks?|days?|hours?|min|minutes?|sec|seconds?' +
+		'|sun\\.?|sunday|mon\\.?|monday|tue\\.?|tuesday|wed\\.?|wednesday' +
+		'|thu\\.?|thursday|fri\\.?|friday|sat\\.?|saturday))(\\sago)?';
+
+	if (text.length > 0) {
+		match = text.match(new RegExp(regex, 'gi'));
+		if (!match)
+			return false;
+
+		for (var i = 0, len = match.length; i < len; i++)
+			if (!process(match[i]))
+				return false;
+
+		// ECMAScript 5 only
+		//if (!match.every(process))
+		//	return false;
+	}
+
+	return (date.getTime() / 1000);
 }
 
 export function rangeNumbers(from: any, to: any, step: any = 1): number[] {
@@ -289,34 +418,5 @@ export function escapeCssString(text: string) {
 
 // rawurlencode
 export function escapeUrlString(str: string) {
-	// http://kevin.vanzonneveld.net
-	// +   original by: Brett Zamir (http://brett-zamir.me)
-	// +      input by: travc
-	// +      input by: Brett Zamir (http://brett-zamir.me)
-	// +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-	// +      input by: Michael Grier
-	// +   bugfixed by: Brett Zamir (http://brett-zamir.me)
-	// +      input by: Ratheous
-	// +      reimplemented by: Brett Zamir (http://brett-zamir.me)
-	// +   bugfixed by: Joris
-	// +      reimplemented by: Brett Zamir (http://brett-zamir.me)
-	// %          note 1: This reflects PHP 5.3/6.0+ behavior
-	// %        note 2: Please be aware that this function expects to encode into UTF-8 encoded strings, as found on
-	// %        note 2: pages served as UTF-8
-	// *     example 1: rawurlencode('Kevin van Zonneveld!');
-	// *     returns 1: 'Kevin%20van%20Zonneveld%21'
-	// *     example 2: rawurlencode('http://kevin.vanzonneveld.net/');
-	// *     returns 2: 'http%3A%2F%2Fkevin.vanzonneveld.net%2F'
-	// *     example 3: rawurlencode('http://www.google.nl/search?q=php.js&ie=utf-8&oe=utf-8&aq=t&rls=com.ubuntu:en-US:unofficial&client=firefox-a');
-	// *     returns 3: 'http%3A%2F%2Fwww.google.nl%2Fsearch%3Fq%3Dphp.js%26ie%3Dutf-8%26oe%3Dutf-8%26aq%3Dt%26rls%3Dcom.ubuntu%3Aen-US%3Aunofficial%26client%3Dfirefox-a'
-
-	// Tilde should be allowed unescaped in future versions of PHP (as reflected below), but if you want to reflect current
-	// PHP behavior, you would need to add ".replace(/~/g, '%7E');" to the following.
-	return encodeURIComponent(String(str))
-		.replace(/!/g, '%21')
-		.replace(/'/g, '%27')
-		.replace(/\(/g, '%28')
-		.replace(/\)/g, '%29')
-		.replace(/\*/g, '%2A')
-	;
+	return encodeURIComponent(String(str)).replace(/[!'\(\)\*]/g, (match) => { return '%' + (('00' + match.charCodeAt(0).toString(16)).substr(-2)); });
 }

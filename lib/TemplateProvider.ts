@@ -2,7 +2,7 @@
 
 import fs    = module('fs');
 import util  = module('util');
-import utils = module('./utils');
+import RuntimeUtils = module('./runtime/RuntimeUtils');
 
 export interface TemplateProvider {
 	getSync(path: string, cached: bool): string;
@@ -14,7 +14,7 @@ export class FileSystemTemplateProvider implements TemplateProvider {
 	cacheObject: any = {};
 
 	constructor(basePath: string) {
-		this.basePath = utils.normalizePath(basePath);
+		this.basePath = RuntimeUtils.normalizePath(basePath);
 		this.basePathComponents = this.basePath.split('/');
 		//console.log(this.basePath);
 		//process.exit(0);
@@ -26,7 +26,7 @@ export class FileSystemTemplateProvider implements TemplateProvider {
 		//console.log(path);
 
 		if (this.cacheObject[path] === undefined) {
-			var normalizedPath = utils.normalizePath(this.basePath + '/' + path);
+			var normalizedPath = RuntimeUtils.normalizePath(this.basePath + '/' + path);
 
 			if (normalizedPath.split('/').slice(0, this.basePathComponents.length) == this.basePathComponents) {
 				throw (new Error("Outside the Base Path"));

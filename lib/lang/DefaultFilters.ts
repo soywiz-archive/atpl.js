@@ -1,6 +1,5 @@
 ﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
 import RuntimeContext = module('../runtime/RuntimeContext');
-import utils = module('../utils');
 
 export class DefaultFilters {
 	/**
@@ -155,7 +154,7 @@ export class DefaultFilters {
 
 	// http://twig.sensiolabs.org/doc/filters/replace.html
 	static replace(value: string, replace_pairs: any) {
-		return String(value).replace(new RegExp("(" + Object.keys(replace_pairs).map(item => utils.quoteRegExp(item)).join('|') + ")", "g"), (match) => {
+		return String(value).replace(new RegExp("(" + Object.keys(replace_pairs).map(item => RuntimeUtils.quoteRegExp(item)).join('|') + ")", "g"), (match) => {
 			return replace_pairs[match];
 		});
 	}

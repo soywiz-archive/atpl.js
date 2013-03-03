@@ -358,6 +358,18 @@
   <ItemGroup>
     <Content Include="test\fixtures\tags\use\deep.set" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\use\deep_empty.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\use\multiple.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\use\multiple_aliases.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\operators\operators_bit.set" />
+  </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptTarget>ES3</TypeScriptTarget>
     <TypeScriptIncludeComments>false</TypeScriptIncludeComments>

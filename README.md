@@ -44,13 +44,15 @@ Supported syntax:
  * Escape (|e) (|e('js')) (|e('css'))...
  * Skip autoescape (|raw)
  * Filters (all twig filters but 'convert_encoding' that is not required because javascript strings are unicode)
- * Functions (all twig functions but 'constant', 'attribute')
+ * Functions (all twig functions but 'constant')
  * Tests (all twig tests but 'constant')
- * Tags (all twig tags but 'use', 'sandbox')
+ * Tags (all twig tags)
  * value in array
  * value in string
  * set a, b = 'a', 'b'
  * macro support (macro+import+from)
+ * sandbox
+ * use (horizontal reuse)
 
 ```
 {% autoescape %}
@@ -79,8 +81,3 @@ Supported syntax:
 {{ 3 in [1, 2, 3, 4] }}
 {{ {'key':'value','key2':'value2'} }}
 ```
-
-Not-implemented-yet syntax:
-
- * use (horizontal reuse)
- * sandbox

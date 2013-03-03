@@ -1,1 +1,1 @@
-﻿///<reference path='../typescript-node-definitions/node.d.ts'/>
+﻿///<reference path='./node.d.ts'/>

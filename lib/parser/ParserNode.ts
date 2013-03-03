@@ -294,6 +294,12 @@ export class ParserNodeBinaryOperation extends ParserNodeExpression {
 
 	generateCode() {
 		switch (this.operator) {
+			case 'b-or':
+				return '("" + ' + this.left.generateCode() + ' | ' + this.right.generateCode() + ')';
+			case 'b-and':
+				return '("" + ' + this.left.generateCode() + ' & ' + this.right.generateCode() + ')';
+			case 'b-xor':
+				return '("" + ' + this.left.generateCode() + ' ^ ' + this.right.generateCode() + ')';
 			case '~':
 				return '("" + ' + this.left.generateCode() + ' + ' + this.right.generateCode() + ')';
 			case '..':

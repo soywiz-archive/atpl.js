@@ -108,33 +108,38 @@ export class ExpressionTokenizer {
 					}
 					else {
 						var operatorIndex = -1;
-						var current3Chars = this.stringReader.peekChars(3);
-						var current2Chars = this.stringReader.peekChars(2);
-						
+						var _parts;
+						var currentChars = this.stringReader.peekChars(5);
+
+						// Found a bit operator
+						if (_parts = currentChars.match(/^(b-and|b-or|b-xor)/)) {
+							emitToken('operator', _parts[0]);
+							this.stringReader.skipChars(_parts[0].length);
+						}
 						// Found a 3 character operator.
-						if (-1 != (operatorIndex = ExpressionTokenizer.operators3.indexOf(current2Chars))) {
-							emitToken('operator', current3Chars);
+						else if (-1 != (operatorIndex = ExpressionTokenizer.operators3.indexOf(currentChars.substr(0, 3)))) {
+							emitToken('operator', currentChars.substr(0, 3));
 							this.stringReader.skipChars(3);
 						}
 						// Found a 2 character operator.
-						else if (-1 != (operatorIndex = ExpressionTokenizer.operators2.indexOf(current2Chars))) {
-							emitToken('operator', current2Chars);
+						else if (-1 != (operatorIndex = ExpressionTokenizer.operators2.indexOf(currentChars.substr(0, 2)))) {
+							emitToken('operator', currentChars.substr(0, 2));
 							this.stringReader.skipChars(2);
 						}
-						// Found a 1 character operator.
+							// Found a 1 character operator.
 						else if (-1 != (operatorIndex = ExpressionTokenizer.operators1.indexOf(currentChar))) {
 							emitToken('operator', currentChar);
 							this.stringReader.skipChars(1);
 						}
-						// An ID
+							// An ID
 						else if (currentChar.match(/^[a-z_\$]$/i)) {
 							var result = this.stringReader.findRegexp(/^[a-z_\$]\w*/i);
-							if (result.position !== 0) throw(new Error("Assertion failed! Not expected!"));
+							if (result.position !== 0) throw (new Error("Assertion failed! Not expected!"));
 							var value = this.stringReader.readChars(result.length);
 							emitToken('id', value);
 						} else {
 							this.stringReader.skipChars(1);
-							throw(new Error("Unknown token '" + currentChar + "' in '" + this.stringReader.peekChars(10) + "'"));
+							throw (new Error("Unknown token '" + currentChar + "' in '" + this.stringReader.peekChars(10) + "'"));
 						}
 					}
 				break;

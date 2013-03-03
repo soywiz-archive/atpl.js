@@ -1,0 +1,15 @@
+﻿=== TITLE
+bit operators
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{{ 2 b-or 7 }}
+{{ 2 b-xor 7 }}
+{{ 2 b-and 7 }}
+
+=== OUTPUT
+7
+5
+2

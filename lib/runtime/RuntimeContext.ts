@@ -3,7 +3,9 @@
 import RuntimeUtils = module('./RuntimeUtils');
 import LanguageContext = module('../LanguageContext');
 //import TemplateParser = module('../parser/TemplateParser');
+import TokenParserContext = module('../parser/TokenParserContext');
 import Scope = module('./Scope');
+import SandboxPolicy = module('../SandboxPolicy');
 
 export class RuntimeContext {
 	output: string = '';
@@ -12,6 +14,7 @@ export class RuntimeContext {
 	defaultAutoescape: any = true;
 	currentBlockName: string = 'none';
 	removeFollowingSpaces: bool = false;
+	sandboxPolicy: SandboxPolicy.SandboxPolicy = new SandboxPolicy.SandboxPolicy();
 
 	LeafTemplate: any;
 	CurrentTemplate: any;
@@ -148,15 +151,15 @@ export class RuntimeContext {
 		return this.$call(this.languageContext.tests, $function, $arguments);
 	}
 
-	include(info: any, scope: any = {}, only: bool = false) {
+	include(info: any, scope: any = {}, only: bool = false, tokenParserContextCommonInfo?: any) {
 		this.createScope(() => {
 			if (scope !== undefined) this.scope.setAll(scope);
 			if (RuntimeUtils.isString(info)) {
 				var name = <string>info;
-				var IncludeTemplate = new ((this.templateParser.compile(name, this)).class )();
+				var IncludeTemplate = new ((this.templateParser.compile(name, this, new TokenParserContext.TokenParserContextCommon(tokenParserContextCommonInfo))).class )();
 				IncludeTemplate.__main(this);
 			} else {
-				var IncludeTemplate = new (info.class )();
+				var IncludeTemplate = new (info.class)();
 				IncludeTemplate.__main(this);
 			}
 		}, only);
@@ -299,15 +302,11 @@ export class RuntimeContext {
 		return false;
 	}
 
-	inArray(value: any, array: any) {
-		if (array instanceof Array) return array.indexOf(value) != -1;
-		if (RuntimeUtils.isString(value) && RuntimeUtils.isString(array)) {
-			return (<string>array).indexOf(<string>value) != -1;
-		}
-		return false;
-	}
-
 	ternaryShortcut(value: any, _default: any) {
 		return value ? value : _default;
+	}
+
+	inArray(value: any, array: any) {
+		return RuntimeUtils.inArray(value, array);
 	}
 }

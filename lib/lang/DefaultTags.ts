@@ -1,5 +1,4 @@
 ﻿import ExpressionParser = module('../parser/ExpressionParser');
-import FlowException = module('../parser/FlowException');
 import ParserNode = module('../parser/ParserNode');
 import TemplateParser = module('../parser/TemplateParser');
 import TokenParserContext = module('../parser/TokenParserContext');
@@ -16,7 +15,7 @@ function checkNoMoreTokens(expressionTokenReader) {
 }
 
 function _flowexception(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-	throw(new FlowException.FlowException(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader));
+	throw(new TemplateParser.FlowException(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader));
 }
 
 function handleOpenedTag(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader, handlers, innerNodeHandler: (node: ParserNode.ParserNode) => void) {
@@ -30,7 +29,7 @@ function handleOpenedTag(blockType: string, templateParser: TemplateParser.Templ
 			//console.log(node);
 			innerNodeHandler(node);
 		} catch (e) {
-			if (!(e instanceof FlowException.FlowException)) throw (e);
+			if (!(e instanceof TemplateParser.FlowException)) throw (e);
 			var handler = handlers[e.blockType];
 			if (handler !== undefined) {
 				if (handler(e)) return;
@@ -183,7 +182,7 @@ export class DefaultTags {
 	// autoescape
 	static endautoescape = _flowexception;
 	static autoescape(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
-		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
 		var innerNode = new ParserNode.ParserNodeContainer();
@@ -201,7 +200,7 @@ export class DefaultTags {
 
 	// DO/SET
 	static set (blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
-		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
+		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext);
 		var nodeIds = expressionParser.parseIdentifierCommaList();
 		expressionTokenReader.expectAndMoveNext([ '=' ]);
 		var nodeValues = expressionParser.parseCommaExpression();
@@ -218,7 +217,7 @@ export class DefaultTags {
 		return container;
 	}
 	static $do(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
-		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
 		return new ParserNode.ParserNodeStatementExpression(expressionNode);
@@ -229,7 +228,7 @@ export class DefaultTags {
 	static endembed = _flowexception;
 	static embed(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var expressionString = expressionTokenReader.getSliceWithCallback(() => {
-			var includeName = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+			var includeName = (new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		}).map(item => item.rawValue);
 		checkNoMoreTokens(expressionTokenReader);
 
@@ -259,7 +258,7 @@ export class DefaultTags {
 
 		var filterNode = new ParserNodeStatementFilter(innerNode);
 
-		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
+		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext);
 		while (true) {
 			var filterName = (<any>expressionParser.parseIdentifier()).value;
 			var parameters = null;
@@ -299,7 +298,7 @@ export class DefaultTags {
 	// MACRO/FROM/IMPORTUSE
 	static endmacro = _flowexception;
 	static macro(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
-		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
+		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext);
 		var macroName = expressionTokenReader.read().value;
 		var paramNames = [];
 		expressionTokenReader.expectAndMoveNext(['(']);
@@ -342,7 +341,7 @@ export class DefaultTags {
 
 	}
 	static from(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
-		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
+		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext);
 		var fileNameNode = expressionParser.parseExpression();
 		expressionTokenReader.expectAndMoveNext(['import']);
 
@@ -368,7 +367,7 @@ export class DefaultTags {
 		]);
 	}
 	static $import(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
-		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
+		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext);
 		var fileNameNode = expressionParser.parseExpression();
 		expressionTokenReader.expectAndMoveNext(['as']);
 		var aliasNode = <ParserNode.ParserNodeLeftValue>expressionParser.parseIdentifier();
@@ -382,13 +381,14 @@ export class DefaultTags {
 
 	// INCLUDE
 	static include(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
+		//console.log(tokenParserContext.common);
 		var node = new ParserNode.ParserNodeContainer();
 		node.add(new ParserNode.ParserNodeRaw('runtimeContext.include('));
-		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		node.add(expressionNode);
 		if (expressionTokenReader.checkAndMoveNext(['with'])) {
 			node.add(new ParserNode.ParserNodeRaw(','));
-			node.add((new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression());
+			node.add((new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression());
 		} else {
 			node.add(new ParserNode.ParserNodeRaw(', undefined'));
 		}
@@ -397,6 +397,7 @@ export class DefaultTags {
 		} else {
 			node.add(new ParserNode.ParserNodeRaw(', false'));
 		}
+		node.add(new ParserNode.ParserNodeRaw(', ' + JSON.stringify(tokenParserContext.common.serialize())));
 		checkNoMoreTokens(expressionTokenReader);
 		node.add(new ParserNode.ParserNodeRaw(');'));
 
@@ -435,8 +436,29 @@ export class DefaultTags {
 	static verbatim = DefaultTags.raw;
 
 	// SANDBOX
+	// http://twig.sensiolabs.org/doc/tags/sandbox.html
+	static endsandbox = _flowexception;
 	static sandbox(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
-		throw (new Error("Not implemented tag [sandbox]"));
+		checkNoMoreTokens(expressionTokenReader);
+
+		var innerNode = new ParserNode.ParserNodeContainer();
+
+		tokenParserContext.common.setSandbox(() => {
+			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+				'endsandbox': (e) => {
+					return true;
+				},
+			}, (node) => {
+				innerNode.add(node);
+			});
+		});
+
+		return new ParserNode.ParserNodeContainer([
+			new ParserNode.ParserNodeRaw('runtimeContext.createScope(function() { '),
+			new ParserNode.ParserNodeRaw('  runtimeContext.scopeSet("__sandboxed", true);'),
+			innerNode,
+			new ParserNode.ParserNodeRaw('});')
+		]);
 	}
 
 	// SPACELESS
@@ -472,7 +494,7 @@ export class DefaultTags {
 	static $if(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var didElse = false;
 
-		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
 
@@ -488,7 +510,7 @@ export class DefaultTags {
 			'elseif': (e) => {
 				if (didElse) throw (new Error("Can't put 'elseif' after the 'else'"));
 
-				var expressionNode = (new ExpressionParser.ExpressionParser(e.expressionTokenReader)).parseExpression();
+				var expressionNode = (new ExpressionParser.ExpressionParser(e.expressionTokenReader, tokenParserContext)).parseExpression();
 				checkNoMoreTokens(expressionTokenReader);
 				parserNodeIf.addCaseCondition(expressionNode);
 			},
@@ -529,7 +551,7 @@ export class DefaultTags {
 
 	// EXTENDS
 	static $extends(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
-		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
+		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
 		return new ParserNode.ParserNodeContainer([
@@ -543,7 +565,7 @@ export class DefaultTags {
 	static $endfor = _flowexception;
 	static $for(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var didElse = false;
-		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
+		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext);
 		var valueId: any = expressionParser.parseIdentifier();
 		var keyId: any = undefined;
 		var condId: any = undefined;

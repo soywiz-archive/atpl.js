@@ -4,11 +4,13 @@
 // https://developer.mozilla.org/en/JavaScript/Reference/Operators/Operator_Precedence
 
 import ParserNode = module('./ParserNode');
+import TokenParserContext = module('./TokenParserContext');
 import ExpressionTokenizer = module('../lexer/ExpressionTokenizer');
 import TokenReader = module('../lexer/TokenReader');
 
 export class ExpressionParser {
-	constructor(public tokenReader: TokenReader.TokenReader) {
+	constructor(public tokenReader: TokenReader.TokenReader, private tokenParserContext: TokenParserContext.TokenParserContext) {
+		//if (!(this.tokenParserContext instanceof TokenParserContext.TokenParserContext)) { console.log(this.tokenParserContext); throw (new Error("ASSERT!")); }
 	}
 
 	parseCommaExpression(): ParserNode.ParserNodeCommaExpression {
@@ -134,7 +136,7 @@ export class ExpressionParser {
 							expr = new ParserNode.ParserNodeBinaryOperation(
 								'~',
 								expr,
-								new ExpressionParser(new TokenReader.TokenReader(ExpressionTokenizer.ExpressionTokenizer.tokenizeString(expressionString))).parseExpression()
+								new ExpressionParser(new TokenReader.TokenReader(ExpressionTokenizer.ExpressionTokenizer.tokenizeString(expressionString)), this.tokenParserContext).parseExpression()
 							);
 						}
 					}
@@ -165,7 +167,13 @@ export class ExpressionParser {
 				}
 				this.tokenReader.expectAndMoveNext([')']);
 				if (expr instanceof ParserNode.ParserNodeIdentifier) {
-					expr = new ParserNode.ParserNodeFunctionCall(new ParserNode.ParserNodeLiteral((<ParserNode.ParserNodeIdentifier>expr).value), arguments);
+					var functionName = (<ParserNode.ParserNodeIdentifier>expr).value;
+
+					if (this.tokenParserContext.common.sandbox) {
+						if (this.tokenParserContext.sandboxPolicy.allowedFunctions.indexOf(functionName) == -1) throw (new Error("SandboxPolicy disallows function '" + functionName + "'"));
+					}
+
+					expr = new ParserNode.ParserNodeFunctionCall(new ParserNode.ParserNodeLiteral(functionName), arguments);
 				} else {
 					expr = new ParserNode.ParserNodeFunctionCall(expr, arguments);
 				}
@@ -229,6 +237,9 @@ export class ExpressionParser {
 
 				arguments.expressions.unshift(expr);
 
+				if (this.tokenParserContext.common.sandbox) {
+					if (this.tokenParserContext.sandboxPolicy.allowedFilters.indexOf(filterName) == -1) throw (new Error("SandboxPolicy disallows filter '" + filterName + "'"));
+				}
 				expr = new ParserNode.ParserNodeFilterCall(filterName, arguments);
 			}
 				// End or other

@@ -1,12 +1,37 @@
 ///<reference path='../imports.d.ts'/>
 
 import ParserNode = module('./ParserNode');
+import RuntimeUtils = module('../runtime/RuntimeUtils');
+import SandboxPolicy = module('../SandboxPolicy');
+
+export class TokenParserContextCommon {
+	sandbox: bool = false;
+
+	constructor(info: any = {}) {
+		if (RuntimeUtils.isObject(info)) for (var key in info) this[key] = info[key];
+	}
+
+	serialize() {
+		var ret = {};
+		for (var key in this) ret[key] = this[key];
+		return ret;
+	}
+
+	setSandbox(callback: () => void ) {
+		this.sandbox = true;
+		try {
+			callback();
+		} finally {
+			this.sandbox = false;
+		}
+	}
+}
 
 export class TokenParserContext {
 	private blocksOutput: any = {};
 	private macrosOutput: any = {};
 
-	constructor() {
+	constructor(public common: TokenParserContextCommon, public sandboxPolicy: SandboxPolicy.SandboxPolicy) {
 	}
 
 	iterateBlocks(callback: (node: ParserNode.ParserNode, name: string) => void) {

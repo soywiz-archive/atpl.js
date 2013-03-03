@@ -1,0 +1,18 @@
+﻿=== TITLE
+sandbox tag
+
+=== INPUT
+{ }
+
+=== TEMPLATE:sandboxed
+{{ __sandboxed|upper }}
+{% if not true|empty %}yes{% endif %}
+
+=== TEMPLATE:main
+{% sandbox %}
+{% include "sandboxed" %}
+{% endsandbox %}
+
+=== OUTPUT
+TRUE
+yes

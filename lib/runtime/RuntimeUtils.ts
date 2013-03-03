@@ -602,3 +602,11 @@ export function date(format, date, timezone?) {
 		}
 	});
 }
+
+export function inArray(value: any, array: any) {
+	if (array instanceof Array) return array.indexOf(value) != -1;
+	if (isString(value) && isString(array)) {
+		return (<string>array).indexOf(<string>value) != -1;
+	}
+	return false;
+}

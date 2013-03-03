@@ -55,8 +55,16 @@
     <Content Include="benchmarks\benchmark.ts" />
     <Content Include="lib\lang\Default.ts" />
     <Content Include="lib\LanguageContext.ts" />
+    <Content Include="lib\SandboxPolicy.ts" />
+    <Content Include="typings\async.d.ts" />
+    <Content Include="typings\express.d.ts" />
+    <Content Include="typings\mocha.d.ts" />
+    <Content Include="typings\moment.d.ts" />
+    <Content Include="typings\node.d.ts" />
+    <Content Include="typings\should.d.ts" />
+    <Content Include="typings\superagent.d.ts" />
+    <Content Include="typings\supertest.d.ts" />
     <TypeScriptCompile Include="lib\TemplateConfig.ts" />
-    <Content Include="lib\runtime\lib\strtotime.ts" />
     <Content Include="test\templates\base\base.html" />
     <Content Include="test\templates\base\simple_extends.html" />
     <Content Include="lib\atpl.ts" />
@@ -70,17 +78,13 @@
     <Content Include="lib\lexer\TemplateTokenizer.ts" />
     <Content Include="lib\lexer\TokenReader.ts" />
     <Content Include="lib\parser\ExpressionParser.ts" />
-    <Content Include="lib\parser\FlowException.ts" />
     <Content Include="lib\parser\ParserNode.ts" />
     <Content Include="lib\parser\TemplateParser.ts" />
     <Content Include="lib\parser\TokenParserContext.ts" />
-    <Content Include="lib\runtime\lib\DateFormat.ts" />
-    <Content Include="lib\runtime\lib\Format.ts" />
     <Content Include="lib\runtime\RuntimeContext.ts" />
     <Content Include="lib\runtime\RuntimeUtils.ts" />
     <Content Include="lib\runtime\Scope.ts" />
     <Content Include="lib\TemplateProvider.ts" />
-    <Content Include="lib\utils.ts" />
     <Content Include="test\app_test.ts" />
     <Content Include="test\expressionparser_test.ts" />
     <Content Include="test\ExpressionTokenizer_test.ts" />
@@ -95,54 +99,9 @@
     <Content Include="test\templates\simple_extends.html" />
     <Content Include="test\TemplateTokenizer_test.ts" />
     <Content Include="test\utils_test.ts" />
-    <Content Include="typescript-node-definitions\.gitignore" />
-    <Content Include="typescript-node-definitions\.gitmodules" />
-    <Content Include="typescript-node-definitions\async.d.ts" />
-    <Content Include="typescript-node-definitions\colors.d.ts" />
-    <Content Include="typescript-node-definitions\connect.d.ts" />
-    <Content Include="typescript-node-definitions\consolidate.d.ts" />
-    <Content Include="typescript-node-definitions\express2.d.ts" />
-    <Content Include="typescript-node-definitions\express3-useragent.d.ts" />
-    <Content Include="typescript-node-definitions\express3.d.ts" />
-    <Content Include="typescript-node-definitions\fibers.d.ts" />
-    <Content Include="typescript-node-definitions\form-data.d.ts" />
-    <Content Include="typescript-node-definitions\glob.d.ts" />
-    <Content Include="typescript-node-definitions\imagemagick.d.ts" />
-    <Content Include="typescript-node-definitions\less.d.ts" />
-    <Content Include="typescript-node-definitions\mime.d.ts" />
-    <Content Include="typescript-node-definitions\mkdirp.d.ts" />
-    <Content Include="typescript-node-definitions\mocha.d.ts" />
-    <Content Include="typescript-node-definitions\moment.d.ts" />
-    <Content Include="typescript-node-definitions\mongodb.d.ts" />
-    <Content Include="typescript-node-definitions\node.d.ts" />
-    <Content Include="typescript-node-definitions\optimist.d.ts" />
-    <Content Include="typescript-node-definitions\q.d.ts" />
-    <Content Include="typescript-node-definitions\redis.d.ts" />
-    <Content Include="typescript-node-definitions\request.d.ts" />
-    <Content Include="typescript-node-definitions\rimraf.d.ts" />
-    <Content Include="typescript-node-definitions\semver.d.ts" />
-    <Content Include="typescript-node-definitions\send.d.ts" />
-    <Content Include="typescript-node-definitions\should.d.ts" />
-    <Content Include="typescript-node-definitions\socket.io.d.ts" />
-    <Content Include="typescript-node-definitions\sprintf.d.ts" />
-    <Content Include="typescript-node-definitions\superagent.d.ts" />
-    <Content Include="typescript-node-definitions\supertest.d.ts" />
-    <Content Include="typescript-node-definitions\swig.d.ts" />
-    <Content Include="typescript-node-definitions\teechart.d.ts" />
-    <Content Include="typescript-node-definitions\twig.d.ts" />
-    <Content Include="typescript-node-definitions\underscore.d.ts" />
-    <Content Include="typescript-node-definitions\underscore.string.d.ts" />
-    <Content Include="typescript-node-definitions\watch.d.ts" />
-    <Content Include="typescript-node-definitions\wrench.d.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="typescript-node-definitions\.git" />
-    <Content Include="typescript-node-definitions\README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="test\fixtures.disabled\functions\" />
     <Folder Include="test\fixtures\regressions\" />
-    <Folder Include="typescript-node-definitions\DefinitelyTyped\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md" />
@@ -277,9 +236,6 @@
     <Content Include="test\fixtures\functions\inspect.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\fixtures.disabled\tags\filter\filter.set" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="test\fixtures\tags\filter\filter_simple.set" />
   </ItemGroup>
   <ItemGroup>
@@ -380,6 +336,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="test\fixtures\functions\attribute.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\_twig\filters\batch.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\_twig\filters\abs.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\sandbox\sandbox.set" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptTarget>ES3</TypeScriptTarget>

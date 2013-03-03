@@ -1,0 +1,25 @@
+﻿=== TITLE
+attribute function
+
+=== INPUT
+{}
+
+=== EVAL
+test.input.classTest = function() {
+	this.d = 7;
+};
+test.input.classTest.prototype.methodTest = function(a, b, c) {
+	//console.log('test.input.classTest.prototype.methodTest');
+	//console.log(a);
+	//console.log(b);
+	//console.log(c);
+	//console.log(this.d);
+	return a + b * c * this.d;
+}
+test.input.objectTest = new (test.input.classTest)();
+
+=== TEMPLATE:main
+{{ attribute(objectTest, 'methodTest', [1, 2, 3]) }}
+
+=== OUTPUT
+43

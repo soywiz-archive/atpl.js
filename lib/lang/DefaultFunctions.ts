@@ -4,28 +4,44 @@ import TemplateParser = module('../parser/TemplateParser');
 import util = module('util');
 
 export class DefaultFunctions {
-	// http://twig.sensiolabs.org/doc/functions/range.html
+	/**
+	 * Obtains a range of numbers
+	 *
+	 * @see http://twig.sensiolabs.org/doc/functions/range.html
+	 */
 	static range(low: number, high: number, step: number = 1) {
 		return RuntimeUtils.range(low, high, step);
 	}
 	
-	// http://twig.sensiolabs.org/doc/functions/cycle.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/functions/cycle.html
+	 */
 	static cycle(list: any[], index: number) {
-		return list[index % list.length]
+		return list[index % list.length];
 	}
 
-	// http://twig.sensiolabs.org/doc/functions/constant.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/functions/constant.html
+	 */
 	static constant(name: string) {
 		throw (new Error("Not implemented function [constant] [no use on javascript]"));
 	}
 
-	// http://twig.sensiolabs.org/doc/functions/include.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/functions/include.html
+	 */
 	static include(name: string) {
 		var runtimeContext: RuntimeContext.RuntimeContext = this;
 		runtimeContext.include(name);
 	}
 
-	// http://twig.sensiolabs.org/doc/functions/random.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/functions/random.html
+	 */
 	static random(values: any) {
 		if (values === undefined || values === null) {
 			return RuntimeUtils.random();
@@ -36,12 +52,19 @@ export class DefaultFunctions {
 		}
 	}
 
-	// http://twig.sensiolabs.org/doc/functions/attribute.html
-	static attribute(object: any, method: any, arguments?: any[]) {
-		throw (new Error("Not implemented function [attribute] [no use on javascript]"));
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/functions/attribute.html
+	 */
+	static attribute(object: any, method: any, _arguments?: any[]) {
+		var runtimeContext: RuntimeContext.RuntimeContext = this;
+		return runtimeContext.accessCall(object, method, _arguments);
 	}
 
-	// http://twig.sensiolabs.org/doc/functions/block.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/functions/block.html
+	 */
 	static block(name: string) {
 		var runtimeContext: RuntimeContext.RuntimeContext = this;
 		return runtimeContext.captureOutput(() => {
@@ -49,7 +72,10 @@ export class DefaultFunctions {
 		});
 	}
 
-	// http://twig.sensiolabs.org/doc/functions/parent.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/functions/parent.html
+	 */
 	static parent() {
 		var runtimeContext: RuntimeContext.RuntimeContext = this;
 		return runtimeContext.captureOutput(() => {
@@ -57,7 +83,10 @@ export class DefaultFunctions {
 		});
 	}
 
-	// http://twig.sensiolabs.org/doc/functions/dump.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/functions/dump.html
+	 */
 	static dump(...objects: any[]) {
 		var runtimeContext: RuntimeContext.RuntimeContext = this;
 		if (objects.length > 0) {
@@ -69,19 +98,28 @@ export class DefaultFunctions {
 		}
 	}
 
-	// http://twig.sensiolabs.org/doc/functions/date.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/functions/date.html
+	 */
 	static date(date?, timezone?) {
 		if (timezone !== undefined) throw (new Error("Not implemented function [date] with [timezone] parameter"));
 		return RuntimeUtils.strtotime(date);
 	}
 
-	// http://twig.sensiolabs.org/doc/functions/template_from_string.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/functions/template_from_string.html
+	 */
 	static template_from_string(template: string) {
 		var runtimeContext: RuntimeContext.RuntimeContext = this;
 		return runtimeContext.compileString(template);
 	}
 
-	// https://github.com/soywiz/atpl.js/issues/13
+	/**
+	 *
+	 * @see https://github.com/soywiz/atpl.js/issues/13
+	 */
 	static inspect(object, showHidden?, depth?, color?) {
 		return util.inspect(object, showHidden, depth, color);
 	}

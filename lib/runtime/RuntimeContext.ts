@@ -284,7 +284,12 @@ export class RuntimeContext {
 		if (object === undefined || object === null) return null;
 		if (object instanceof Function) object = object();
 		var ret = object[key];
-		//if (ret instanceof Function) ret = ret();
+		return ret;
+	}
+
+	accessCall(object: any, key: any, _arguments: any[]) {
+		var ret = this.access(object, key);
+		if (ret instanceof Function) ret = (<Function>ret).apply(object, _arguments);
 		return ret;
 	}
 

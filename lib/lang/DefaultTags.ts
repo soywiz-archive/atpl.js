@@ -536,13 +536,23 @@ export class DefaultTags {
 
 		var innerNode = new ParserNode.ParserNodeContainer();
 
-		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'endblock': (e) => {
-				return true;
-			},
-		}, (node) => {
-			innerNode.add(node);
-		});
+		if (expressionTokenReader.hasMore()) {
+			var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
+			checkNoMoreTokens(expressionTokenReader);
+
+			innerNode.add(new ParserNode.ParserNodeRaw('return runtimeContext.write('));
+			innerNode.add(expressionNode);
+			innerNode.add(new ParserNode.ParserNodeRaw(');'));
+		} else {
+
+			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+				'endblock': (e) => {
+					return true;
+				},
+			}, (node) => {
+				innerNode.add(node);
+			});
+		}
 
 		tokenParserContext.setBlock(blockName, innerNode);
 

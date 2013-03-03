@@ -1,0 +1,13 @@
+﻿=== TITLE
+"block" tag
+
+=== INPUT
+{ "foo" : "bar" }
+
+=== TEMPLATE:main
+{% block title1 %}FOO{% endblock %}
+{% block title2 foo|lower %}
+
+=== OUTPUT
+FOO
+bar

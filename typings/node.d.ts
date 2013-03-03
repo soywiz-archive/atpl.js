@@ -296,8 +296,8 @@ declare module "http" {
     export var STATUS_CODES;
     export function createServer(requestListener?: (request: ServerRequest, response: ServerResponse) =>void ): Server;
     export function createClient(port?: number, host?: string): any;
-    export function request(options: any, callback?: Function): ClientRequest;
-    export function get(options: any, callback?: Function): ClientRequest;
+    export function request(options: any, callback?: (res: ClientResponse) => void): ClientRequest;
+    export function get (options: any, callback?: (res: ClientResponse) => void): ClientRequest;
     export var globalAgent: Agent;
 }
 
@@ -935,11 +935,11 @@ declare module "crypto" {
     export function createHash(algorithm: string): Hash;
     export function createHmac(algorithm: string, key: string): Hmac;
     interface Hash {
-        update(data: any, input_encoding?: string): void;
+        update(data: any, input_encoding?: string): Hash;
         digest(encoding?: string): string;
     }
     interface Hmac {
-        update(data: any): void;
+        update(data: any): Hmac;
         digest(encoding?: string): void;
     }
     export function createCipher(algorithm: string, password: any): Cipher;

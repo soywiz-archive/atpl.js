@@ -1,6 +1,6 @@
-﻿///<reference path='../typescript-node-definitions/node.d.ts'/>
-///<reference path='../typescript-node-definitions/express3.d.ts'/>
-///<reference path='../typescript-node-definitions/supertest.d.ts'/>
-///<reference path='../typescript-node-definitions/moment.d.ts'/>
-///<reference path='../typescript-node-definitions/async.d.ts'/>
-///<reference path='../typescript-node-definitions/mocha.d.ts'/>
+﻿///<reference path='../typings/node.d.ts'/>
+///<reference path='../typings/express.d.ts'/>
+///<reference path='../typings/supertest.d.ts'/>
+///<reference path='../typings/moment.d.ts'/>
+///<reference path='../typings/async.d.ts'/>
+///<reference path='../typings/mocha.d.ts'/>

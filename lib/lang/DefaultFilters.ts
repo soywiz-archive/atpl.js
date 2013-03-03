@@ -28,49 +28,79 @@ export class DefaultFilters {
 
 		return groupList;
 	}
-	// http://twig.sensiolabs.org/doc/filters/capitalize.html
+
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/capitalize.html
+	 */
 	static capitalize(value: string) {
 		return RuntimeUtils.capitalize(value);
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/convert_encoding.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/convert_encoding.html
+	 */
 	static convert_encoding(value: string, from: string, to: string) {
 		throw (new Error("Not implemented [no use on javascript that works with unicode]"));
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/date.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/date.html
+	 */
 	static date(value: any, format?, timezone?) {
 		return RuntimeUtils.date(format, value, timezone);
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/date_modify.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/date_modify.html
+	 */
 	static date_modify(value: any, modifier: any) {
 		return RuntimeUtils.strtotime(modifier, value);
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/default.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/default.html
+	 */
 	static $default(value: string, default_value: any) {
 		return RuntimeUtils.$default(value, default_value);
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/escape.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/escape.html
+	 */
 	static e(value: string, strategy?: string) {
 		var runtimeContext: RuntimeContext.RuntimeContext = this;
 		runtimeContext.currentAutoescape = strategy;
 		return value;
 	}
+
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/escape.html
+	 */
 	static escape(value: string, strategy: any = true) {
 		var runtimeContext: RuntimeContext.RuntimeContext = this;
 		runtimeContext.currentAutoescape = strategy;
 		return value;
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/format.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/format.html
+	 */
 	static format(format: string, ...parameters: any[]) {
 		return RuntimeUtils.sprintf.apply(null, arguments);
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/join.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/join.html
+	 */
 	static join(value: any, separator: string = '') {
 		if (!RuntimeUtils.defined(value)) return '';
 		if (value instanceof Array) {
@@ -80,12 +110,18 @@ export class DefaultFilters {
 		}
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/json_encode.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/json_encode.html
+	 */
 	static json_encode(value: any) {
 		return RuntimeUtils.json_encode_circular(value);
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/keys.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/keys.html
+	 */
 	static keys(value: any) {
 		if (!RuntimeUtils.defined(value)) return [];
 		if (RuntimeUtils.isString(value)) return [];
@@ -94,13 +130,19 @@ export class DefaultFilters {
 		return keys;
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/length.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/length.html
+	 */
 	static $length(value: any) {
 		if (!RuntimeUtils.defined(value)) return 0;
 		return value.length;
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/first.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/first.html
+	 */
 	static first(value: any) {
 		if (!RuntimeUtils.defined(value)) return undefined;
 		if (RuntimeUtils.isArray(value)) return value[0];
@@ -109,7 +151,10 @@ export class DefaultFilters {
 		return undefined;
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/last.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/last.html
+	 */
 	static last(value: any) {
 		if (!RuntimeUtils.defined(value)) return undefined;
 		if (RuntimeUtils.isArray(value)) return value[value.length - 1];
@@ -118,12 +163,18 @@ export class DefaultFilters {
 		return undefined;
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/lower.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/lower.html
+	 */
 	static lower(value: any) {
 		return String(value).toLowerCase();
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/merge.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/merge.html
+	 */
 	static merge(value: any, add: any): any {
 		if (RuntimeUtils.isArray(value)) {
 			return (<any[]>value).concat(add);
@@ -135,31 +186,46 @@ export class DefaultFilters {
 		}
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/nl2br.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/nl2br.html
+	 */
 	static nl2br(value: any) {
 		return String(value).replace(/\n/g, '<br />');
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/number_format.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/number_format.html
+	 */
 	static number_format(value: any, decimal: number = 0, decimal_point: string = '.', decimal_sep: string = ',') {
 		return RuntimeUtils.number_format(value, decimal, decimal_point, decimal_sep);
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/raw.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/raw.html
+	 */
 	static raw(value: string) {
 		var runtimeContext: RuntimeContext.RuntimeContext = this;
 		runtimeContext.currentAutoescape = false;
 		return value;
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/replace.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/replace.html
+	 */
 	static replace(value: string, replace_pairs: any) {
 		return String(value).replace(new RegExp("(" + Object.keys(replace_pairs).map(item => RuntimeUtils.quoteRegExp(item)).join('|') + ")", "g"), (match) => {
 			return replace_pairs[match];
 		});
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/reverse.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/reverse.html
+	 */
 	static reverse(value: any) {
 		if (!RuntimeUtils.defined(value)) return value;
 		if (RuntimeUtils.isArray(value)) return value.reverse();
@@ -173,7 +239,10 @@ export class DefaultFilters {
 		throw (new Error("Not implemented filter [reverse] with value type [" + (typeof value) + ']'));
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/slice.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/slice.html
+	 */
 	static slice(value: any, start, length, preserve_keys?) {
 		if (RuntimeUtils.isArray(value)) return (<any[]>value).slice(start, start + length);
 		if (RuntimeUtils.isNumber(value)) value = value.toString();
@@ -181,43 +250,68 @@ export class DefaultFilters {
 		return value;
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/sort.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/sort.html
+	 */
 	static sort(value: any) {
 		if (value instanceof Array) return value.sort();
 		return value;
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/split.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/split.html
+	 */
 	static split(_value: any, delimiter: string, limit: number) {
 		var value = RuntimeUtils.toString(_value);
 		return RuntimeUtils.split(value, delimiter, limit);
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/striptags.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/striptags.html
+	 */
 	static striptags(value: any) {
 		return RuntimeUtils.strip_tags(value);
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/title.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/title.html
+	 */
 	static title(value: any) {
 		return RuntimeUtils.title(value);
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/trim.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/trim.html
+	 */
 	static trim(value: any, characters?: string) {
 		return RuntimeUtils.trim(value, characters);
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/upper.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/upper.html
+	 */
 	static upper(value: any) {
 		return String(value).toUpperCase();
 	}
 
-	// http://twig.sensiolabs.org/doc/filters/url_encode.html
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/url_encode.html
+	 */
 	static url_encode(value: any) {
 		return RuntimeUtils.escapeUrlString(String(value)).replace('%20', '+');
 	}
 
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/spaceless.html
+	 */
 	static spaceless(value: any) {
 		return RuntimeUtils.toString(value).replace(/>\s+</g, '><');
 	}

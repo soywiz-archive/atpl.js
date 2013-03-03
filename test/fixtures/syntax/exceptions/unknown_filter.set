@@ -1,0 +1,11 @@
+﻿=== TITLE
+find an unknown filter
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ test|my_unknown_filter }}
+
+=== EXCEPTION
+Invalid filter type 'my_unknown_filter'

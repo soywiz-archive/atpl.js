@@ -143,8 +143,9 @@ export class RuntimeContext {
 		}
 	}
 
-	filter($function: any, $arguments: any[]) {
-		return this.$call(this.languageContext.filters, $function, $arguments);
+	filter(filterName: any, $arguments: any[]) {
+		if (this.languageContext.filters[filterName] === undefined) throw (new Error("Invalid filter type '" + filterName + "'"));
+		return this.$call(this.languageContext.filters, filterName, $arguments);
 	}
 
 	test($function: any, $arguments: any[]) {

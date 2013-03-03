@@ -6,7 +6,7 @@ sandbox tag
 
 === TEMPLATE:sandboxed
 {{ __sandboxed|upper }}
-{% if not true|empty %}yes{% endif %}
+{% if not false|default(false) %}yes{% endif %}
 
 === TEMPLATE:main
 {% sandbox %}

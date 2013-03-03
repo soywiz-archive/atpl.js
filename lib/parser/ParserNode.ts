@@ -388,5 +388,29 @@ export class ParserNodeOutputText extends ParserNode {
 	}
 }
 
+export class ParserNodeOutputNodeExpression extends ParserNodeExpression {
+	type: string = 'ParserNodeOutputNodeExpression';
+
+	constructor(public expression: ParserNode) {
+		super();
+	}
+
+	generateCode() {
+		return 'runtimeContext.write(' + this.expression.generateCode() + ')';
+	}
+}
+
+export class ParserNodeReturnStatement extends ParserNodeStatement {
+	type: string = 'ParserNodeReturnStatement';
+
+	constructor(public expression: ParserNodeExpression) {
+		super();
+	}
+
+	generateCode() {
+		return 'return ' + this.expression.generateCode() + ';';
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

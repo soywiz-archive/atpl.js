@@ -54,7 +54,7 @@ export class ParserNodeAutoescape extends ParserNode.ParserNodeStatement {
 	}
 }
 
-export class ParserNodeStatementFilter extends ParserNode.ParserNodeStatement {
+export class ParserNodeExpressionFilter extends ParserNode.ParserNodeExpression {
 	filters = <{ name: string; parameters: ParserNode.ParserNodeCommaExpression; }[]>[];
 
 	constructor(public inner: ParserNode.ParserNode) {
@@ -71,7 +71,6 @@ export class ParserNodeStatementFilter extends ParserNode.ParserNodeStatement {
 	generateCode() {
 		var out = '';
 
-		out += 'runtimeContext.write(';
 		this.filters.reverse().forEach((filter) => {
 			out += 'runtimeContext.filter(' + JSON.stringify(filter.name) + ', [';
 		});
@@ -87,8 +86,6 @@ export class ParserNodeStatementFilter extends ParserNode.ParserNodeStatement {
 			}
 			out += '])';
 		});
-
-		out += ');';
 
 		return out
 	}
@@ -256,7 +253,7 @@ export class DefaultTags {
 			innerNode.add(node);
 		});
 
-		var filterNode = new ParserNodeStatementFilter(innerNode);
+		var filterNode = new ParserNodeExpressionFilter(innerNode);
 
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext);
 		while (true) {
@@ -280,7 +277,7 @@ export class DefaultTags {
 
 		checkNoMoreTokens(expressionTokenReader);
 
-		return filterNode;
+		return new ParserNode.ParserNodeStatementExpression(new ParserNode.ParserNodeOutputNodeExpression(filterNode));
 	}
 
 	// FLUSH
@@ -506,11 +503,11 @@ export class DefaultTags {
 		});
 		//console.log('************************');
 
-		return new ParserNode.ParserNodeContainer([
-			new ParserNode.ParserNodeRaw('runtimeContext.write(runtimeContext.filter("spaceless", [runtimeContext.captureOutput(function() { '),
+		return new ParserNode.ParserNodeStatementExpression(new ParserNode.ParserNodeOutputNodeExpression(new ParserNode.ParserNodeContainer([
+			new ParserNode.ParserNodeRaw('runtimeContext.filter("spaceless", [runtimeContext.captureOutput(function() { '),
 			innerNode,
-			new ParserNode.ParserNodeRaw('})]));')
-		]);
+			new ParserNode.ParserNodeRaw('})])')
+		])));
 	}
 
 	// IF/ELSEIF/ELSE/ENDIF
@@ -527,10 +524,6 @@ export class DefaultTags {
 		var parserNodeIf = new ParserNodeIf();
 
 		parserNodeIf.addCaseCondition(expressionNode);
-
-		//tokenParserContext.write('if (' + expressionNode.generateCode() + ') {');
-
-		//parseExpressionExpressionSync
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
 			'elseif': (e) => {
@@ -566,9 +559,7 @@ export class DefaultTags {
 			var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 			checkNoMoreTokens(expressionTokenReader);
 
-			innerNode.add(new ParserNode.ParserNodeRaw('return runtimeContext.write('));
-			innerNode.add(expressionNode);
-			innerNode.add(new ParserNode.ParserNodeRaw(');'));
+			innerNode.add(new ParserNode.ParserNodeReturnStatement(new ParserNode.ParserNodeWriteExpression(expressionNode)));
 		} else {
 
 			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {

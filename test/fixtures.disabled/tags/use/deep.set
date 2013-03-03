@@ -1,0 +1,24 @@
+﻿== TITLE
+"use" tag deep
+
+=== TEMPLATE:main
+{% use "foo" %}
+
+{{ block('content') }}
+{{ block('foo') }}
+{{ block('bar') }}
+
+=== TEMPLATE:foo
+{% use "bar" %}
+
+{% block content 'foo' %}
+{% block foo 'foo' %}
+
+=== TEMPLATE:bar
+{% block content 'bar' %}
+{% block bar 'bar' %}
+
+=== OUTPUT
+foo
+foo
+bar

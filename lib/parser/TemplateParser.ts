@@ -85,10 +85,10 @@ export class TemplateParser {
 		}
 		var output = '';
 		output += 'CurrentTemplate = function() { this.name = ' + JSON.stringify(path) + '; };\n';
-		output += 'CurrentTemplate.prototype.render = function(runtimeContext) { runtimeContext.setTemplate(this); this.__main(runtimeContext); };\n';
+		output += 'CurrentTemplate.prototype.render = function(runtimeContext, avoidRender) { runtimeContext.setTemplate(this); this.__main(runtimeContext, avoidRender); };\n';
 
 		tokenParserContext.iterateBlocks((blockNode, blockName) => {
-			output += 'CurrentTemplate.prototype.' + blockName + ' = function(runtimeContext) {\n';
+			output += 'CurrentTemplate.prototype.' + blockName + ' = function(runtimeContext, avoidRender) {\n';
 			{
 				output += 'var that = this;\n';
 				output += 'runtimeContext.setCurrentBlock(that, ' + JSON.stringify(blockName) + ', function() {';

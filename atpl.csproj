@@ -101,6 +101,7 @@
     <Content Include="test\utils_test.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="test\fixtures.disabled\" />
     <Folder Include="test\fixtures\regressions\" />
   </ItemGroup>
   <ItemGroup>
@@ -345,6 +346,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="test\fixtures\tags\sandbox\sandbox.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\block\basic.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\use\basic.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\use\aliases.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\tags\use\deep.set" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptTarget>ES3</TypeScriptTarget>

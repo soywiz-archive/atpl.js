@@ -289,12 +289,6 @@ export class DefaultTags {
 		// do nothing (all output is buffered and can't be flushed)
 	}
 
-	// USE
-	// http://twig.sensiolabs.org/doc/tags/use.html
-	static use(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
-		throw (new Error("Not implemented tag [use]"));
-	}
-
 	// MACRO/FROM/IMPORTUSE
 	static endmacro = _flowexception;
 	static macro(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
@@ -377,6 +371,31 @@ export class DefaultTags {
 		return new ParserNode.ParserNodeStatementExpression(
 			new ParserNode.ParserNodeAssignment(aliasNode, new ParserNode.ParserNodeRaw('runtimeContext.import(' + fileNameNode.generateCode() + ')'))
 		);
+	}
+
+	// USE
+	// http://twig.sensiolabs.org/doc/tags/use.html
+	static use(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
+		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext);
+		var fileNameNode = expressionParser.parseExpression();
+
+		var pairs = null;
+
+		while (expressionTokenReader.checkAndMoveNext(['with'])) {
+			var fromNode = expressionParser.parseIdentifierOnly().value;
+			expressionTokenReader.expectAndMoveNext(['as']);
+			var toNode = expressionParser.parseIdentifierOnly().value;
+			if (pairs === null) pairs = {};
+			pairs['block_' + fromNode] = 'block_' + toNode;
+		}
+
+		checkNoMoreTokens(expressionTokenReader);
+
+		return new ParserNode.ParserNodeRaw('runtimeContext.use(that, ' + fileNameNode.generateCode() + ', ' + JSON.stringify(pairs) + ');');
+
+		//return new ParserNode.ParserNodeStatementExpression(
+		//	new ParserNode.ParserNodeAssignment(aliasNode, new ParserNode.ParserNodeRaw('runtimeContext.import(' + fileNameNode.generateCode() + ')'))
+		//);
 	}
 
 	// INCLUDE

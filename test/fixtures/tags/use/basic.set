@@ -1,0 +1,13 @@
+﻿== TITLE
+"use" tag
+
+=== TEMPLATE:main
+{% use "blocks" %}
+
+{{ block('content') }}
+
+=== TEMPLATE:blocks
+{% block content 'foo' %}
+
+=== OUTPUT
+foo

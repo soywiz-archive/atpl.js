@@ -258,6 +258,19 @@ export class ExpressionParser {
 		return identifiers;
 	}
 
+	parseIdentifierOnly() {
+		var token = this.tokenReader.peek();
+
+		if (token.type == 'id') {
+			this.tokenReader.skip();
+			var identifierString = token.value;
+
+			return new ParserNode.ParserNodeIdentifier(identifierString);
+		}
+
+		throw (new Error("Unexpected token : " + JSON.stringify(token.value) + " type:'" + token.type + "'"));
+	}
+
 	parseIdentifier(): ParserNode.ParserNodeExpression {
 		var token = this.tokenReader.peek();
 

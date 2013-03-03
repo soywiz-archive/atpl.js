@@ -1,0 +1,13 @@
+﻿== TITLE
+"use" tag aliases test
+
+=== TEMPLATE:main
+{% use "blocks" with content as foo %}
+
+{{ block('foo') }}
+
+=== TEMPLATE:blocks
+{% block content 'foo' %}
+
+=== OUTPUT
+foo

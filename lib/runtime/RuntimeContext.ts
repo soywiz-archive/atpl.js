@@ -6,6 +6,7 @@ import LanguageContext = module('../LanguageContext');
 import TokenParserContext = module('../parser/TokenParserContext');
 import Scope = module('./Scope');
 import SandboxPolicy = module('../SandboxPolicy');
+import util = module('util');
 
 export class RuntimeContext {
 	output: string = '';
@@ -136,7 +137,6 @@ export class RuntimeContext {
 
 	call($function: any, $arguments: any[]) {
 		if (this.languageContext.functions[$function] === undefined) {
-			//console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
 			return this.$call2(this.scope.get($function), $arguments);
 		} else {
 			return this.$call(this.languageContext.functions, $function, $arguments);
@@ -163,6 +163,20 @@ export class RuntimeContext {
 				IncludeTemplate.__main(this);
 			}
 		}, only);
+	}
+
+	use(currentTemplate: any, name: string, pairs: any = null) {
+		var includeTemplate = new ((this.templateParser.compile(name, this)).class )();
+		//includeTemplate.__main(this);
+
+		var includeBlocks = this._getBlocks(includeTemplate);
+		for (var key in includeBlocks) {
+			if (pairs === null) {
+				currentTemplate[key] = includeBlocks[key];
+			} else if (pairs[key]) {
+				currentTemplate[pairs[key]] = includeBlocks[key];
+			}
+		}
 	}
 
 	import(name: string) {
@@ -221,16 +235,34 @@ export class RuntimeContext {
 		return out;
 	}
 
-	private _putBlock(Current: any, name: string) {
+	private _getBlocks(Current: any) {
+		var ret = {};
+		//console.log('-------------');
+		//console.log(util.inspect(Current['__proto__'], false));
+		//console.log('+++++++++++++');
+
+		//if (Current['__parent']) ret = this._getBlocks(Current['__parent']);
+		//if (Current['__proto__'] && Current['__proto__']['__proto__']) ret = this._getBlocks(Current['__proto__']['__proto__']);
+
+		//console.log('*************');
+		for (var key in Current) {
+			//console.log(key);
+			if (key.match(/^block_/)) ret[key] = Current[key];
+		}
+		return ret;
+	}
+
+	private _putBlock(Current: any, name: string, avoidRender?: bool) {
 		var method = (Current[name]);
 		if (method === undefined) {
 			console.log(Current['__proto__']);
 			throw (new Error("Can't find block '" + name + "' in '" + Current.name + ":" + this.currentBlockName + "'"));
 		}
-		return method.call(Current, this);
+		return method.call(Current, this, avoidRender);
 	}
 
-	putBlock(name: string) {
+	putBlock(name: string, avoidRender?: bool) {
+		//if (avoidRender) return;
 		return this._putBlock(this.LeafTemplate, name);
 	}
 

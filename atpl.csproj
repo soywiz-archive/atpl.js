@@ -370,6 +370,12 @@
   <ItemGroup>
     <Content Include="test\fixtures\syntax\operators\operators_bit.set" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\named_arguments.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\syntax\exceptions\unknown_filter.set" />
+  </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptTarget>ES3</TypeScriptTarget>
     <TypeScriptIncludeComments>false</TypeScriptIncludeComments>

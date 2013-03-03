@@ -1,8 +1,4 @@
-﻿///<reference path='../lib/imports.d.ts'/>
-///<reference path='../typescript-node-definitions/express3.d.ts'/>
-///<reference path='../typescript-node-definitions/supertest.d.ts'/>
-///<reference path='../typescript-node-definitions/moment.d.ts'/>
-///<reference path='../typescript-node-definitions/async.d.ts'/>
+﻿///<reference path='../_typings.d.ts'/>
 import util = module("util");
 import express3 = module("express3");
 import atpl = module('../lib/atpl');

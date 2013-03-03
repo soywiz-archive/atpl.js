@@ -1,3 +1,4 @@
+/*
 declare interface any {
 	should: any;
 	be: any;
@@ -38,3 +39,4 @@ declare interface any {
 }
 
 declare var should: any;
+*/

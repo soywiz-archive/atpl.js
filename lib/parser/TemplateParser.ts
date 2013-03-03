@@ -227,8 +227,8 @@ export class TemplateParser {
 		return nodes;
 	}
 
-	parseTemplateExpressionSync(tokenParserContext, templateTokenReader, expressionTokenReader): ParserNode.ParserNodeWriteExpression {
-		return new ParserNode.ParserNodeWriteExpression((new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression());
+	parseTemplateExpressionSync(tokenParserContext, templateTokenReader, expressionTokenReader) {
+		return new ParserNode.ParserNodeStatementExpression(new ParserNode.ParserNodeWriteExpression((new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression()));
 	}
 
 	parseTemplateBlockSync(tokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader): ParserNode.ParserNode {

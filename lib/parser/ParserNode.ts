@@ -28,13 +28,13 @@ export export class ParserNode {
 export export class ParserNodeExpression extends ParserNode {
 }
 
-export export class ParserNodeWriteExpression extends ParserNode {
+export export class ParserNodeWriteExpression extends ParserNodeExpression {
 	constructor(public expression: ParserNodeExpression) {
 		super();
 	}
 
 	generateCode() {
-		return 'runtimeContext.writeExpression(' + this.expression.generateCode() + ');';
+		return 'runtimeContext.writeExpression(' + this.expression.generateCode() + ')';
 	}
 }
 

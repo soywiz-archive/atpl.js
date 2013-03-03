@@ -1,0 +1,25 @@
+﻿=== TITLE
+"use" tag multiple aliases
+
+=== TEMPLATE:main
+{% use "foo" with content as foo_content %}
+{% use "bar" %}
+
+{{ block('content') }}
+{{ block('foo') }}
+{{ block('bar') }}
+{{ block('foo_content') }}
+
+=== TEMPLATE:foo
+{% block content 'foo' %}
+{% block foo 'foo' %}
+
+=== TEMPLATE:bar
+{% block content 'bar' %}
+{% block bar 'bar' %}
+
+=== OUTPUT
+bar
+foo
+bar
+foo

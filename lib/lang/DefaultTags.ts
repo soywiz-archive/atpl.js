@@ -379,51 +379,28 @@ export class DefaultTags {
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext);
 		var fileName = expressionParser.parseStringLiteral().value;
 
-		var pairs = null;
+		var pairs = {};
 
 		while (expressionTokenReader.checkAndMoveNext(['with'])) {
 			var fromNode = expressionParser.parseIdentifierOnly().value;
 			expressionTokenReader.expectAndMoveNext(['as']);
 			var toNode = expressionParser.parseIdentifierOnly().value;
-			if (pairs === null) pairs = {};
 			pairs['block_' + fromNode] = 'block_' + toNode;
 		}
 
 		checkNoMoreTokens(expressionTokenReader);
-		//console.log(pairs);
 
 		var info = templateParser.getEvalCode(fileName, tokenParserContext.common);
 
 		info.tokenParserContext.iterateBlocks((node, name) => {
-			//console.log('aaaaaaaaaaa: ' + name);
 			if (name.match(/^block_/)) {
-				//name = name.substr(6);
-				if (pairs === null) {
-					tokenParserContext.setBlock(name, node);
-				} else if (pairs[name]) {
+				if (pairs[name]) {
 					tokenParserContext.setBlock(pairs[name], node);
+				} else {
+					tokenParserContext.setBlock(name, node);
 				}
 			}
 		});
-
-		////new TokenParserContext.TokenParserContext(tokenParserContext.common, tokenParserContext.sandboxPolicy);
-		//templateParser.parseTemplateSync(
-		////ads -as- ds-
-		//
-		//var includeTemplate = new ((this.templateParser.compile(name, this)).class )();
-		//
-		//includeTemplate.__main(this, true);
-		//
-		//var includeBlocks = this._getBlocks(includeTemplate);
-		//for (var key in includeBlocks) {
-		//	if (pairs === null) {
-		//		currentTemplate[key] = includeBlocks[key];
-		//	} else if (pairs[key]) {
-		//		currentTemplate[pairs[key]] = includeBlocks[key];
-		//	}
-		//}
-		//
-		//tokenParserContext.setBlock(blockName, innerNode);
 
 		return new ParserNode.ParserNodeRaw('');
 	}

@@ -1,0 +1,13 @@
+﻿=== TITLE
+"use" tag deep empty
+
+=== TEMPLATE:main
+{% use "foo" %}
+
+=== TEMPLATE:foo
+{% use "bar" %}
+
+=== TEMPLATE:bar
+-
+
+=== OUTPUT

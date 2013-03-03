@@ -1,0 +1,23 @@
+﻿=== TITLE
+"use" tag multiple
+
+=== TEMPLATE:main
+{% use "foo" %}
+{% use "bar" %}
+
+{{ block('content') }}
+{{ block('foo') }}
+{{ block('bar') }}
+
+=== TEMPLATE:foo
+{% block content 'foo' %}
+{% block foo 'foo' %}
+
+=== TEMPLATE:bar
+{% block content 'bar' %}
+{% block bar 'bar' %}
+
+=== OUTPUT
+bar
+foo
+bar

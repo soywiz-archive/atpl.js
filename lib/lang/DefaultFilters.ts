@@ -14,6 +14,21 @@ export class DefaultFilters {
 		return Math.abs(value);
 	}
 
+	/**
+	 *
+	 * @see http://twig.sensiolabs.org/doc/filters/batch.html
+	 */
+	static batch(_items: any[], groupCount: number) {
+		var items = RuntimeUtils.ensureArray(_items);
+		var groupList = [];
+		groupCount = RuntimeUtils.ensureNumber(groupCount);
+
+		for (var n = 0; n < items.length; n += groupCount) {
+			groupList.push(items.slice(n, n + groupCount));
+		}
+
+		return groupList;
+	}
 	// http://twig.sensiolabs.org/doc/filters/capitalize.html
 	static capitalize(value: string) {
 		return RuntimeUtils.capitalize(value);

@@ -4,6 +4,11 @@ import _strtotime = module('./lib/strtotime');
 import util = module('util');
 import utils = module('../utils');
 
+export function ensureArray(value: any): any[] {
+	if (isArray(value)) return value;
+	return [value];
+}
+
 export function ensureNumber(value: any) {
 	if (isNumber(value)) return value;
 	return parseFloat(String(value));

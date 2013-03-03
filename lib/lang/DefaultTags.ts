@@ -2,6 +2,7 @@
 import FlowException = module('../parser/FlowException');
 import ParserNode = module('../parser/ParserNode');
 import TemplateParser = module('../parser/TemplateParser');
+import TokenParserContext = module('../parser/TokenParserContext');
 import TokenReader = module('../lexer/TokenReader');
 
 export interface ITemplateParser {
@@ -18,7 +19,7 @@ function _flowexception(blockType, templateParser, tokenParserContext, templateT
 	throw(new FlowException.FlowException(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader));
 }
 
-function handleOpenedTag(blockType, templateParser: TemplateParser.TemplateParser, tokenParserContext, templateTokenReader, expressionTokenReader, handlers, innerNodeHandler: (node: ParserNode.ParserNode) => void) {
+function handleOpenedTag(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader, handlers, innerNodeHandler: (node: ParserNode.ParserNode) => void) {
 	while (true) {
 		try {
 			var keys = []; for (var key in handlers) keys.push(key);
@@ -181,7 +182,7 @@ export class ParserNodeFor extends ParserNode.ParserNodeStatement {
 export class DefaultTags {
 	// autoescape
 	static endautoescape = _flowexception;
-	static autoescape(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static autoescape(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
@@ -199,10 +200,10 @@ export class DefaultTags {
 	}
 
 	// DO/SET
-	static set(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static set (blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
 		var nodeIds = expressionParser.parseIdentifierCommaList();
-		expressionTokenReader.expectAndMoveNext('=');
+		expressionTokenReader.expectAndMoveNext([ '=' ]);
 		var nodeValues = expressionParser.parseCommaExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
@@ -216,7 +217,7 @@ export class DefaultTags {
 
 		return container;
 	}
-	static $do(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static $do(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
@@ -226,7 +227,7 @@ export class DefaultTags {
 	// EMBED
 	// http://twig.sensiolabs.org/doc/tags/embed.html
 	static endembed = _flowexception;
-	static embed(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader: TokenReader.TokenReader) {
+	static embed(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var expressionString = expressionTokenReader.getSliceWithCallback(() => {
 			var includeName = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 		}).map(item => item.rawValue);
@@ -247,7 +248,7 @@ export class DefaultTags {
 	// FILTER
 	// http://twig.sensiolabs.org/doc/tags/filter.html
 	static endfilter = _flowexception;
-	static filter(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader: TokenReader.TokenReader) {
+	static filter(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var innerNode = new ParserNode.ParserNodeContainer();
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
@@ -285,19 +286,19 @@ export class DefaultTags {
 
 	// FLUSH
 	// http://twig.sensiolabs.org/doc/tags/flush.html
-	static flush(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static flush(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		// do nothing (all output is buffered and can't be flushed)
 	}
 
 	// USE
 	// http://twig.sensiolabs.org/doc/tags/use.html
-	static use(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static use(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		throw (new Error("Not implemented tag [use]"));
 	}
 
 	// MACRO/FROM/IMPORTUSE
 	static endmacro = _flowexception;
-	static macro(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader: TokenReader.TokenReader) {
+	static macro(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
 		var macroName = expressionTokenReader.read().value;
 		var paramNames = [];
@@ -340,7 +341,7 @@ export class DefaultTags {
 		return new ParserNode.ParserNodeRaw('');
 
 	}
-	static from(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader: TokenReader.TokenReader) {
+	static from(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
 		var fileNameNode = expressionParser.parseExpression();
 		expressionTokenReader.expectAndMoveNext(['import']);
@@ -366,7 +367,7 @@ export class DefaultTags {
 			new ParserNode.ParserNodeRaw(', ' + JSON.stringify(pairs) + ');')
 		]);
 	}
-	static $import(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static $import(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
 		var fileNameNode = expressionParser.parseExpression();
 		expressionTokenReader.expectAndMoveNext(['as']);
@@ -380,7 +381,7 @@ export class DefaultTags {
 	}
 
 	// INCLUDE
-	static include(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader: TokenReader.TokenReader) {
+	static include(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var node = new ParserNode.ParserNodeContainer();
 		node.add(new ParserNode.ParserNodeRaw('runtimeContext.include('));
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
@@ -406,7 +407,7 @@ export class DefaultTags {
 	// http://twig.sensiolabs.org/doc/tags/verbatim.html
 	static endraw = _flowexception;
 	static endverbatim = _flowexception;
-	static raw(blockType, templateParser, tokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader) {
+	static raw(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		checkNoMoreTokens(expressionTokenReader);
 		//console.log(templateTokenReader);
 
@@ -434,14 +435,14 @@ export class DefaultTags {
 	static verbatim = DefaultTags.raw;
 
 	// SANDBOX
-	static sandbox(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static sandbox(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		throw (new Error("Not implemented tag [sandbox]"));
 	}
 
 	// SPACELESS
 	// http://twig.sensiolabs.org/doc/tags/spaceless.html
 	static endspaceless = _flowexception;
-	static spaceless(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static spaceless(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		checkNoMoreTokens(expressionTokenReader);
 
 		var innerNode = new ParserNode.ParserNodeContainer();
@@ -468,7 +469,7 @@ export class DefaultTags {
 	static $else = _flowexception;
 	static $elseif = _flowexception;
 	static $endif = _flowexception;
-	static $if(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static $if(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var didElse = false;
 
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
@@ -508,7 +509,7 @@ export class DefaultTags {
 
 	// BLOCK/ENDBLOCK
 	static endblock = _flowexception;
-	static block(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static block(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var blockName = 'block_' + expressionTokenReader.read().value;
 
 		var innerNode = new ParserNode.ParserNodeContainer();
@@ -527,7 +528,7 @@ export class DefaultTags {
 	}
 
 	// EXTENDS
-	static $extends(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static $extends(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
@@ -540,7 +541,7 @@ export class DefaultTags {
 
 	// http://twig.sensiolabs.org/doc/tags/for.html
 	static $endfor = _flowexception;
-	static $for(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+	static $for(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var didElse = false;
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader);
 		var valueId: any = expressionParser.parseIdentifier();

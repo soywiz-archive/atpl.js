@@ -56,7 +56,6 @@
     <Content Include="lib\lang\Default.ts" />
     <Content Include="lib\LanguageContext.ts" />
     <TypeScriptCompile Include="lib\TemplateConfig.ts" />
-    <Content Include="lib\runtime\lib\strip_tags.ts" />
     <Content Include="lib\runtime\lib\strtotime.ts" />
     <Content Include="test\templates\base\base.html" />
     <Content Include="test\templates\base\simple_extends.html" />
@@ -378,6 +377,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="test\fixtures\tags\filter\filter_complex_parameters.set" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\fixtures\functions\attribute.set" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptTarget>ES3</TypeScriptTarget>

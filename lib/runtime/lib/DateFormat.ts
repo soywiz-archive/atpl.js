@@ -1,6 +1,6 @@
 ﻿///<reference path='../../imports.d.ts'/>
 
- var shortDays = "Sun,Mon,Tue,Wed,Thu,Fri,Sat".split(",");
+var shortDays = "Sun,Mon,Tue,Wed,Thu,Fri,Sat".split(",");
 var fullDays = "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday".split(",");
 var shortMonths = "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec".split(",");
 var fullMonths = "January,February,March,April,May,June,July,August,September,October,November,December".split(",");

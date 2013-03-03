@@ -216,7 +216,7 @@ export class TemplateParser {
 		return new ParserNode.ParserNodeWriteExpression((new ExpressionParser(expressionTokenReader)).parseExpression());
 	}
 
-	parseTemplateBlockSync(tokenParserContext, templateTokenReader, expressionTokenReader): ParserNode.ParserNode {
+	parseTemplateBlockSync(tokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader): ParserNode.ParserNode {
 		var that = this;
 		var blockTypeToken = expressionTokenReader.read();
 		var blockType = blockTypeToken.value;

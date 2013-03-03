@@ -105,7 +105,14 @@ export class ParserNodeArrayContainer extends ParserNodeExpression {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-export class ParserNodeLiteral extends ParserNodeExpression {
+export interface ParseNodeLiteralIdentifier {
+	type: string;
+	value: any;
+	generateCode();
+	optimize();
+}
+
+export class ParserNodeLiteral extends ParserNodeExpression implements ParseNodeLiteralIdentifier {
 	type: string = 'ParserNodeLiteral';
 
 	constructor(public value: any) {
@@ -128,7 +135,7 @@ export class ParserNodeLeftValue extends ParserNodeExpression {
 	}
 }
 
-export class ParserNodeIdentifier extends ParserNodeLeftValue {
+export class ParserNodeIdentifier extends ParserNodeLeftValue implements ParseNodeLiteralIdentifier {
 	type: string = 'ParserNodeIdentifier';
 
 	constructor(public value: string) {
@@ -258,10 +265,10 @@ export class ParserNodeFilterCall extends ParserNodeExpression {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-export class ParserNodeUnaryOperation extends ParserNode {
+export class ParserNodeUnaryOperation extends ParserNodeExpression {
 	type: string = 'ParserNodeUnaryOperation';
 
-	constructor(public operator: string, public right: ParserNode) {
+	constructor(public operator: string, public right: ParserNodeExpression) {
 		super();
 	}
 
@@ -278,7 +285,7 @@ export class ParserNodeUnaryOperation extends ParserNode {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-export class ParserNodeBinaryOperation extends ParserNode {
+export class ParserNodeBinaryOperation extends ParserNodeExpression {
 	type: string = 'ParserNodeBinaryOperation';
 
 	constructor(public operator, public left, public right) {

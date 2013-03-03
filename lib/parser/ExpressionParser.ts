@@ -42,53 +42,21 @@ export class ExpressionParser {
 		return left;
 	}
 
-	parseTernaryShortcut() {
-		return this._parseBinary('parseTernaryShortcut', this.parseLogicOr, ['?:']);
-	}
-
-	parseLogicOr() {
-		return this._parseBinary('parseLogicOr', this.parseLogicAnd, ['||', 'or']);
-	}
-
-	parseLogicAnd() {
-		return this._parseBinary('parseLogicAnd', this.parseCompare, ['&&', 'and']);
-	}
-
-	//parseBitOr() {
-	//	return this._parseBinary('parseBitOr', this.parseBitXor, ['or']);
-	//}
-	//
-	//parseBitXor() {
-	//	return this._parseBinary('parseBitXor', this.parseBitAnd, ['^']);
-	//}
-	//
-	//parseBitAnd() {
-	//	return this._parseBinary('parseBitAnd', this.parseCompare, ['&']);
-	//}
-
-	parseCompare() {
-		return this._parseBinary('parseCompare', this.parseAddSub, ['==', '!=', '>=', '<=', '>', '<', '===', '!==', 'is not', 'not in', 'is', 'in']);
-	}
-
-	parseAddSub() {
-		return this._parseBinary('parseAddSub', this.parseMulDiv, ['+', '-']);
-	}
-
-	parseMulDiv() {
-		return this._parseBinary('parseMulDiv', this.parsePow, ['*', '/', '//', '%']);
-	}
-
-	parsePow() {
-		return this._parseBinary('parsePow', this.parseString, ['**']);
-	}
-
-	parseString() {
-		return this._parseBinary('parseString', this.parseLiteralUnary, ['~', '..']);
-	}
+	parseTernaryShortcut() { return this._parseBinary('parseTernaryShortcut', this.parseLogicOr, ['?:']); }
+	parseLogicOr() { return this._parseBinary('parseLogicOr', this.parseLogicAnd, ['||', 'or']); }
+	parseLogicAnd() { return this._parseBinary('parseLogicAnd', this.parseBitOr, ['&&', 'and']); }
+	parseBitOr() { return this._parseBinary('parseBitOr', this.parseBitXor, ['b-or']); }
+	parseBitXor() { return this._parseBinary('parseBitXor', this.parseBitAnd, ['b-xor']); }
+	parseBitAnd() { return this._parseBinary('parseBitAnd', this.parseCompare, ['b-and']); }
+	parseCompare() { return this._parseBinary('parseCompare', this.parseAddSub, ['==', '!=', '>=', '<=', '>', '<', '===', '!==', 'is not', 'not in', 'is', 'in']); }
+	parseAddSub() { return this._parseBinary('parseAddSub', this.parseMulDiv, ['+', '-']); }
+	parseMulDiv() { return this._parseBinary('parseMulDiv', this.parsePow, ['*', '/', '//', '%']); }
+	parsePow() { return this._parseBinary('parsePow', this.parseString, ['**']); }
+	parseString() { return this._parseBinary('parseString', this.parseLiteralUnary, ['~', '..']); }
 
 	parseLiteralUnary() {
 		var token = this.tokenReader.peek();
-		var expr = undefined;
+		var expr: ParserNode.ParserNodeExpression = undefined;
 	
 		// '(' <expression> ')'
 		if (this.tokenReader.checkAndMoveNext(['('])) {
@@ -96,7 +64,6 @@ export class ExpressionParser {
 			this.tokenReader.expectAndMoveNext([')']);
 			expr = subExpression;
 		}
-
 		// '[' [<expression> [',']] ']'
 		else if (this.tokenReader.checkAndMoveNext(['['])) {
 			var arrayElements: ParserNode.ParserNodeExpression[] = [];
@@ -115,7 +82,6 @@ export class ExpressionParser {
 			}
 			expr = new ParserNode.ParserNodeArrayContainer(arrayElements);
 		}
-
 		// '{' [<key> ':' <expression> [',']] '}'
 		else if (this.tokenReader.checkAndMoveNext(['{'])) {
 			var objectElements: ParserNode.ParserNodeObjectItem[] = [];
@@ -138,13 +104,11 @@ export class ExpressionParser {
 			}
 			expr = new ParserNode.ParserNodeObjectContainer(objectElements);
 		}
-
 		// Unary operator.
 		else if (['-', '+', '~', '!', 'not'].indexOf(token.value) != -1) {
 			this.tokenReader.skip();
 			expr = new ParserNode.ParserNodeUnaryOperation(token.value, this.parseLiteralUnary());
 		}
-	
 		// Numeric or string literal.
 		else if (token.type == 'number' || token.type == 'string') {
 			this.tokenReader.skip();
@@ -201,7 +165,7 @@ export class ExpressionParser {
 				}
 				this.tokenReader.expectAndMoveNext([')']);
 				if (expr instanceof ParserNode.ParserNodeIdentifier) {
-					expr = new ParserNode.ParserNodeFunctionCall(new ParserNode.ParserNodeLiteral(expr.value), arguments);
+					expr = new ParserNode.ParserNodeFunctionCall(new ParserNode.ParserNodeLiteral((<ParserNode.ParserNodeIdentifier>expr).value), arguments);
 				} else {
 					expr = new ParserNode.ParserNodeFunctionCall(expr, arguments);
 				}
@@ -295,8 +259,7 @@ export class ExpressionParser {
 				case 'true': return new ParserNode.ParserNodeLiteral(true);
 				case 'null': return new ParserNode.ParserNodeLiteral(null);
 				case 'undefined': return new ParserNode.ParserNodeLiteral(undefined);
-				default:
-					return new ParserNode.ParserNodeIdentifier(identifierString);
+				default: return new ParserNode.ParserNodeIdentifier(identifierString);
 			}
 		}
 	

@@ -249,6 +249,17 @@ export class ExpressionParser {
 		}
 	}
 
+	parseStringLiteral(): ParserNode.ParserNodeLiteral {
+		var token = this.tokenReader.peek();
+
+		if (token.type == 'string') {
+			this.tokenReader.skip();
+			return new ParserNode.ParserNodeLiteral(token.value);
+		}
+
+		throw (new Error("Unexpected token : " + JSON.stringify(token.value) + " type:'" + token.type + "'"));
+	}
+
 	parseIdentifierCommaList(): ParserNode.ParserNodeExpression[]{
 		var identifiers = <ParserNode.ParserNodeExpression[]>[];
 		while (true) {

@@ -27,8 +27,13 @@ function debug(data) {
 }
 
 export interface CompiledTemplate {
-	ouput: string;
+	output: string;
 	class: any;
+}
+
+export interface EvalResult {
+	output: string;
+	tokenParserContext: TokenParserContext.TokenParserContext;
 }
 
 export class TemplateParser {
@@ -69,7 +74,7 @@ export class TemplateParser {
 		return template;
 	}
 
-	getEvalCodeString(content: string, path: string, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon) {
+	getEvalCodeString(content: string, path: string, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon): EvalResult {
 		var templateTokenizer  = new TemplateTokenizer(content);
 		var templateTokens     = templateTokenizer.tokenize();
 		var tokenParserContext = new TokenParserContext.TokenParserContext(tokenParserContextCommon || new TokenParserContext.TokenParserContextCommon(), this.sandboxPolicy);
@@ -85,10 +90,10 @@ export class TemplateParser {
 		}
 		var output = '';
 		output += 'CurrentTemplate = function() { this.name = ' + JSON.stringify(path) + '; };\n';
-		output += 'CurrentTemplate.prototype.render = function(runtimeContext, avoidRender) { runtimeContext.setTemplate(this); this.__main(runtimeContext, avoidRender); };\n';
+		output += 'CurrentTemplate.prototype.render = function(runtimeContext) { runtimeContext.setTemplate(this); this.__main(runtimeContext); };\n';
 
 		tokenParserContext.iterateBlocks((blockNode, blockName) => {
-			output += 'CurrentTemplate.prototype.' + blockName + ' = function(runtimeContext, avoidRender) {\n';
+			output += 'CurrentTemplate.prototype.' + blockName + ' = function(runtimeContext) {\n';
 			{
 				output += 'var that = this;\n';
 				output += 'runtimeContext.setCurrentBlock(that, ' + JSON.stringify(blockName) + ', function() {';
@@ -115,7 +120,7 @@ export class TemplateParser {
 		return { output: output, tokenParserContext: tokenParserContext };
 	}
 
-	getEvalCode(path: string, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon) {
+	getEvalCode(path: string, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon): EvalResult {
 		if (!this.getCache()) delete this.registry[path];
 
 		if (this.registry[path] !== undefined) {

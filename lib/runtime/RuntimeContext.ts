@@ -165,20 +165,6 @@ export class RuntimeContext {
 		}, only);
 	}
 
-	use(currentTemplate: any, name: string, pairs: any = null) {
-		var includeTemplate = new ((this.templateParser.compile(name, this)).class )();
-		//includeTemplate.__main(this);
-
-		var includeBlocks = this._getBlocks(includeTemplate);
-		for (var key in includeBlocks) {
-			if (pairs === null) {
-				currentTemplate[key] = includeBlocks[key];
-			} else if (pairs[key]) {
-				currentTemplate[pairs[key]] = includeBlocks[key];
-			}
-		}
-	}
-
 	import(name: string) {
 		var IncludeTemplate = new ((this.templateParser.compile(name, this)).class)();
 		//console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<");
@@ -252,17 +238,16 @@ export class RuntimeContext {
 		return ret;
 	}
 
-	private _putBlock(Current: any, name: string, avoidRender?: bool) {
+	private _putBlock(Current: any, name: string) {
 		var method = (Current[name]);
 		if (method === undefined) {
 			console.log(Current['__proto__']);
 			throw (new Error("Can't find block '" + name + "' in '" + Current.name + ":" + this.currentBlockName + "'"));
 		}
-		return method.call(Current, this, avoidRender);
+		return method.call(Current, this);
 	}
 
-	putBlock(name: string, avoidRender?: bool) {
-		//if (avoidRender) return;
+	putBlock(name: string) {
 		return this._putBlock(this.LeafTemplate, name);
 	}
 

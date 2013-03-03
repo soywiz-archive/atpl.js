@@ -101,7 +101,6 @@
     <Content Include="test\utils_test.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="test\fixtures.disabled\" />
     <Folder Include="test\fixtures\regressions\" />
   </ItemGroup>
   <ItemGroup>

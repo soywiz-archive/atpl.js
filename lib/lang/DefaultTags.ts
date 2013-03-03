@@ -377,7 +377,7 @@ export class DefaultTags {
 	// http://twig.sensiolabs.org/doc/tags/use.html
 	static use(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext);
-		var fileNameNode = expressionParser.parseExpression();
+		var fileName = expressionParser.parseStringLiteral().value;
 
 		var pairs = null;
 
@@ -390,12 +390,42 @@ export class DefaultTags {
 		}
 
 		checkNoMoreTokens(expressionTokenReader);
+		//console.log(pairs);
 
-		return new ParserNode.ParserNodeRaw('runtimeContext.use(that, ' + fileNameNode.generateCode() + ', ' + JSON.stringify(pairs) + ');');
+		var info = templateParser.getEvalCode(fileName, tokenParserContext.common);
 
-		//return new ParserNode.ParserNodeStatementExpression(
-		//	new ParserNode.ParserNodeAssignment(aliasNode, new ParserNode.ParserNodeRaw('runtimeContext.import(' + fileNameNode.generateCode() + ')'))
-		//);
+		info.tokenParserContext.iterateBlocks((node, name) => {
+			//console.log('aaaaaaaaaaa: ' + name);
+			if (name.match(/^block_/)) {
+				//name = name.substr(6);
+				if (pairs === null) {
+					tokenParserContext.setBlock(name, node);
+				} else if (pairs[name]) {
+					tokenParserContext.setBlock(pairs[name], node);
+				}
+			}
+		});
+
+		////new TokenParserContext.TokenParserContext(tokenParserContext.common, tokenParserContext.sandboxPolicy);
+		//templateParser.parseTemplateSync(
+		////ads -as- ds-
+		//
+		//var includeTemplate = new ((this.templateParser.compile(name, this)).class )();
+		//
+		//includeTemplate.__main(this, true);
+		//
+		//var includeBlocks = this._getBlocks(includeTemplate);
+		//for (var key in includeBlocks) {
+		//	if (pairs === null) {
+		//		currentTemplate[key] = includeBlocks[key];
+		//	} else if (pairs[key]) {
+		//		currentTemplate[pairs[key]] = includeBlocks[key];
+		//	}
+		//}
+		//
+		//tokenParserContext.setBlock(blockName, innerNode);
+
+		return new ParserNode.ParserNodeRaw('');
 	}
 
 	// INCLUDE

@@ -55,8 +55,10 @@
     <Content Include="benchmarks\benchmark.ts" />
     <Content Include="lib\lang\Default.ts" />
     <Content Include="lib\LanguageContext.ts" />
+    <Content Include="lib\lexer\ITokenizer.ts" />
     <Content Include="lib\SandboxPolicy.ts" />
     <Content Include="test\fixtures\regressions\issue_60.set" />
+    <Content Include="test\fixtures\regressions\issue_61.set" />
     <None Include="test\fixtures\regressions\issue_58.set" />
     <Content Include="typings\async.d.ts" />
     <Content Include="typings\express.d.ts" />

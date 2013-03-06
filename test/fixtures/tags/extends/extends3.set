@@ -11,10 +11,10 @@ extends 3
 {% extends "base1" %}{% block test_b %}2b{% endblock %}
 
 === TEMPLATE:base3
-{% extends "base2" %}No{% block test_c %}3c{% endblock%}No
+{% extends "base2" %} {% block test_c %}3c{% endblock%} 
 
 === TEMPLATE:main
-{% extends "base3" %}No{% block test_d %}4d{% endblock%}No
+{% extends "base3" %} {% block test_d %}4d{% endblock%} 
 
 === OUTPUT
 [1a2b3c4d]

@@ -11,7 +11,7 @@ a{% block body %}b{% endblock %}c
 {% extends "base1" %}{% block body %}A{% block left %}B{% endblock %}C{% block right %}D{% endblock %}E{% endblock %}
 
 === TEMPLATE:main
-{% extends "base2" %}No{% block left %}[Z]{% endblock%}No
+{% extends "base2" %} {% block left %}[Z]{% endblock%} 
 
 === OUTPUT
 aA[Z]CDEc

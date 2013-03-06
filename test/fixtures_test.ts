@@ -11,14 +11,6 @@ var RuntimeContext = require('../lib/runtime/RuntimeContext.js').RuntimeContext;
 var RuntimeUtils = require('../lib/runtime/RuntimeUtils.js');
 var Default = require('../lib/lang/Default.js');
 
-class B {
-	test() { console.log('B'); }
-}
-
-class A extends B {
-	test() { console.log('A'); super.test(); }
-}
-
 function handleSet(name, data) {
 	var parts = data.split('===');
 	var test = { title: 'untitled: ' + name, description: '', input: {}, expected: '', templates: {}, eval: undefined, eval_after: undefined, exception: undefined };

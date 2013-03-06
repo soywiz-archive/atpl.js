@@ -11,7 +11,7 @@ extends 2
 {% extends "base1" %}{% block test2 %}2b{% endblock %}
 
 === TEMPLATE:main
-{% extends "base2" %}No{% block test3 %}3c{% endblock%}No
+{% extends "base2" %} {% block test3 %}3c{% endblock%} 
 
 === OUTPUT
 [1a2b3c]

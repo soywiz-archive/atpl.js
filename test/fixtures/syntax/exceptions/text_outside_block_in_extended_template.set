@@ -1,0 +1,14 @@
+﻿=== TITLE
+text outside block in extended template
+
+=== INPUT
+{}
+
+=== TEMPLATE:base
+a{% block a %}b{% endblock %}c
+
+=== TEMPLATE:main
+{% extends "base" %}a
+
+=== EXCEPTION
+A template that extends another one cannot have a body

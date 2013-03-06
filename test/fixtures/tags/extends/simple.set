@@ -8,7 +8,7 @@ simple
 Hello {% block test %}Test{% endblock %}
 
 === TEMPLATE:main
-{% extends "base" %}No{% block test %}World{% endblock%}No
+{% extends "base" %} {% block test %}World{% endblock%} 
 
 === OUTPUT
 Hello World

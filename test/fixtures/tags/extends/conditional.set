@@ -11,7 +11,7 @@ Hello {% block test %}Test{% endblock %}
 Goodbye {% block test %}Test{% endblock %}
 
 === TEMPLATE:main
-{% extends cond ? "base_a" : "base_b" %}No{% block test %}World{% endblock%}No
+{% extends cond ? "base_a" : "base_b" %} {% block test %}World{% endblock%} 
 
 === OUTPUT
 Goodbye World

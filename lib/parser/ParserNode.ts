@@ -38,7 +38,10 @@ export export class ParserNodeWriteExpression extends ParserNodeExpression {
 	}
 
 	generateCode(context: ParserNodeGenerateCodeContext) {
-		if (!context.doWrite) return '';
+		if (!context.doWrite) {
+			throw (new Error('A template that extends another one cannot have a body'));
+			return '';
+		}
 		return 'runtimeContext.writeExpression(' + this.expression.generateCode(context) + ')';
 	}
 }
@@ -403,14 +406,19 @@ export class ParserNodeTernaryOperation extends ParserNode {
 ///////////////////////////////////////////////////////////////////////////////
 
 export class ParserNodeOutputText extends ParserNode {
+	text: string = '';
 	type: string = 'ParserNodeOutputText';
 
-	constructor(public text) {
+	constructor(text: string) {
 		super();
+		this.text = String(text);
 	}
 
 	generateCode(context: ParserNodeGenerateCodeContext) {
-		if (!context.doWrite) return '';
+		if (!context.doWrite) {
+			if (this.text.match(/\S/)) throw (new Error('A template that extends another one cannot have a body'));
+			return '';
+		}
 		return 'runtimeContext.write(' + JSON.stringify(this.text) + ');';
 	}
 }

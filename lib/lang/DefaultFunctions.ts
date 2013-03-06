@@ -78,8 +78,10 @@ export class DefaultFunctions {
 	 */
 	static parent() {
 		var runtimeContext: RuntimeContext.RuntimeContext = this;
-		return runtimeContext.captureOutput(() => {
-			runtimeContext.putBlockParent(runtimeContext.currentBlockName);
+		return runtimeContext.autoescape(false, () => {
+			return runtimeContext.captureOutput(() => {
+				runtimeContext.putBlockParent(runtimeContext.currentBlockName);
+			});
 		});
 	}
 

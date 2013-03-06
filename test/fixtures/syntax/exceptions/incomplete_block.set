@@ -1,0 +1,13 @@
+﻿=== TITLE
+missing endblock
+
+=== INPUT
+{}
+
+=== TEMPLATE:base
+
+=== TEMPLATE:main
+{% block test %}
+
+=== EXCEPTION
+Unexpected end of 'block' no any of ['endblock']

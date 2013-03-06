@@ -1,0 +1,24 @@
+﻿=== TITLE
+issue #60 parent() returns html entities
+
+=== DESCRIPTION
+In twig:
+{{ parent() }}
+doesn't escape
+
+{{ parent() ~ '' }}
+does escape
+So probably it is checking that the expression is just parent() to avoid escaping
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{% extends "layout" %}
+{% block body %}{{ parent() }}{% endblock %}
+
+=== TEMPLATE:layout
+{% block body %}<a>{% endblock %}
+
+=== OUTPUT
+<a>

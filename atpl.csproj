@@ -56,6 +56,8 @@
     <Content Include="lib\lang\Default.ts" />
     <Content Include="lib\LanguageContext.ts" />
     <Content Include="lib\SandboxPolicy.ts" />
+    <Content Include="test\fixtures\regressions\issue_60.set" />
+    <None Include="test\fixtures\regressions\issue_58.set" />
     <Content Include="typings\async.d.ts" />
     <Content Include="typings\express.d.ts" />
     <Content Include="typings\mocha.d.ts" />
@@ -64,6 +66,8 @@
     <Content Include="typings\should.d.ts" />
     <Content Include="typings\superagent.d.ts" />
     <Content Include="typings\supertest.d.ts" />
+    <Content Include="test\fixtures\syntax\exceptions\incomplete_block.set" />
+    <Content Include="test\fixtures\syntax\exceptions\text_outside_block_in_extended_template.set" />
     <TypeScriptCompile Include="lib\TemplateConfig.ts" />
     <Content Include="test\templates\base\base.html" />
     <Content Include="test\templates\base\simple_extends.html" />
@@ -100,9 +104,7 @@
     <Content Include="test\TemplateTokenizer_test.ts" />
     <Content Include="test\utils_test.ts" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="test\fixtures\regressions\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="README.md" />
   </ItemGroup>

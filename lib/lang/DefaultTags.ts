@@ -45,6 +45,12 @@ export class ParserNodeAutoescape extends ParserNode.ParserNodeStatement {
 		super();
 	}
 
+	iterate(handler: (node: ParserNode.ParserNode) => void ) {
+		handler(this);
+		this.expression.iterate(handler);
+		this.inner.iterate(handler);
+	}
+
 	generateCode(context: ParserNode.ParserNodeGenerateCodeContext) {
 		return (
 			'runtimeContext.autoescape(' + this.expression.generateCode(context) + ', function() {' +
@@ -55,10 +61,16 @@ export class ParserNodeAutoescape extends ParserNode.ParserNodeStatement {
 }
 
 export class ParserNodeExpressionFilter extends ParserNode.ParserNodeExpression {
-	filters = <{ name: string; parameters: ParserNode.ParserNodeCommaExpression; }[]>[];
+	filters: { name: string; parameters: ParserNode.ParserNodeCommaExpression; }[] = [];
 
 	constructor(public inner: ParserNode.ParserNode) {
 		super();
+	}
+
+	iterate(handler: (node: ParserNode.ParserNode) => void ) {
+		handler(this);
+		this.inner.iterate(handler);
+		this.filters.forEach(item => item.parameters.iterate(handler));
 	}
 
 	addFilter(filterName: string, filterParameters: ParserNode.ParserNodeCommaExpression) {
@@ -96,6 +108,11 @@ export class ParserNodeScopeSet extends ParserNode.ParserNodeStatement {
 		super();
 	}
 
+	iterate(handler: (node: ParserNode.ParserNode) => void ) {
+		handler(this);
+		this.value.iterate(handler);
+	}
+
 	generateCode(context: ParserNode.ParserNodeGenerateCodeContext) {
 		return 'runtimeContext.scope.set(' + JSON.stringify(this.key) + ', ' + this.value.generateCode(context) + ');';
 	}
@@ -103,6 +120,11 @@ export class ParserNodeScopeSet extends ParserNode.ParserNodeStatement {
 
 export class ParserNodeIf extends ParserNode.ParserNodeStatement {
 	conditions: { expression: ParserNode.ParserNodeExpression; code: ParserNode.ParserNodeContainer; }[] = [];
+
+	iterate(handler: (node: ParserNode.ParserNode) => void ) {
+		handler(this);
+		this.conditions.forEach(node => { node.code.iterate(handler); node.expression.iterate(handler); });
+	}
 
 	addCaseCondition(expression: ParserNode.ParserNodeExpression) {
 		this.conditions.push({
@@ -141,6 +163,14 @@ export class ParserNodeIf extends ParserNode.ParserNodeStatement {
 export class ParserNodeFor extends ParserNode.ParserNodeStatement {
 	constructor(public keyId: any, public condId: any, public valueId: ParserNode.ParserNodeLeftValue, public nodeList: ParserNode.ParserNodeExpression, public forCode: ParserNode.ParserNode, public elseCode: ParserNode.ParserNode) {
 		super();
+	}
+
+	iterate(handler: (node: ParserNode.ParserNode) => void ) {
+		handler(this);
+		this.valueId.iterate(handler);
+		this.nodeList.iterate(handler);
+		this.forCode.iterate(handler);
+		this.elseCode.iterate(handler);
 	}
 
 	generateCode(context: ParserNode.ParserNodeGenerateCodeContext) {

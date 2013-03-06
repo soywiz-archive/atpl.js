@@ -24,8 +24,8 @@ export class ParserNode {
 		return '<invalid>';
 	}
 
-	optimize() {
-		return this;
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
 	}
 }
 
@@ -43,6 +43,11 @@ export export class ParserNodeWriteExpression extends ParserNodeExpression {
 			return '';
 		}
 		return 'runtimeContext.writeExpression(' + this.expression.generateCode(context) + ')';
+	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		this.expression.iterate(handler);
 	}
 }
 
@@ -68,6 +73,13 @@ export class ParserNodeContainer extends ParserNode {
 		}
 		return output;
 	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		for (var n in this.nodes) {
+			this.nodes[n].iterate(handler);
+		}
+	}
 }
 
 export class ParserNodeContainerExpression extends ParserNodeExpression {
@@ -89,6 +101,13 @@ export class ParserNodeContainerExpression extends ParserNodeExpression {
 		}
 		return output;
 	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		for (var n in this.nodes) {
+			this.nodes[n].iterate(handler);
+		}
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -104,6 +123,13 @@ export class ParserNodeObjectItem extends ParserNode {
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		return this.key.generateCode(context) + ' : ' + this.value.generateCode(context);
 	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		this.key.iterate(handler);
+		this.value.iterate(handler);
+	}
+
 }
 
 export class ParserNodeObjectContainer extends ParserNodeExpression {
@@ -115,6 +141,11 @@ export class ParserNodeObjectContainer extends ParserNodeExpression {
 
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		return '{' + this.items.map(node => node.generateCode(context)).join(', ') + '}';
+	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		for (var n in this.items) this.items[n].iterate(handler);
 	}
 }
 
@@ -128,6 +159,11 @@ export class ParserNodeArrayContainer extends ParserNodeExpression {
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		return '[' + this.items.map(node => node.generateCode(context)).join(', ') + ']';
 	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		for (var n in this.items) this.items[n].iterate(handler);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -137,7 +173,6 @@ export interface ParseNodeLiteralIdentifier {
 	type: string;
 	value: any;
 	generateCode(context: ParserNodeGenerateCodeContext);
-	optimize();
 }
 
 export class ParserNodeLiteral extends ParserNodeExpression implements ParseNodeLiteralIdentifier {
@@ -149,6 +184,10 @@ export class ParserNodeLiteral extends ParserNodeExpression implements ParseNode
 
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		return JSON.stringify(this.value);
+	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
 	}
 }
 
@@ -206,6 +245,11 @@ export class ParserNodeStatementExpression extends ParserNodeStatement {
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		return this.expression.generateCode(context) + ';';
 	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		this.expression.iterate(handler);
+	}
 }
 
 export class ParserNodeAssignment extends ParserNodeExpression {
@@ -217,6 +261,12 @@ export class ParserNodeAssignment extends ParserNodeExpression {
 
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		return this.leftValue.generateAssign(context, this.rightValue);
+	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		this.leftValue.iterate(handler);
+		this.rightValue.iterate(handler);
 	}
 }
 
@@ -233,6 +283,11 @@ export class ParserNodeCommaExpression extends ParserNode {
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		return this.expressions.map((item) => item.generateCode(context)).join(', ');
 	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		for (var n in this.expressions) this.expressions[n].iterate(handler);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -248,6 +303,12 @@ export class ParserNodeArrayAccess extends ParserNodeExpression {
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		return 'runtimeContext.access(' + this.object.generateCode(context) + ', ' + this.key.generateCode(context) + ')';
 	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		this.object.iterate(handler);
+		this.key.iterate(handler);
+	}
 }
 
 export class ParserNodeArraySlice extends ParserNodeExpression {
@@ -259,6 +320,13 @@ export class ParserNodeArraySlice extends ParserNodeExpression {
 
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		return 'runtimeContext.slice(' + this.object.generateCode(context) + ', ' + this.left.generateCode(context) + ', ' + this.right.generateCode(context) + ')';
+	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		this.object.iterate(handler);
+		this.left.iterate(handler);
+		this.right.iterate(handler);
 	}
 }
 
@@ -277,6 +345,12 @@ export class ParserNodeFunctionCall extends ParserNodeExpression {
 			return 'runtimeContext.call(' + this.functionExpr.generateCode(context) + ', [' + this.arguments.generateCode(context) + '], ' + JSON.stringify(this.arguments.names) + ')';
 		}
 	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		this.functionExpr.iterate(handler);
+		this.arguments.iterate(handler);
+	}
 }
 
 export class ParserNodeFilterCall extends ParserNodeExpression {
@@ -288,6 +362,11 @@ export class ParserNodeFilterCall extends ParserNodeExpression {
 
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		return 'runtimeContext.filter(' + JSON.stringify(this.filterName) + ', [' + this.arguments.generateCode(context) + '])';
+	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		this.arguments.iterate(handler);
 	}
 }
 
@@ -309,6 +388,11 @@ export class ParserNodeUnaryOperation extends ParserNodeExpression {
 				return this.operator + '(' + this.right.generateCode(context) + ')';
 		}
 	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		this.right.iterate(handler);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -317,31 +401,29 @@ export class ParserNodeUnaryOperation extends ParserNodeExpression {
 export class ParserNodeBinaryOperation extends ParserNodeExpression {
 	type: string = 'ParserNodeBinaryOperation';
 
-	constructor(public operator, public left, public right) {
+	constructor(public operator: string, public left: ParserNodeExpression, public right: ParserNodeExpression) {
 		super();
+	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		this.left.iterate(handler);
+		this.right.iterate(handler);
 	}
 
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		switch (this.operator) {
-			case 'b-or':
-				return '("" + ' + this.left.generateCode() + ' | ' + this.right.generateCode() + ')';
-			case 'b-and':
-				return '("" + ' + this.left.generateCode() + ' & ' + this.right.generateCode() + ')';
-			case 'b-xor':
-				return '("" + ' + this.left.generateCode() + ' ^ ' + this.right.generateCode() + ')';
-			case '~':
-				return '("" + ' + this.left.generateCode() + ' + ' + this.right.generateCode() + ')';
-			case '..':
-				return 'runtimeContext.range(' + this.left.generateCode() + ', ' + this.right.generateCode() + ')';
-			case '?:':
-				return 'runtimeContext.ternaryShortcut(' + this.left.generateCode() + ', ' + this.right.generateCode() + ')';
-			case '//':
-				return 'Math.floor(' + this.left.generateCode() + ' / ' + this.right.generateCode() + ')';
-			case '**':
-				return 'Math.pow(' + this.left.generateCode() + ',' + this.right.generateCode() + ')';
+			case 'b-or': return '("" + ' + this.left.generateCode(context) + ' | ' + this.right.generateCode(context) + ')';
+			case 'b-and': return '("" + ' + this.left.generateCode(context) + ' & ' + this.right.generateCode(context) + ')';
+			case 'b-xor': return '("" + ' + this.left.generateCode(context) + ' ^ ' + this.right.generateCode(context) + ')';
+			case '~': return '("" + ' + this.left.generateCode(context) + ' + ' + this.right.generateCode(context) + ')';
+			case '..': return 'runtimeContext.range(' + this.left.generateCode(context) + ', ' + this.right.generateCode(context) + ')';
+			case '?:': return 'runtimeContext.ternaryShortcut(' + this.left.generateCode(context) + ', ' + this.right.generateCode(context) + ')';
+			case '//': return 'Math.floor(' + this.left.generateCode(context) + ' / ' + this.right.generateCode(context) + ')';
+			case '**': return 'Math.pow(' + this.left.generateCode(context) + ',' + this.right.generateCode(context) + ')';
 			case 'not in':
 			case 'in':
-				var ret = 'runtimeContext.inArray(' + this.left.generateCode() + ',' + this.right.generateCode() + ')';
+				var ret = 'runtimeContext.inArray(' + this.left.generateCode(context) + ',' + this.right.generateCode(context) + ')';
 				if ((this.operator == 'not in')) ret = '!(' + ret + ')';
 
 				return ret;
@@ -352,7 +434,7 @@ export class ParserNodeBinaryOperation extends ParserNodeExpression {
 				var right:ParserNodeExpression = this.right;
 
 				if (this.right instanceof ParserNodeUnaryOperation) {
-					right = this.right.right;
+					right = (<ParserNodeUnaryOperation>this.right).right;
 				}
 
 				if (right instanceof ParserNodeFunctionCall) {
@@ -372,9 +454,9 @@ export class ParserNodeBinaryOperation extends ParserNodeExpression {
 			default:
 				return (
 					'(' +
-						this.left.generateCode() +
+						this.left.generateCode(context) +
 						' ' + this.operator  + ' ' +
-						this.right.generateCode() +
+						this.right.generateCode(context) +
 					')'
 				);
 		}
@@ -389,6 +471,13 @@ export class ParserNodeTernaryOperation extends ParserNode {
 
 	constructor(public cond: ParserNode, public exprTrue: ParserNode, public exprFalse: ParserNode) {
 		super();
+	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		this.cond.iterate(handler);
+		this.exprTrue.iterate(handler);
+		this.exprFalse.iterate(handler);
 	}
 
 	generateCode(context: ParserNodeGenerateCodeContext) {
@@ -430,6 +519,11 @@ export class ParserNodeOutputNodeExpression extends ParserNodeExpression {
 		super();
 	}
 
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		this.expression.iterate(handler);
+	}
+
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		if (!context.doWrite) return '';
 		return 'runtimeContext.write(' + this.expression.generateCode(context) + ')';
@@ -441,6 +535,11 @@ export class ParserNodeReturnStatement extends ParserNodeStatement {
 
 	constructor(public expression: ParserNodeExpression) {
 		super();
+	}
+
+	iterate(handler: (node: ParserNode) => void ) {
+		handler(this);
+		this.expression.iterate(handler);
 	}
 
 	generateCode(context: ParserNodeGenerateCodeContext) {

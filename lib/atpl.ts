@@ -31,6 +31,7 @@ export interface IOptionsExpress {
 }
 
 var languageContext = new LanguageContext.LanguageContext();
+Default.register(languageContext);
 
 function internalCompile(options: IOptions, absolutePath = false) {
 	if (options.root === undefined) options.root = '';
@@ -38,8 +39,6 @@ function internalCompile(options: IOptions, absolutePath = false) {
 	// options.cache
 
 	if (registryTemplateParser[options.root] === undefined) {
-		Default.register(languageContext);
-
 		var templateParser = new TemplateParser.TemplateParser(
 			new FileSystemTemplateProvider(options.root),
 			languageContext

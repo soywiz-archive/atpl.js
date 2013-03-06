@@ -1,3 +1,8 @@
+var __extends = this.__extends || function (d, b) {
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
 var assert = require('assert')
 var fs = require('fs')
 var TemplateParser = require('../lib/parser/TemplateParser.js').TemplateParser;
@@ -7,10 +12,30 @@ var TemplateConfig = require('../lib/TemplateConfig.js').TemplateConfig;
 var RuntimeContext = require('../lib/runtime/RuntimeContext.js').RuntimeContext;
 var RuntimeUtils = require('../lib/runtime/RuntimeUtils.js');
 var Default = require('../lib/lang/Default.js');
+var B = (function () {
+    function B() { }
+    B.prototype.test = function () {
+        console.log('B');
+    };
+    return B;
+})();
+var A = (function (_super) {
+    __extends(A, _super);
+    function A() {
+        _super.apply(this, arguments);
+
+    }
+    A.prototype.test = function () {
+        console.log('A');
+        _super.prototype.test.call(this);
+    };
+    return A;
+})(B);
 function handleSet(name, data) {
     var parts = data.split('===');
     var test = {
         title: 'untitled: ' + name,
+        description: '',
         input: {
         },
         expected: '',
@@ -22,13 +47,16 @@ function handleSet(name, data) {
     };
     for(var n = 0; n < parts.length; n++) {
         var part = parts[n].trim();
-        var token = /^([\w:]+)\s+([\S\s]*)$/gim.exec(part);
+        var token = /^([\w:]+)\s+([\S\s]*)$/igm.exec(part);
         if(token != null) {
             var key = token[1].trim().toLowerCase();
             var value = token[2].trim();
             switch(key) {
                 case 'title':
                     test.title = value + ' (' + name + ')';
+                    break;
+                case 'description':
+                    test.description = value;
                     break;
                 case 'input':
                     test.input = JSON.parse(value);

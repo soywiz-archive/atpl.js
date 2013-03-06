@@ -30,6 +30,7 @@ export class TokenParserContextCommon {
 export class TokenParserContext {
 	private blocksOutput: any = {};
 	private macrosOutput: any = {};
+	afterMainNodes: ParserNode.ParserNode[] = [];
 
 	constructor(public common: TokenParserContextCommon, public sandboxPolicy: SandboxPolicy.SandboxPolicy) {
 	}
@@ -42,11 +43,19 @@ export class TokenParserContext {
 		for (var name in this.macrosOutput) callback(this.macrosOutput[name], name);
 	}
 
+	iterateAfterMainNodes(callback: (node: ParserNode.ParserNode) => void ) {
+		this.afterMainNodes.forEach(callback);
+	}
+
 	setBlock(blockName, node: ParserNode.ParserNode) {
 		return this.blocksOutput[blockName] = node;
 	}
 
 	setMacro(macroName, node: ParserNode.ParserNode) {
 		return this.macrosOutput[macroName] = node;
+	}
+
+	addAfterMainNode(node: ParserNode.ParserNode) {
+		this.afterMainNodes.push(node);
 	}
 }

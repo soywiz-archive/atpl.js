@@ -1,0 +1,27 @@
+﻿=== TITLE
+issue #58 
+
+=== DESCRIPTION
+since extending ignores all non-block bodies, the import statement (that is executed at runtime) does not reach.
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{% extends "layout" %}
+{% import "macros" as macros %}
+{% block body %}
+{{ macros.foo(1, 2, 3) }}
+{% endblock %}
+
+=== TEMPLATE:layout
+{% block body %}
+{% endblock %}
+
+=== TEMPLATE:macros
+{% macro foo(a, b, c) %}
+	{{- "#{a}, #{b}, #{c}" -}}
+{% endmacro %}
+
+=== OUTPUT
+1, 2, 3

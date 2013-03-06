@@ -11,9 +11,17 @@ var RuntimeContext = require('../lib/runtime/RuntimeContext.js').RuntimeContext;
 var RuntimeUtils = require('../lib/runtime/RuntimeUtils.js');
 var Default = require('../lib/lang/Default.js');
 
+class B {
+	test() { console.log('B'); }
+}
+
+class A extends B {
+	test() { console.log('A'); super.test(); }
+}
+
 function handleSet(name, data) {
 	var parts = data.split('===');
-	var test = { title: 'untitled: ' + name, input: {}, expected: '', templates: {}, eval: undefined, eval_after: undefined, exception: undefined };
+	var test = { title: 'untitled: ' + name, description: '', input: {}, expected: '', templates: {}, eval: undefined, eval_after: undefined, exception: undefined };
 	for (var n = 0; n < parts.length; n++) {
 		var part = parts[n].trim();
 		var token = /^([\w:]+)\s+([\S\s]*)$/igm.exec(part);
@@ -25,6 +33,7 @@ function handleSet(name, data) {
 			var value = token[2].trim();
 			switch (key) {
 				case 'title': test.title = value + ' (' + name + ')'; break;
+				case 'description': test.description = value; break;
 				case 'input': test.input = JSON.parse(value); break;
 				case 'output': test.expected = value; break;
 				case 'eval': test.eval = value; break;

@@ -45,10 +45,10 @@ export class ParserNodeAutoescape extends ParserNode.ParserNodeStatement {
 		super();
 	}
 
-	generateCode() {
+	generateCode(context: ParserNode.ParserNodeGenerateCodeContext) {
 		return (
-			'runtimeContext.autoescape(' + this.expression.generateCode() + ', function() {' +
-				this.inner.generateCode() +
+			'runtimeContext.autoescape(' + this.expression.generateCode(context) + ', function() {' +
+				this.inner.generateCode(context) +
 			'}, true);'
 		);
 	}
@@ -68,7 +68,7 @@ export class ParserNodeExpressionFilter extends ParserNode.ParserNodeExpression 
 		});
 	}
 
-	generateCode() {
+	generateCode(context: ParserNode.ParserNodeGenerateCodeContext) {
 		var out = '';
 
 		this.filters.reverse().forEach((filter) => {
@@ -76,13 +76,13 @@ export class ParserNodeExpressionFilter extends ParserNode.ParserNodeExpression 
 		});
 
 		out += 'runtimeContext.captureOutput(function () {'
-		out += this.inner.generateCode();
+		out += this.inner.generateCode(context);
 		out += '})';
 
 		this.filters.reverse().forEach((filter) => {
 			if (filter.parameters && filter.parameters.expressions.length > 0) {
 				out += ',';
-				out += filter.parameters.generateCode();
+				out += filter.parameters.generateCode(context);
 			}
 			out += '])';
 		});
@@ -96,8 +96,8 @@ export class ParserNodeScopeSet extends ParserNode.ParserNodeStatement {
 		super();
 	}
 
-	generateCode() {
-		return 'runtimeContext.scope.set(' + JSON.stringify(this.key) + ', ' + this.value.generateCode() + ');';
+	generateCode(context: ParserNode.ParserNodeGenerateCodeContext) {
+		return 'runtimeContext.scope.set(' + JSON.stringify(this.key) + ', ' + this.value.generateCode(context) + ');';
 	}
 }
 
@@ -122,15 +122,15 @@ export class ParserNodeIf extends ParserNode.ParserNodeStatement {
 		this.conditions[this.conditions.length - 1].code.add(node);
 	}
 
-	generateCode() {
+	generateCode(context: ParserNode.ParserNodeGenerateCodeContext) {
 		var out = '';
 
 		for (var n = 0; n < this.conditions.length; n++) {
 			var condition = this.conditions[n];
 			if (out != '') out += 'else ';
-			if (condition.expression != null) out += 'if (' + condition.expression.generateCode() + ')';
+			if (condition.expression != null) out += 'if (' + condition.expression.generateCode(context) + ')';
 			out += '{ ';
-			out += condition.code.generateCode();
+			out += condition.code.generateCode(context);
 			out += '}';
 		}
 
@@ -143,15 +143,15 @@ export class ParserNodeFor extends ParserNode.ParserNodeStatement {
 		super();
 	}
 
-	generateCode() {
+	generateCode(context: ParserNode.ParserNodeGenerateCodeContext) {
 		var out = '';
 		out += ('runtimeContext.createScope((function() { ');
-		out += (' var list = ' + this.nodeList.generateCode() + ';');
+		out += (' var list = ' + this.nodeList.generateCode(context) + ';');
 		out += (' if (!runtimeContext.emptyList(list)) {');
 		out += ('  runtimeContext.each(list, function(k, v) { ');
-		out += ('   ' + (new ParserNode.ParserNodeAssignment(this.valueId, new ParserNode.ParserNodeRaw("v"))).generateCode() + ';');
+		out += ('   ' + (new ParserNode.ParserNodeAssignment(this.valueId, new ParserNode.ParserNodeRaw("v"))).generateCode(context) + ';');
 		if (this.keyId !== undefined) {
-			out += ('   ' + (new ParserNode.ParserNodeAssignment(this.keyId, new ParserNode.ParserNodeRaw("k"))).generateCode() + ';');
+			out += ('   ' + (new ParserNode.ParserNodeAssignment(this.keyId, new ParserNode.ParserNodeRaw("k"))).generateCode(context) + ';');
 		}
 		if (this.condId) {
 			out += ('   if (' + this.condId.generateCode() + ') { ');
@@ -159,14 +159,14 @@ export class ParserNodeFor extends ParserNode.ParserNodeStatement {
 			out += ('   if (true) { ');
 		}
 		
-		out += this.forCode.generateCode();
+		out += this.forCode.generateCode(context);
 
 		out += ('}'); // if condition
 		
 		out += ('  });'); // each
 		out += ('} else {');
 		{
-			out += this.elseCode.generateCode();
+			out += this.elseCode.generateCode(context);
 		}
 		out += ('} '); // if/else
 		out += ('}));'); // createScope
@@ -366,7 +366,14 @@ export class DefaultTags {
 		checkNoMoreTokens(expressionTokenReader);
 
 		return new ParserNode.ParserNodeStatementExpression(
-			new ParserNode.ParserNodeAssignment(aliasNode, new ParserNode.ParserNodeRaw('runtimeContext.import(' + fileNameNode.generateCode() + ')'))
+			new ParserNode.ParserNodeAssignment(
+				aliasNode,
+				new ParserNode.ParserNodeContainerExpression([
+					new ParserNode.ParserNodeRaw('runtimeContext.import('),
+					fileNameNode,
+					new ParserNode.ParserNodeRaw(')'),
+				])
+			)
 		);
 	}
 
@@ -573,7 +580,7 @@ export class DefaultTags {
 
 		tokenParserContext.setBlock(blockName, innerNode);
 
-		return new ParserNode.ParserNodeRaw('runtimeContext.putBlock(' + JSON.stringify(blockName) + ');');
+		return new ParserNode.ParserNodeRaw('runtimeContext.putBlock(' + JSON.stringify(blockName) + ');', false);
 	}
 
 	// EXTENDS
@@ -581,11 +588,13 @@ export class DefaultTags {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
-		return new ParserNode.ParserNodeContainer([
+		tokenParserContext.addAfterMainNode(new ParserNode.ParserNodeContainer([
 			new ParserNode.ParserNodeRaw('return runtimeContext.extends('),
 			expressionNode,
 			new ParserNode.ParserNodeRaw(');')
-		]);
+		]));
+
+		return new ParserNode.ParserNodeRaw('');
 	}
 
 	// http://twig.sensiolabs.org/doc/tags/for.html

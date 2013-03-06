@@ -95,10 +95,17 @@ export class TemplateParser {
 		tokenParserContext.iterateBlocks((blockNode, blockName) => {
 			output += 'CurrentTemplate.prototype.' + blockName + ' = function(runtimeContext) {\n';
 			{
+				var avoidOutput = ((blockName == "__main") && (tokenParserContext.afterMainNodes.length > 0));
+
 				output += 'var that = this;\n';
 				output += 'runtimeContext.setCurrentBlock(that, ' + JSON.stringify(blockName) + ', function() {';
 				{
-					output += blockNode.generateCode() + "\n";
+					output += blockNode.generateCode({ doWrite: !avoidOutput }) + "\n";
+				}
+				if (avoidOutput) {
+					tokenParserContext.iterateAfterMainNodes((blockNode2) => {
+						output += blockNode2.generateCode({ doWrite: false }) + "\n";
+					});
 				}
 				output += '});';
 			}
@@ -112,7 +119,7 @@ export class TemplateParser {
 			output += 'CurrentTemplate.prototype.macros.' + macroName + ' = function() {\n';
 			output += 'var runtimeContext = this.$runtimeContext || this;\n';
 			//output += 'console.log("<<<<<<<<<<<<<<<<<<<<<<");console.log(this);\n';
-			output += macroNode.generateCode();
+			output += macroNode.generateCode({ doWrite: true });
 			output += '};\n';
 		});
 
@@ -199,7 +206,7 @@ export class TemplateParser {
 		switch (item.type) {
 			case 'text':
 				item = tokenReader.read();
-				return new ParserNode.ParserNodeRaw('runtimeContext.write(' + JSON.stringify(String(item.value)) + ');');
+				return new ParserNode.ParserNodeOutputText(String(item.value));
 			case 'trimSpacesAfter':
 			case 'trimSpacesBefore':
 				item = tokenReader.read();
@@ -207,7 +214,7 @@ export class TemplateParser {
 			case 'expression':
 				item = tokenReader.read();
 				// Propagate the "not done".
-				return (new ParserNode.ParserNodeRaw(this.parseTemplateExpressionSync(tokenParserContext, tokenReader, new TokenReader.TokenReader(item.value)).generateCode()));
+				return (new ParserNode.ParserNodeRaw(this.parseTemplateExpressionSync(tokenParserContext, tokenReader, new TokenReader.TokenReader(item.value)).generateCode({ doWrite: true })));
 			case 'block':
 				item = tokenReader.read();
 				// Propagate the "not done".

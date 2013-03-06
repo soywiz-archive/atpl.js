@@ -13,10 +13,14 @@
 //	}
 //}
 
-export export class ParserNode {
+export interface ParserNodeGenerateCodeContext {
+	doWrite: bool;
+}
+
+export class ParserNode {
 	type: string = '-';
 
-	generateCode() {
+	generateCode(context: ParserNodeGenerateCodeContext) {
 		return '<invalid>';
 	}
 
@@ -33,8 +37,9 @@ export export class ParserNodeWriteExpression extends ParserNodeExpression {
 		super();
 	}
 
-	generateCode() {
-		return 'runtimeContext.writeExpression(' + this.expression.generateCode() + ')';
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		if (!context.doWrite) return '';
+		return 'runtimeContext.writeExpression(' + this.expression.generateCode(context) + ')';
 	}
 }
 
@@ -53,15 +58,35 @@ export class ParserNodeContainer extends ParserNode {
 		this.nodes.push(node);
 	}
 
-	generateCode() {
+	generateCode(context: ParserNodeGenerateCodeContext) {
 		var output = '';
 		for (var n in this.nodes) {
-			output += this.nodes[n].generateCode();
+			output += this.nodes[n].generateCode(context);
 		}
 		return output;
 	}
 }
 
+export class ParserNodeContainerExpression extends ParserNodeExpression {
+	type: string = 'ParserNodeContainerExpression';
+
+	constructor(public nodes: ParserNode[] = null) {
+		super();
+		if (this.nodes == null) this.nodes = [];
+	}
+
+	add(node: ParserNode) {
+		this.nodes.push(node);
+	}
+
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		var output = '';
+		for (var n in this.nodes) {
+			output += this.nodes[n].generateCode(context);
+		}
+		return output;
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,8 +98,8 @@ export class ParserNodeObjectItem extends ParserNode {
 		super();
 	}
 
-	generateCode() {
-		return this.key.generateCode() + ' : ' + this.value.generateCode();
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		return this.key.generateCode(context) + ' : ' + this.value.generateCode(context);
 	}
 }
 
@@ -85,8 +110,8 @@ export class ParserNodeObjectContainer extends ParserNodeExpression {
 		super();
 	}
 
-	generateCode() {
-		return '{' + this.items.map(node => node.generateCode()).join(', ') + '}';
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		return '{' + this.items.map(node => node.generateCode(context)).join(', ') + '}';
 	}
 }
 
@@ -97,8 +122,8 @@ export class ParserNodeArrayContainer extends ParserNodeExpression {
 		super();
 	}
 
-	generateCode() {
-		return '[' + this.items.map(node => node.generateCode()).join(', ') + ']';
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		return '[' + this.items.map(node => node.generateCode(context)).join(', ') + ']';
 	}
 }
 
@@ -108,7 +133,7 @@ export class ParserNodeArrayContainer extends ParserNodeExpression {
 export interface ParseNodeLiteralIdentifier {
 	type: string;
 	value: any;
-	generateCode();
+	generateCode(context: ParserNodeGenerateCodeContext);
 	optimize();
 }
 
@@ -119,7 +144,7 @@ export class ParserNodeLiteral extends ParserNodeExpression implements ParseNode
 		super();
 	}
 
-	generateCode() {
+	generateCode(context: ParserNodeGenerateCodeContext) {
 		return JSON.stringify(this.value);
 	}
 }
@@ -130,7 +155,7 @@ export class ParserNodeLiteral extends ParserNodeExpression implements ParseNode
 export class ParserNodeLeftValue extends ParserNodeExpression {
 	type: string = 'ParserNodeLeftValue';
 
-	generateAssign(expr: ParserNodeExpression): string {
+	generateAssign(context: ParserNodeGenerateCodeContext, expr: ParserNodeExpression): string {
 		throw (new Error("Must implement"));
 	}
 }
@@ -142,11 +167,11 @@ export class ParserNodeIdentifier extends ParserNodeLeftValue implements ParseNo
 		super();
 	}
 
-	generateAssign(expr: ParserNodeExpression) {
-		return 'runtimeContext.scopeSet(' + JSON.stringify(this.value) + ', ' + expr.generateCode() + ')';
+	generateAssign(context: ParserNodeGenerateCodeContext, expr: ParserNodeExpression) {
+		return 'runtimeContext.scopeSet(' + JSON.stringify(this.value) + ', ' + expr.generateCode(context) + ')';
 	}
 
-	generateCode() {
+	generateCode(context: ParserNodeGenerateCodeContext) {
 		return 'runtimeContext.scopeGet(' + JSON.stringify(this.value) + ')';
 	}
 }
@@ -158,11 +183,12 @@ export class ParserNodeStatement extends ParserNode {
 export class ParserNodeRaw extends ParserNodeExpression {
 	type: string = 'ParserNodeRaw';
 
-	constructor(public value: string) {
+	constructor(public value: string, public putAlways: bool = true) {
 		super();
 	}
 
-	generateCode() {
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		if (!context.doWrite && !this.putAlways) return '';
 		return this.value;
 	}
 }
@@ -174,8 +200,8 @@ export class ParserNodeStatementExpression extends ParserNodeStatement {
 		super();
 	}
 
-	generateCode() {
-		return this.expression.generateCode() + ';';
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		return this.expression.generateCode(context) + ';';
 	}
 }
 
@@ -186,8 +212,8 @@ export class ParserNodeAssignment extends ParserNodeExpression {
 		super();
 	}
 
-	generateCode() {
-		return this.leftValue.generateAssign(this.rightValue);
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		return this.leftValue.generateAssign(context, this.rightValue);
 	}
 }
 
@@ -201,8 +227,8 @@ export class ParserNodeCommaExpression extends ParserNode {
 		super();
 	}
 
-	generateCode() {
-		return this.expressions.map((item) => item.generateCode()).join(', ');
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		return this.expressions.map((item) => item.generateCode(context)).join(', ');
 	}
 }
 
@@ -216,8 +242,8 @@ export class ParserNodeArrayAccess extends ParserNodeExpression {
 		super();
 	}
 
-	generateCode() {
-		return 'runtimeContext.access(' + this.object.generateCode() + ', ' + this.key.generateCode() + ')';
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		return 'runtimeContext.access(' + this.object.generateCode(context) + ', ' + this.key.generateCode(context) + ')';
 	}
 }
 
@@ -228,8 +254,8 @@ export class ParserNodeArraySlice extends ParserNodeExpression {
 		super();
 	}
 
-	generateCode() {
-		return 'runtimeContext.slice(' + this.object.generateCode() + ', ' + this.left.generateCode() + ', ' + this.right.generateCode() + ')';
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		return 'runtimeContext.slice(' + this.object.generateCode(context) + ', ' + this.left.generateCode(context) + ', ' + this.right.generateCode(context) + ')';
 	}
 }
 
@@ -240,12 +266,12 @@ export class ParserNodeFunctionCall extends ParserNodeExpression {
 		super();
 	}
 
-	generateCode() {
+	generateCode(context: ParserNodeGenerateCodeContext) {
 		if (this.functionExpr instanceof ParserNodeArrayAccess) {
 			var arrayAccess = <ParserNodeArrayAccess>this.functionExpr;
-			return 'runtimeContext.callContext(' + arrayAccess.object.generateCode() + ', ' + arrayAccess.key.generateCode() + ', [' + this.arguments.generateCode() + '], ' + JSON.stringify(this.arguments.names) + ')';
+			return 'runtimeContext.callContext(' + arrayAccess.object.generateCode(context) + ', ' + arrayAccess.key.generateCode(context) + ', [' + this.arguments.generateCode(context) + '], ' + JSON.stringify(this.arguments.names) + ')';
 		} else {
-			return 'runtimeContext.call(' + this.functionExpr.generateCode() + ', [' + this.arguments.generateCode() + '], ' + JSON.stringify(this.arguments.names) + ')';
+			return 'runtimeContext.call(' + this.functionExpr.generateCode(context) + ', [' + this.arguments.generateCode(context) + '], ' + JSON.stringify(this.arguments.names) + ')';
 		}
 	}
 }
@@ -257,8 +283,8 @@ export class ParserNodeFilterCall extends ParserNodeExpression {
 		super();
 	}
 
-	generateCode() {
-		return 'runtimeContext.filter(' + JSON.stringify(this.filterName) + ', [' + this.arguments.generateCode() + '])';
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		return 'runtimeContext.filter(' + JSON.stringify(this.filterName) + ', [' + this.arguments.generateCode(context) + '])';
 	}
 }
 
@@ -272,12 +298,12 @@ export class ParserNodeUnaryOperation extends ParserNodeExpression {
 		super();
 	}
 
-	generateCode() {
+	generateCode(context: ParserNodeGenerateCodeContext) {
 		switch (this.operator) {
 			case 'not':
-				return '!(' + this.right.generateCode() + ')';
+				return '!(' + this.right.generateCode(context) + ')';
 			default:
-				return this.operator + '(' + this.right.generateCode() + ')';
+				return this.operator + '(' + this.right.generateCode(context) + ')';
 		}
 	}
 }
@@ -292,7 +318,7 @@ export class ParserNodeBinaryOperation extends ParserNodeExpression {
 		super();
 	}
 
-	generateCode() {
+	generateCode(context: ParserNodeGenerateCodeContext) {
 		switch (this.operator) {
 			case 'b-or':
 				return '("" + ' + this.left.generateCode() + ' | ' + this.right.generateCode() + ')';
@@ -328,11 +354,11 @@ export class ParserNodeBinaryOperation extends ParserNodeExpression {
 
 				if (right instanceof ParserNodeFunctionCall) {
 					//throw (new Error("Not implemented ParserNodeFunctionCall"));
-					ret = 'runtimeContext.test(' + (<ParserNodeFunctionCall>right).functionExpr.generateCode() + ', [' + left.generateCode() + ',' + (<ParserNodeFunctionCall>right).arguments.generateCode() + '])';
+					ret = 'runtimeContext.test(' + (<ParserNodeFunctionCall>right).functionExpr.generateCode(context) + ', [' + left.generateCode(context) + ',' + (<ParserNodeFunctionCall>right).arguments.generateCode(context) + '])';
 				} else if (right instanceof ParserNodeIdentifier) {
-					ret = 'runtimeContext.test(' + JSON.stringify((<ParserNodeIdentifier>right).value) + ', [' + left.generateCode() + '])';
+					ret = 'runtimeContext.test(' + JSON.stringify((<ParserNodeIdentifier>right).value) + ', [' + left.generateCode(context) + '])';
 				} else if (right instanceof ParserNodeLiteral && (<ParserNodeLiteral>right).value === null) {
-					ret = 'runtimeContext.test("null", [' + left.generateCode() + '])';
+					ret = 'runtimeContext.test("null", [' + left.generateCode(context) + '])';
 				} else {
 					throw (new Error("ParserNodeBinaryOperation: Not implemented 'is' operator for tests with " + JSON.stringify(right)));
 				}
@@ -362,12 +388,12 @@ export class ParserNodeTernaryOperation extends ParserNode {
 		super();
 	}
 
-	generateCode() {
+	generateCode(context: ParserNodeGenerateCodeContext) {
 		return (
 			'(' +
-				this.cond.generateCode() + 
-				" ? " + this.exprTrue.generateCode() +
-				" : " + this.exprFalse.generateCode() +
+				this.cond.generateCode(context) + 
+				" ? " + this.exprTrue.generateCode(context) +
+				" : " + this.exprFalse.generateCode(context) +
 			')'
 		);
 	}
@@ -383,7 +409,8 @@ export class ParserNodeOutputText extends ParserNode {
 		super();
 	}
 
-	generateCode() {
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		if (!context.doWrite) return '';
 		return 'runtimeContext.write(' + JSON.stringify(this.text) + ');';
 	}
 }
@@ -395,8 +422,9 @@ export class ParserNodeOutputNodeExpression extends ParserNodeExpression {
 		super();
 	}
 
-	generateCode() {
-		return 'runtimeContext.write(' + this.expression.generateCode() + ')';
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		if (!context.doWrite) return '';
+		return 'runtimeContext.write(' + this.expression.generateCode(context) + ')';
 	}
 }
 
@@ -407,8 +435,8 @@ export class ParserNodeReturnStatement extends ParserNodeStatement {
 		super();
 	}
 
-	generateCode() {
-		return 'return ' + this.expression.generateCode() + ';';
+	generateCode(context: ParserNodeGenerateCodeContext) {
+		return 'return ' + this.expression.generateCode(context) + ';';
 	}
 }
 

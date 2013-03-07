@@ -1,7 +1,7 @@
 {
   "name": "atpl",
   "description": "A complete and fast template engine fully compatible with twig and similar to jinja with zero dependencies.",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "author": "Carlos Ballesteros <cballesterosvelasco@gmail.com> (http://cballesterosvelasco.es/)",
   "contributors": [ 
   ],

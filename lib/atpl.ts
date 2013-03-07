@@ -68,8 +68,11 @@ function internalCompile(options: IOptions, absolutePath = false) {
 				if (absolutePath) {
 					return templateParser.compileAndRenderToString(options.path, params);
 				} else {
-					if (options.path.indexOf(options.root) !== 0) throw (new Error("Path '" + options.path + "' not inside root '" + options.root + "'"));
-					return templateParser.compileAndRenderToString(options.path.substr(options.root.length), params);
+					var path = options.path.replace(/\\/g, '/');
+					var root = options.root.replace(/\\/g, '/');
+					if (!path.match(/[\/\\]/)) path = root + '/' + path;
+					if (path.indexOf(root) !== 0) throw (new Error("Path '" + path + "' not inside root '" + root + "'"));
+					return templateParser.compileAndRenderToString(path.substr(root.length), params);
 				}
 			}
 		});
@@ -129,9 +132,11 @@ function express3RenderFile(filename: string, options: any/*IOptionsExpress*/, c
     var result = null;
     try {
     	result = internalRender(filename, options);
+    	return callback(null, result);
     } catch (err) {
+    	return callback(err, '');
     }
-    return callback(null, result);
+    //return callback(null, result);
 }
 
 export function registerExtension(items: any) { return languageContext.registerExtension(items); }

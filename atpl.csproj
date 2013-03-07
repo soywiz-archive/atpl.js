@@ -57,9 +57,11 @@
     <Content Include="lib\LanguageContext.ts" />
     <Content Include="lib\lexer\ITokenizer.ts" />
     <Content Include="lib\SandboxPolicy.ts" />
+    <Content Include="test\express3_test.ts" />
     <Content Include="test\fixtures\regressions\issue_60.set" />
     <Content Include="test\fixtures\regressions\issue_61.set" />
     <None Include="test\fixtures\regressions\issue_58.set" />
+    <Content Include="test\templates\invalid.html" />
     <Content Include="typings\async.d.ts" />
     <Content Include="typings\express.d.ts" />
     <Content Include="typings\mocha.d.ts" />

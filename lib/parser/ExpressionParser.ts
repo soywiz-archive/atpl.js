@@ -326,6 +326,9 @@ export class ExpressionParser {
 		var rightNode;
 		var currentOperator;
 
+		//console.log(this.tokenReader);
+		//console.log(this.tokenReader.hasMore());
+
 		while (this.tokenReader.hasMore()) {
 			if ((currentOperator = this.tokenReader.checkAndMoveNextMultiToken(validOperators)) === undefined) break;
 

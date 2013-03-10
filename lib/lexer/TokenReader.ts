@@ -4,14 +4,22 @@ import ExpressionTokenizer = module('./ExpressionTokenizer');
 import ITokenizer = module('./ITokenizer');
 
 export class TokenReader {
-	length: number;
-	position: number;
-	tokens: ExpressionTokenizer.Token[];
+	//private length: number;
+	private position: number;
+	private tokens: ExpressionTokenizer.Token[] = [];
+	private eof: bool = false;
 
-	constructor(private tokenizer: ITokenizer.ITokenizer) {
-		this.tokens = tokenizer.tokenizeAll();
-		this.length = this.tokens.length;
+	constructor(public tokenizer: ITokenizer.ITokenizer) {
+		//this.tokens = tokenizer.tokenizeAll();
+		//this.length = this.tokens.length;
 		this.position = 0;
+	}
+
+	private readToken() {
+		//if (!this.hasMore()) return false;
+		if (!this.tokenizer.hasMore()) return false;
+		this.tokens.push(this.tokenizer.readNext());
+		return true;
 	}
 
 	getOffset(): number {
@@ -30,16 +38,13 @@ export class TokenReader {
 	}
 
 	hasMore(): bool {
-		return this.getLeftCount() > 0;
-	}
-
-	getLeftCount(): number {
-		return this.tokens.length - this.position;
+		if (this.position < this.tokens.length) return true;
+		return this.tokenizer.hasMore();
 	}
 
 	peek(offset: number = 0): ExpressionTokenizer.Token {
-		if (this.position + offset >= this.length) {
-			return { type: 'eof', value: null, rawValue: null, stringOffset: this.length };
+		while (this.tokens.length <= this.position + offset) {
+			if (!this.readToken()) return { type: 'eof', value: null, rawValue: null, stringOffset: -1 };
 		}
 		return this.tokens[this.position + offset];
 	}
@@ -49,9 +54,11 @@ export class TokenReader {
 	}
 
 	read(): ExpressionTokenizer.Token {
-		var item = this.peek();
-		this.skip(1);
-		return item;
+		try {
+			return this.peek();
+		} finally {
+			this.skip(1);
+		}
 	}
 
 	checkAndMoveNext(values: string[]): string {

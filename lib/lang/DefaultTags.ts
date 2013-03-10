@@ -10,7 +10,12 @@ export interface ITemplateParser {
 }
 
 function checkNoMoreTokens(expressionTokenReader) {
-	if (expressionTokenReader.hasMore()) throw (new Error("Unexpected token '" + JSON.stringify(expressionTokenReader.peek()) + "'"));
+	//console.log(expressionTokenReader);
+	//console.log(expressionTokenReader.hasMore());
+	if (expressionTokenReader.hasMore()) {
+		//console.log(expressionTokenReader);
+		throw (new Error("Unexpected token '" + JSON.stringify(expressionTokenReader.peek()) + "'"));
+	}
 	return expressionTokenReader;
 }
 
@@ -474,6 +479,9 @@ export class DefaultTags {
 
 		//var rawText = templateTokenReader.tokens
 
+		//var res = templateTokenReader.tokenizer.stringReader.findRegexp(/{%-?\s*endverbatim\s*-?%}/);
+		//console.log(res);
+
 		var offsetStart = templateTokenReader.getOffset();
 		var offsetEnd = offsetStart;
 
@@ -556,7 +564,6 @@ export class DefaultTags {
 
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
-
 
 		var parserNodeIf = new ParserNodeIf();
 

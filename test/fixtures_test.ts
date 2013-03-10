@@ -56,11 +56,8 @@ function handleSet(name, data) {
 
 		//console.log(templateParser.getEvalCode('test').output);
 		try {
-			assert.equal(
-				templateParser.compileAndRenderToString('main', test.input).trim().replace(/\r\n/g, '\n'),
-				test.expected.trim().replace(/\r\n/g, '\n')
-			);
-			if (test.exception !== undefined) (<any>assert.fail)('Excepting exception "' + test.exception + '"');
+			var result = templateParser.compileAndRenderToString('main', test.input).trim().replace(/\r\n/g, '\n');
+			var expected = test.expected.trim().replace(/\r\n/g, '\n');
 			if (test.eval_after) eval(test.eval_after);
 		} catch (e) {
 			if (test.exception === undefined) {
@@ -68,8 +65,13 @@ function handleSet(name, data) {
 				console.log(templateParser.getEvalCode('main').output);
 				throw (e);
 			}
+			if (e.message === undefined) throw (new Error("ERROR, INVALID EXCEPTION! " + JSON.stringify(e)));
+			//console.log(e); 
 			assert.equal(e.message, test.exception);
+			return;
 		}
+		if (test.exception !== undefined) (<any>assert.fail)('Excepting exception "' + test.exception + '"');
+		assert.equal(result, expected);
 	});
 }
 

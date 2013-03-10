@@ -479,27 +479,12 @@ export class DefaultTags {
 
 		//var rawText = templateTokenReader.tokens
 
-		//var res = templateTokenReader.tokenizer.stringReader.findRegexp(/{%-?\s*endverbatim\s*-?%}/);
-		//console.log(res);
-
-		var offsetStart = templateTokenReader.getOffset();
-		var offsetEnd = offsetStart;
-
-		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'endverbatim': (e) => { offsetEnd = templateTokenReader.getOffset() - 1; return true; },
-			'endraw': (e) => { offsetEnd = templateTokenReader.getOffset() - 1; return true; },
-		}, (node) => {
-		});
-
-		var rawText = templateTokenReader.getSlice(offsetStart, offsetEnd).map((item) => (<any>item).rawText).join('');
-		//console.log('-----------------------------');
-		//console.log(templateTokenReader.getSlice(offsetStart, offsetEnd));
-		//console.log('-----------------------------');
-		//console.log(rawText);
-		//console.log('-----------------------------');
+		var res = templateTokenReader.tokenizer.stringReader.findRegexp(/\{%\-?\s*endverbatim\s*\-?%\}/);
+		if (res.position === null) throw (new Error("Expecting endverbatim"));
+		var rawText = templateTokenReader.tokenizer.stringReader.readChars(res.position);
+		templateTokenReader.tokenizer.stringReader.skipChars(res.length);
 
 		return new ParserNode.ParserNodeOutputText(rawText);
-		//throw (new Error("Not implemented tag [raw/verbatim]"));
 	}
 	static verbatim = DefaultTags.raw;
 

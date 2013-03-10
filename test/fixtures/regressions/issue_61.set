@@ -1,0 +1,25 @@
+﻿=== TITLE
+issue #61 verbatim tag
+
+=== DESCRIPTION
+
+=== INPUT
+{}
+
+=== TEMPLATE:main
+{% verbatim %}
+<script type="text/x-handlebars" data-template-name="contributors">
+	{{#each person in controller}}
+		{{person.login}}
+	{{/each}}
+	<a {{action test controller}}>Test</a>
+</script>
+{% endverbatim %}
+
+=== OUTPUT
+<script type="text/x-handlebars" data-template-name="contributors">
+	{{#each person in controller}}
+		{{person.login}}
+	{{/each}}
+	<a {{action test controller}}>Test</a>
+</script>

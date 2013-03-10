@@ -38,20 +38,20 @@ export class ExpressionTokenizer implements ITokenizer.ITokenizer {
 		'{', '}', '[', ']', '.', ':', ',', '<', '>', '?', '=', '~',
 	];
 
-	static tokenizeString(string: string) {
-		return tokenizeStringReader(new StringReader.StringReader(string));
-	}
-
-	static tokenizeStringReader(stringReader: StringReader.StringReader) {
-		return new ExpressionTokenizer(stringReader).tokenize();
-	}
+	//static tokenizeString(string: string) {
+	//	return tokenizeStringReader(new StringReader.StringReader(string));
+	//}
+	//
+	//static tokenizeStringReader(stringReader: StringReader.StringReader) {
+	//	return new ExpressionTokenizer(stringReader).tokenizeAll();
+	//}
 
 	/**
 	 * Return a list of tokens.
 	 *
 	 * @return list of tokenized tokens.
 	 */
-	tokenize(): Token[] {
+	tokenizeAll(): Token[] {
 		var tokens = [];
 		while (this.hasMore()) {
 			var token = this.readNext();

@@ -26,6 +26,13 @@ export class StringReader {
 		return this.string.substr(start, end - start);
 	}
 
+	getSliceWithCallback(callback: () => void) {
+		var start = this.getOffset();
+		callback();
+		var end = this.getOffset();
+		return this.getSlice(start, end);
+	}
+
 	/**
 	 * Determines if the stream has more characters to read.
 	 */

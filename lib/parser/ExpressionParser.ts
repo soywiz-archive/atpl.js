@@ -5,6 +5,7 @@
 
 import ParserNode = module('./ParserNode');
 import TokenParserContext = module('./TokenParserContext');
+import StringReader = module('../lexer/StringReader');
 import ExpressionTokenizer = module('../lexer/ExpressionTokenizer');
 import TokenReader = module('../lexer/TokenReader');
 
@@ -155,7 +156,7 @@ export class ExpressionParser {
 							expr = new ParserNode.ParserNodeBinaryOperation(
 								'~',
 								expr,
-								new ExpressionParser(new TokenReader.TokenReader(ExpressionTokenizer.ExpressionTokenizer.tokenizeString(expressionString)), this.tokenParserContext).parseExpression()
+								new ExpressionParser(new TokenReader.TokenReader(new ExpressionTokenizer.ExpressionTokenizer(new StringReader.StringReader(expressionString))), this.tokenParserContext).parseExpression()
 							);
 						}
 					}

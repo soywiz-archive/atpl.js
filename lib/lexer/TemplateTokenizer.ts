@@ -31,7 +31,7 @@ export class TemplateTokenizer implements ITokenizer {
 	 *
 	 * @return list of tokenized tokens.
 	 */
-	tokenize(): any[] {
+	tokenizeAll(): any[] {
 		var tokens = [];
 		while (this.hasMore()) {
 			var token = this.readNext();
@@ -116,7 +116,11 @@ export class TemplateTokenizer implements ITokenizer {
 							break;
 						case '{{':
 						case '{%':
-							var expressionTokens = (new ExpressionTokenizer.ExpressionTokenizer(this.stringReader)).tokenize();
+							var expressionTokenizer = new ExpressionTokenizer.ExpressionTokenizer(new StringReader.StringReader(
+								this.stringReader.getSliceWithCallback(() => {
+									(new ExpressionTokenizer.ExpressionTokenizer(this.stringReader)).tokenizeAll();
+								})
+							));
 							var peekMinus = this.stringReader.peekChars(1);
 							if (peekMinus == '-') this.stringReader.skipChars(1);
 							this.removeSpacesAfter = (peekMinus == '-');
@@ -128,9 +132,9 @@ export class TemplateTokenizer implements ITokenizer {
 								throw (new Error('Open type was "' + this.openChars + '" but close type was "' + closeChars + '"'));
 							}
 							if (this.openChars == '{{') {
-								token = this.emitToken('expression', expressionTokens);
+								token = this.emitToken('expression', expressionTokenizer);
 							} else {
-								token = this.emitToken('block', expressionTokens);
+								token = this.emitToken('block', expressionTokenizer);
 							}
 							break;
 						default:

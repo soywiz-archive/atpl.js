@@ -10,7 +10,7 @@ describe('TemplateTokenizer', function() {
 	it('just plain text', function() {
 		//console.log(assert);
 		var templateTokenizer = new TemplateTokenizer('plain text');
-		var tokens = templateTokenizer.tokenize();
+		var tokens = templateTokenizer.tokenizeAll();
 		assert.equal(
 			JSON.stringify([
 				{ type: "text", value: "plain text", "offsetStart" : 0, "offsetEnd" : 10, "rawText" : "plain text"}
@@ -20,7 +20,7 @@ describe('TemplateTokenizer', function() {
 	});
 	it('comments test', function() {
 		var templateTokenizer = new TemplateTokenizer('plain text {# this is a comment #} Hello! {# this is another comment #} ');
-		var tokens = templateTokenizer.tokenize();
+		var tokens = templateTokenizer.tokenizeAll();
 		assert.equal(
 			JSON.stringify([
 				{ type: "text", value: "plain text ", "offsetStart": 0, "offsetEnd": 11, "rawText": "plain text " },
@@ -30,9 +30,10 @@ describe('TemplateTokenizer', function() {
 			JSON.stringify(tokens)
 		);
 	});
+	/*
 	it('with expression test', function() {
 		var templateTokenizer = new TemplateTokenizer('{%extends base%} {{ 1 + 2 + 3 }} {{ "string" }}');
-		var tokens = templateTokenizer.tokenize();
+		var tokens = templateTokenizer.tokenizeAll();
 		var json_expected = [
 			{"type":"block","value":[
 				{ "type": "id", "value": "extends", "rawValue": "extends", "stringOffset": 2 },
@@ -53,4 +54,5 @@ describe('TemplateTokenizer', function() {
 
 		assert.equal(JSON.stringify(json_expected), JSON.stringify(tokens));
 	});
+	*/
 });

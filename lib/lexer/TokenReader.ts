@@ -1,12 +1,15 @@
 ///<reference path='../imports.d.ts'/>
 
 import ExpressionTokenizer = module('./ExpressionTokenizer');
+import ITokenizer = module('./ITokenizer');
 
 export class TokenReader {
 	length: number;
 	position: number;
+	tokens: ExpressionTokenizer.Token[];
 
-	constructor(public tokens: ExpressionTokenizer.Token[]) {
+	constructor(private tokenizer: ITokenizer.ITokenizer) {
+		this.tokens = tokenizer.tokenizeAll();
 		this.length = this.tokens.length;
 		this.position = 0;
 	}

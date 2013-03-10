@@ -3,4 +3,5 @@
 export interface ITokenizer {
 	hasMore(): bool;
 	readNext(): any;
+	tokenizeAll();
 }

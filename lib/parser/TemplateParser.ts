@@ -3,6 +3,8 @@
 import ParserNode = module('./ParserNode');
 import TokenReader = module('../lexer/TokenReader');
 import _TemplateTokenizer = module('../lexer/TemplateTokenizer');
+import ExpressionTokenizer = module('../lexer/ExpressionTokenizer');
+import StringReader = module('../lexer/StringReader');
 import TemplateProvider   = module('../TemplateProvider');
 import RuntimeContext  = module('../runtime/RuntimeContext');
 import TokenParserContext = module('./TokenParserContext');
@@ -76,11 +78,10 @@ export class TemplateParser {
 
 	getEvalCodeString(content: string, path: string, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon): EvalResult {
 		var templateTokenizer  = new TemplateTokenizer(content);
-		var templateTokens     = templateTokenizer.tokenize();
 		var tokenParserContext = new TokenParserContext.TokenParserContext(tokenParserContextCommon || new TokenParserContext.TokenParserContextCommon(), this.sandboxPolicy);
 	
 		try {
-			tokenParserContext.setBlock('__main', this.parseTemplateSync(tokenParserContext, new TokenReader.TokenReader(templateTokens)));
+			tokenParserContext.setBlock('__main', this.parseTemplateSync(tokenParserContext, new TokenReader.TokenReader(templateTokenizer)));
 		} catch (e) {
 			if (e instanceof FlowException) {
 				//console.log(e);
@@ -214,6 +215,7 @@ export class TemplateParser {
 			case 'expression':
 				item = tokenReader.read();
 				// Propagate the "not done".
+				
 				return (new ParserNode.ParserNodeRaw(this.parseTemplateExpressionSync(tokenParserContext, tokenReader, new TokenReader.TokenReader(item.value)).generateCode({ doWrite: true })));
 			case 'block':
 				item = tokenReader.read();

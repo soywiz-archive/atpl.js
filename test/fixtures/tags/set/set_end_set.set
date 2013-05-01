@@ -1,0 +1,14 @@
+﻿=== TITLE
+set end_set
+
+=== INPUT
+{ "hi" : "Hello" }
+
+=== TEMPLATE:main
+{% set var %}{{ hi }} World!{% endset %}
+{{ var }}
+{{ var }}
+
+=== OUTPUT
+Hello World!
+Hello World!

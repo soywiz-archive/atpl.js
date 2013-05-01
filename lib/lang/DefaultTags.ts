@@ -231,22 +231,43 @@ export class DefaultTags {
 	}
 
 	// DO/SET
-	static set (blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
+	static endset = _flowexception;
+	static set (blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader): ParserNode.ParserNode {
 		var expressionParser = new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext);
 		var nodeIds = expressionParser.parseIdentifierCommaList();
-		expressionTokenReader.expectAndMoveNext([ '=' ]);
-		var nodeValues = expressionParser.parseCommaExpression();
-		checkNoMoreTokens(expressionTokenReader);
+		if (expressionTokenReader.checkAndMoveNext(['='])) {
+			var nodeValues = expressionParser.parseCommaExpression();
+			checkNoMoreTokens(expressionTokenReader);
 
-		if (nodeIds.length != nodeValues.expressions.length) throw (new Error("variables doesn't match values"));
+			if (nodeIds.length != nodeValues.expressions.length) throw (new Error("variables doesn't match values"));
 
-		var container = new ParserNode.ParserNodeContainer();
+			var container = new ParserNode.ParserNodeContainer();
 
-		for (var n = 0; n < nodeIds.length; n++) {
-			container.add(new ParserNodeScopeSet(String((<any>nodeIds[n]).value), nodeValues.expressions[n]));
+			for (var n = 0; n < nodeIds.length; n++) {
+				container.add(new ParserNodeScopeSet(String((<any>nodeIds[n]).value), nodeValues.expressions[n]));
+			}
+
+			return container;
+		} else {
+			var innerNode = new ParserNode.ParserNodeContainer();
+
+			//console.log('************************');
+			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+				'endset': (e) => {
+					return true;
+				},
+			}, (node) => {
+				//console.log(node);
+				innerNode.add(node);
+			});
+			//console.log('************************');
+
+			return new ParserNode.ParserNodeStatementExpression(<ParserNode.ParserNodeExpression><any>(new ParserNode.ParserNodeContainer([
+				new ParserNode.ParserNodeRaw('runtimeContext.scopeSet(' + JSON.stringify((<ParserNode.ParserNodeIdentifier>nodeIds[0]).value) + ', (runtimeContext.captureOutput(function() { '),
+				innerNode,
+				new ParserNode.ParserNodeRaw('})))')
+			])));
 		}
-
-		return container;
 	}
 	static $do(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader) {
 		var expressionNode = (new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();

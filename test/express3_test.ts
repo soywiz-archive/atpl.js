@@ -15,4 +15,4 @@ describe('express3', () => {
 			done();
 		});
 	});
-});
+} );

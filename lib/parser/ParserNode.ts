@@ -29,10 +29,10 @@ export class ParserNode {
 	}
 }
 
-export export class ParserNodeExpression extends ParserNode {
+export class ParserNodeExpression extends ParserNode {
 }
 
-export export class ParserNodeWriteExpression extends ParserNodeExpression {
+export class ParserNodeWriteExpression extends ParserNodeExpression {
 	constructor(public expression: ParserNodeExpression) {
 		super();
 	}

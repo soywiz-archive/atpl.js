@@ -298,7 +298,7 @@ export var __sprintf = (function () {
 		return output.join('');
 	}
 
-	var str_format = function () {
+	var str_format:any = function () {
 		if (!str_format.cache.hasOwnProperty(arguments[0])) {
 			str_format.cache[arguments[0]] = str_format.parse(arguments[0]);
 		}
@@ -535,7 +535,7 @@ export function getOrdinalFor(intNum) {
             && intNum != 13) ? "rd" : "th");
 }
 export function getISO8601Year(aDate) {
-	var d = new Date(aDate.getFullYear() + 1, 0, 4);
+	var d: any = new Date(aDate.getFullYear() + 1, 0, 4);
 	if ((d - aDate) / 86400000 < 7 && (aDate.getDay() + 6) % 7 < (d.getDay() + 6) % 7)
 		return d.getFullYear();
 	if (aDate.getMonth() > 0 || aDate.getDate() >= 4)
@@ -544,7 +544,7 @@ export function getISO8601Year(aDate) {
 }
 export function getISO8601Week(aDate) {
 	// Get a day during the first week of the year.
-	var d = new Date(getISO8601Year(aDate), 0, 4);
+	var d:any = new Date(getISO8601Year(aDate), 0, 4);
 	// Get the first monday of the year.
 	d.setDate(d.getDate() - (d.getDay() + 6) % 7);
 	return Math.floor((aDate - d) / 604800000) + 1;
@@ -564,8 +564,8 @@ export function date(format, date, timezone?) {
 
 	if (typeof format !== "string" || /^\s*$/.test(format))
 		return date + "";
-	var jan1st = new Date(date.getFullYear(), 0, 1);
-	var me = date;
+	var jan1st: any = new Date(date.getFullYear(), 0, 1);
+	var me: any = date;
 	return format.replace(/[dDjlNSwzWFmMntLoYyaABgGhHisu]/g, function (option) {
 		switch (option) {
 			case "d": return ("0" + me.getDate()).replace(/^.+(..)$/, "$1"); // Day of the month, 2 digits with leading zeros

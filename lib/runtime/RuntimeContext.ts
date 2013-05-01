@@ -152,16 +152,36 @@ export class RuntimeContext {
 		return this.$call(this.languageContext.tests, $function, $arguments);
 	}
 
+	// TODO: Probably better to create a object separate to RuntimeContext that holds those values.
+	_KeepTemplateHierarchy(callback) {
+		var LeafTemplateOld = this.LeafTemplate;
+		var CurrentTemplateOld = this.CurrentTemplate;
+		var RootTemplateOld = this.RootTemplate;
+		try {
+			callback();
+		} finally {
+			this.LeafTemplate = LeafTemplateOld;
+			this.CurrentTemplate = CurrentTemplateOld;
+			this.RootTemplate = RootTemplateOld;
+		}
+	}
+
 	include(info: any, scope: any = {}, only: bool = false, tokenParserContextCommonInfo?: any) {
 		this.createScope(() => {
 			if (scope !== undefined) this.scope.setAll(scope);
 			if (RuntimeUtils.isString(info)) {
 				var name = <string>info;
 				var IncludeTemplate = new ((this.templateParser.compile(name, this, new TokenParserContext.TokenParserContextCommon(tokenParserContextCommonInfo))).class )();
-				IncludeTemplate.__main(this);
+				this._KeepTemplateHierarchy(() => {
+					this.LeafTemplate = this.CurrentTemplate = this.RootTemplate = IncludeTemplate;
+					IncludeTemplate.__main(this);
+				});
 			} else {
-				var IncludeTemplate = new (info.class)();
-				IncludeTemplate.__main(this);
+				var IncludeTemplate = new (info.class )();
+				this._KeepTemplateHierarchy(() => {
+					this.LeafTemplate = this.CurrentTemplate = this.RootTemplate = IncludeTemplate;
+					IncludeTemplate.__main(this);
+				});
 			}
 		}, only);
 	}

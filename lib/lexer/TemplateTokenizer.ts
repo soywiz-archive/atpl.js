@@ -15,7 +15,7 @@ export interface TemplateToken {
 }
 */
 
-export class TemplateTokenizer implements ITokenizer {
+export class TemplateTokenizer implements ITokenizer.ITokenizer {
 	public stringReader: StringReader.StringReader;
 
 	constructor(public string: string) {

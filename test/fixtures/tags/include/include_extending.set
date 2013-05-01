@@ -1,0 +1,30 @@
+﻿=== TITLE
+include tag with extending template
+
+=== INPUT
+{}
+
+=== TEMPLATE:include_base1
+<base1>{% block base1 %}BASE1{% endblock %}</base1>
+
+=== TEMPLATE:include_base2
+{% extends "include_base1" %}
+{% block base1 %}
+<base2a>{% block base2a %}BASE2A{% endblock %}</base2a>
+<base2b>{% block base2b %}BASE2B{% endblock %}</base2b>
+{% endblock %}
+
+=== TEMPLATE:include
+{% extends "include_base2" %}
+{% block base2a %}{{ a }} World{% endblock %}
+{% block base2b %}{{ "Goodbye" }} World{% endblock %}
+
+=== TEMPLATE:main
+{% set a = "Hello" %}
+[{% include "include" %}]
+
+=== OUTPUT
+[<base1>
+<base2a>Hello World</base2a>
+<base2b>Goodbye World</base2b>
+</base1>]

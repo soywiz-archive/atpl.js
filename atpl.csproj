@@ -72,6 +72,8 @@
     <Content Include="typings\supertest.d.ts" />
     <Content Include="test\fixtures\syntax\exceptions\incomplete_block.set" />
     <Content Include="test\fixtures\syntax\exceptions\text_outside_block_in_extended_template.set" />
+    <Content Include="test\fixtures\tags\include\include_extending.set" />
+    <Content Include="test\fixtures\tags\set\set_end_set.set" />
     <TypeScriptCompile Include="lib\TemplateConfig.ts" />
     <Content Include="test\templates\base\base.html" />
     <Content Include="test\templates\base\simple_extends.html" />

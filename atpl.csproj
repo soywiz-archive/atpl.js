@@ -60,6 +60,7 @@
     <Content Include="test\express3_test.ts" />
     <Content Include="test\fixtures\regressions\issue_60.set" />
     <Content Include="test\fixtures\regressions\issue_61.set" />
+    <Content Include="test\fixtures\filters\nl2br.set" />
     <None Include="test\fixtures\regressions\issue_58.set" />
     <Content Include="test\templates\invalid.html" />
     <Content Include="typings\async.d.ts" />

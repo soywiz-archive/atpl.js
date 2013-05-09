@@ -90,20 +90,28 @@ export class RuntimeContext {
 		this.output += text;
 	}
 
+	getEscapedText(text: any): any {
+	    try {
+	        if (text === undefined || text === null) return '';
+	        if (!RuntimeUtils.isString(text)) text = JSON.stringify(text);
+	        //console.log(this.currentAutoescape);
+	        switch (this.currentAutoescape) {
+	            case false: text = text; break;
+	            case 'js': text = RuntimeUtils.escapeJsString(text); break;
+	            case 'css': text = RuntimeUtils.escapeCssString(text); break;
+	            case 'url': text = RuntimeUtils.escapeUrlString(text); break;
+	            case 'html_attr': text = RuntimeUtils.escapeHtmlAttribute(text); break;
+	            case 'html': case true: case undefined: text = RuntimeUtils.escapeHtmlEntities(text); break;
+	            default: throw (new Error('Invalid escaping strategy "' + this.currentAutoescape + '"(valid ones: html, js, url, css, and html_attr).'));
+	        }
+	        return text;
+	    } finally {
+	        this.currentAutoescape = this.defaultAutoescape;
+	    }
+	}
+
 	writeExpression(text: any) {
-		if (text === undefined || text === null) return;
-		if (!RuntimeUtils.isString(text)) text = JSON.stringify(text);
-		//console.log(this.currentAutoescape);
-		switch (this.currentAutoescape) {
-			case false: this.write(text); break;
-			case 'js': this.write(RuntimeUtils.escapeJsString(text)); break;
-			case 'css': this.write(RuntimeUtils.escapeCssString(text)); break;
-			case 'url': this.write(RuntimeUtils.escapeUrlString(text)); break;
-			case 'html_attr': this.write(RuntimeUtils.escapeHtmlAttribute(text)); break;
-			case 'html': case true: case undefined: this.write(RuntimeUtils.escapeHtmlEntities(text)); break;
-			default: throw (new Error('Invalid escaping strategy "' + this.currentAutoescape + '"(valid ones: html, js, url, css, and html_attr).'));
-		}
-		this.currentAutoescape = this.defaultAutoescape;
+	    this.write(this.getEscapedText(text));
 	}
 
 	$call(functionList: any, $function: any, $arguments: any[], $argumentNames?: any[]) {

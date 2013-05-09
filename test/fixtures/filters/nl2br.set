@@ -1,0 +1,12 @@
+﻿=== TITLE
+nl2br
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ "I like Twig.\nYou will like it <strong>too</strong>."|nl2br }}
+
+=== OUTPUT
+I like Twig.<br />
+You will like it &lt;strong&gt;too&lt;/strong&gt;.

@@ -191,7 +191,10 @@ export class DefaultFilters {
 	 * @see http://twig.sensiolabs.org/doc/filters/nl2br.html
 	 */
 	static nl2br(value: any) {
-		return String(value).replace(/\n/g, '<br />');
+		var runtimeContext: RuntimeContext.RuntimeContext = this;
+		value = runtimeContext.getEscapedText(value);
+		runtimeContext.currentAutoescape = false;
+		return String(value).replace(/\n/g, '<br />\n');
 	}
 
 	/**

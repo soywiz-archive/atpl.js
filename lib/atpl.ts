@@ -90,7 +90,7 @@ function internalCompile(options: IOptions, absolutePath = false) {
 
 var rootPathCache = {};
 
-function internalRender(filename: string, options: any/*IOptionsExpress*/, absolutePath = false): string {
+function internalRenderSync(filename: string, options: any/*IOptionsExpress*/, absolutePath = false): string {
 	//console.log(filename);
 	//console.log(options);
 	//console.log(options._locals);
@@ -112,6 +112,11 @@ function internalRender(filename: string, options: any/*IOptionsExpress*/, absol
     return internalCompile(params, absolutePath)(options);
 }
 
+function internalRenderAsync(filename: string, options: any/*IOptionsExpress*/, done: (result: string) => void , absolutePath = false): void {
+	var result = internalRenderSync(filename, options, absolutePath);
+	done(result);
+}
+
 export function internalCompileString(content: string, options: IOptions) {
 	return function(params: any): string {
 		//console.log('content: ' + JSON.stringify(content));
@@ -119,7 +124,7 @@ export function internalCompileString(content: string, options: IOptions) {
 		//console.log('params: ' + JSON.stringify(params));
 		params.content = content;
 		params.path = params.filename;
-		return internalRender(params.filename, params, true);
+		return internalRenderSync(params.filename, params, true);
 	}
 }
 
@@ -137,13 +142,12 @@ function express3RenderFile(filename: string, options: any/*IOptionsExpress*/, c
         options = {};
     }
 
-    var err = null;
-    var result = null;
     try {
-    	result = internalRender(filename, options);
-    	return callback(null, result);
+    	internalRenderAsync(filename, options, function (result) {
+    		return callback(null, result);
+    	});
     } catch (err) {
-    	return callback(err, '');
+    	return callback(err, undefined);
     }
     //return callback(null, result);
 }

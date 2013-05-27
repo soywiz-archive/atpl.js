@@ -6,6 +6,8 @@ json_encode filter
 
 === TEMPLATE:main
 {{ input|json_encode }}
+{{ input|json_encode|raw }}
 
 === OUTPUT
+{&quot;a&quot;:1,&quot;b&quot;:{&quot;c&quot;:&quot;test&quot;}}
 {"a":1,"b":{"c":"test"}}

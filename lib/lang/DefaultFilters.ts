@@ -115,6 +115,8 @@ export class DefaultFilters {
 	 * @see http://twig.sensiolabs.org/doc/filters/json_encode.html
 	 */
 	static json_encode(value: any) {
+		var runtimeContext: RuntimeContext.RuntimeContext = this;
+		runtimeContext.currentAutoescape = false;
 		return RuntimeUtils.json_encode_circular(value);
 	}
 

@@ -1,0 +1,11 @@
+﻿=== TITLE
+json_encode filter
+
+=== INPUT
+{ "input" : { "a" : 1, "b" : { "c" : "test" } } }
+
+=== TEMPLATE:main
+{{ input|json_encode }}
+
+=== OUTPUT
+{"a":1,"b":{"c":"test"}}

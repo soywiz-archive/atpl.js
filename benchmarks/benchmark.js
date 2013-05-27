@@ -6,6 +6,13 @@ var moment = require('moment')
 var async = require('async')
 var express = require('express');
 var app = express();
+function nextTick(callback) {
+    if(setImmediate !== undefined) {
+        setImmediate(callback);
+    } else {
+        process.nextTick(callback);
+    }
+}
 app.engine('html', atpl.__express);
 app.set('devel', false);
 app.set('view engine', 'html');
@@ -52,11 +59,11 @@ function measure(path, done) {
                 }
                 return done();
             } else {
-                process.nextTick(doRequest);
+                nextTick(doRequest);
             }
         });
     }
-    process.nextTick(doRequest);
+    nextTick(doRequest);
 }
 async.series([
     function (done) {

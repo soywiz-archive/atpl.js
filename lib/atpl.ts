@@ -6,6 +6,15 @@ import LanguageContext = module('./LanguageContext');
 import Default = module('./lang/Default');
 import fs = module('fs');
 var FileSystemTemplateProvider = TemplateProvider.FileSystemTemplateProvider;
+var isWin = !!process.platform.match(/^win/);
+
+function normalizePath(path) {
+	path = path.replace(/\\/g, '/');
+	if (isWin && path.match(/^[A-Za-z]:\//)) {
+		path = path.substr(0, 1).toLowerCase() + path.substr(1);
+	}
+	return path;
+}
 
 var registryTemplateParser = {};
 
@@ -68,9 +77,9 @@ function internalCompile(options: IOptions, absolutePath = false) {
 				if (absolutePath) {
 					return templateParser.compileAndRenderToString(options.path, params);
 				} else {
-					var path = options.path.replace(/\\/g, '/');
-					var root = options.root.replace(/\\/g, '/');
-					if (!path.match(/[\/\\]/)) path = root + '/' + path;
+					var path = normalizePath(options.path);
+					var root = normalizePath(options.root);
+					if (!path.match(/[\/\\]/)) path = normalizePath(root + '/' + path);
 					if (path.indexOf(root) !== 0) throw (new Error("Path '" + path + "' not inside root '" + root + "'"));
 					return templateParser.compileAndRenderToString(path.substr(root.length), params);
 				}

@@ -7,7 +7,18 @@ import moment = module('moment');
 import async = module('async');
 
 var express = require('express');
-var app:express3.Application = express();
+var app: express3.Application = express();
+
+declare var setImmediate: (callback) => void;
+
+function nextTick(callback: () => void ): void {
+	if (setImmediate !== undefined) {
+		setImmediate(callback);
+	} else {
+		//setTimeout(callback, 0);
+		process.nextTick(callback);
+	}
+}
 
 app.engine('html', atpl.__express);
 app.set('devel', false);
@@ -64,13 +75,13 @@ function measure(path, done) {
 					}
 					return done();
 				} else {
-					process.nextTick(doRequest);
+					nextTick(doRequest);
 				}
 			})
 		;
 	}
 
-	process.nextTick(doRequest);
+	nextTick(doRequest);
 }
 
 async.series([

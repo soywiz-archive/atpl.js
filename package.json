@@ -11,7 +11,7 @@
 	"supertest": "0.6.x",
 	"express": "3.0.x",
     "should": "1.2.x",
-    "mocha": "1.9.x",
+    "mocha": "1.10.x",
 	"async": "0.2.x",
 	"moment": "2.0.x"
   },

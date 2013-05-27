@@ -3,6 +3,9 @@ import RuntimeContext = module('../runtime/RuntimeContext');
 import TemplateParser = module('../parser/TemplateParser');
 import util = module('util');
 
+/**
+ *
+ */
 export class DefaultFunctions {
 	/**
 	 * Obtains a range of numbers

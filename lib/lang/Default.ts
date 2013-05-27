@@ -6,6 +6,9 @@ import DefaultFilters = module('./DefaultFilters');
 import DefaultTests = module('./DefaultTests');
 import LanguageContext = module('../LanguageContext');
 
+/**
+ *
+ */
 export function register(languageContext: LanguageContext.LanguageContext): LanguageContext.LanguageContext {
 	languageContext.registerTags(DefaultTags.DefaultTags);
 	languageContext.registerFunctions(DefaultFunctions.DefaultFunctions);

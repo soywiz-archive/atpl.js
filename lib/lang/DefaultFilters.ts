@@ -1,6 +1,9 @@
 ﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
 import RuntimeContext = module('../runtime/RuntimeContext');
 
+/**
+ *
+ */
 export class DefaultFilters {
 	/**
 	 * Filter that obtains the absolute value of a number.

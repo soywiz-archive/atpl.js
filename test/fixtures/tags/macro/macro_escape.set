@@ -1,0 +1,29 @@
+﻿=== TITLE
+macro_escape
+
+=== INPUT
+{
+	"stories" : [
+		{ "url" : "http://test/''", "title" : "My Title" },
+		{ "url" : "http://test/", "title" : "<strong>Title</strong>" }
+	]
+}
+
+=== TEMPLATE:_macros
+{% macro putStoryLink(story) %}<a href="{{ story.url }}">{{ story.title }}</a>{% endmacro %}
+{% macro putStory(story) %}<div>{{ macros.putStoryLink(story) }}</div>{% endmacro %}
+{% macro putStories(title, stories) %}
+<h1>{{ title }}</h1>
+<ul>
+{% for story in stories %}
+	{{ macros.putStory(story) }}
+{% endfor%}
+</ul>
+{% endmacro %}
+
+=== TEMPLATE:main
+{% import "_macros" as macros %}
+
+{{ macros.putStories('Story List', stories) }}
+
+=== OUTPUT

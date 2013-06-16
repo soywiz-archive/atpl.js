@@ -57,10 +57,12 @@
     <Content Include="lib\LanguageContext.ts" />
     <Content Include="lib\lexer\ITokenizer.ts" />
     <Content Include="lib\SandboxPolicy.ts" />
+    <Content Include="test\express_test.ts" />
     <Content Include="test\express3_test.ts" />
     <Content Include="test\fixtures\regressions\issue_60.set" />
     <Content Include="test\fixtures\regressions\issue_61.set" />
     <Content Include="test\fixtures\filters\nl2br.set" />
+    <Content Include="test\fixtures\filters\json_encode.set" />
     <None Include="test\fixtures\regressions\issue_58.set" />
     <Content Include="test\templates\invalid.html" />
     <Content Include="typings\async.d.ts" />
@@ -239,7 +241,7 @@
     <Content Include="test\fixtures\functions\dump_circular.set" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="test\fixtures\functions\json_encode.set" />
+    <Content Include="test\fixtures\filters\json_encode_circular.set" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="test\fixtures\functions\inspect.set" />

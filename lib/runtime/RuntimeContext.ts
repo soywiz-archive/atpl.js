@@ -1,12 +1,18 @@
 ///<reference path='../imports.d.ts'/>
 
-import RuntimeUtils = module('./RuntimeUtils');
-import LanguageContext = module('../LanguageContext');
-//import TemplateParser = module('../parser/TemplateParser');
-import TokenParserContext = module('../parser/TokenParserContext');
-import Scope = module('./Scope');
-import SandboxPolicy = module('../SandboxPolicy');
-import util = module('util');
+import RuntimeUtils = require('./RuntimeUtils');
+import LanguageContext = require('../LanguageContext');
+//import TemplateParser = require('../parser/TemplateParser');
+import TokenParserContext = require('../parser/TokenParserContext');
+import Scope = require('./Scope');
+import SandboxPolicy = require('../SandboxPolicy');
+import util = require('util');
+
+export interface ITemplateParser
+{
+    compile(path: string, runtimeContext: any, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon);
+	compileString(templateString: string, runtimeContext:any): any;
+}
 
 export class RuntimeContext {
 	output: string = '';
@@ -14,14 +20,14 @@ export class RuntimeContext {
 	currentAutoescape: any = true;
 	defaultAutoescape: any = true;
 	currentBlockName: string = 'none';
-	removeFollowingSpaces: bool = false;
+	removeFollowingSpaces: boolean = false;
 	sandboxPolicy: SandboxPolicy.SandboxPolicy = new SandboxPolicy.SandboxPolicy();
 
 	LeafTemplate: any;
 	CurrentTemplate: any;
 	RootTemplate: any;
 
-	constructor(public templateParser: any, scopeData: any, public languageContext: LanguageContext.LanguageContext) {
+	constructor(public templateParser: ITemplateParser, scopeData: any, public languageContext: LanguageContext.LanguageContext) {
 		this.scope = new Scope.Scope(scopeData);
 	}
 
@@ -51,7 +57,7 @@ export class RuntimeContext {
 		}
 	}
 
-	createScope(inner: () => void, only: bool = false) {
+	createScope(inner: () => void, only: boolean = false) {
 		if (only) {
 			var oldScope = this.scope;
 			try {
@@ -174,11 +180,11 @@ export class RuntimeContext {
 		}
 	}
 
-	include(info: any, scope: any = {}, only: bool = false, tokenParserContextCommonInfo?: any) {
+	include(info: any, scope: any = {}, only: boolean = false, tokenParserContextCommonInfo?: any) {
 		this.createScope(() => {
 			if (scope !== undefined) this.scope.setAll(scope);
 			if (RuntimeUtils.isString(info)) {
-				var name = <string>info;
+                var name = <string>info;
 				var IncludeTemplate = new ((this.templateParser.compile(name, this, new TokenParserContext.TokenParserContextCommon(tokenParserContextCommonInfo))).class )();
 				this._KeepTemplateHierarchy(() => {
 					this.LeafTemplate = this.CurrentTemplate = this.RootTemplate = IncludeTemplate;
@@ -288,7 +294,7 @@ export class RuntimeContext {
 		//throw (new Error("Not implemented"));
 	}
 
-	autoescape(temporalValue: any, callback: () => void, setCurrentAfter: bool = false) {
+	autoescape(temporalValue: any, callback: () => void, setCurrentAfter: boolean = false) {
 		if (temporalValue === undefined) temporalValue = true;
 		var prevDefault = this.defaultAutoescape;
 		

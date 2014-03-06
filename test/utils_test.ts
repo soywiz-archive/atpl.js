@@ -1,7 +1,7 @@
 ///<reference path='./imports.d.ts'/>
 
-import RuntimeUtils = module('../lib/runtime/RuntimeUtils');
-import assert = module('assert');
+import RuntimeUtils = require('../lib/runtime/RuntimeUtils');
+import assert = require('assert');
 
 describe('utils', () => {
 	it('simple normalize path', () => {

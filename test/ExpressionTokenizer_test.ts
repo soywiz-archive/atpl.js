@@ -1,10 +1,10 @@
 ﻿///<reference path='./imports.d.ts'/>
 
-import assert = module('assert');
-import fs = module('fs');
+import assert = require('assert');
+import fs = require('fs');
 
-import ExpressionTokenizer = module('../lib/lexer/ExpressionTokenizer');
-import StringReader = module('../lib/lexer/StringReader');
+import ExpressionTokenizer = require('../lib/lexer/ExpressionTokenizer');
+import StringReader = require('../lib/lexer/StringReader');
 
 describe('ExpressionTokenizer', function() {
 	it('tokenize 0', function () {

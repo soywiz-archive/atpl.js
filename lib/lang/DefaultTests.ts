@@ -1,4 +1,4 @@
-﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
+﻿import RuntimeUtils = require('../runtime/RuntimeUtils');
 
 export class DefaultTests {
 	// http://twig.sensiolabs.org/doc/tests/constant.html

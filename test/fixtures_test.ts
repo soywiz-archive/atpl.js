@@ -1,7 +1,7 @@
 ///<reference path='./imports.d.ts'/>
 
-import assert = module('assert');
-import fs = module('fs');
+import assert = require('assert');
+import fs = require('fs');
 
 var TemplateParser         = require('../lib/parser/TemplateParser.js').TemplateParser;
 var MemoryTemplateProvider = require('../lib/TemplateProvider.js').MemoryTemplateProvider;

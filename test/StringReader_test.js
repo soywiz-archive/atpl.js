@@ -1,6 +1,8 @@
-var assert = require('assert')
+///<reference path='./imports.d.ts'/>
+var assert = require('assert');
 
-var StringReader = require('../lib/lexer/StringReader')
+var StringReader = require('../lib/lexer/StringReader');
+
 describe('StringReader', function () {
     it('smart test', function () {
         var stringReader = new StringReader.StringReader('Hello {{ 1 }} World {{ 2 }}');

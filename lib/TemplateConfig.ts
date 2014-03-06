@@ -1,10 +1,11 @@
 ///<reference path='imports.d.ts'/>
 
-export class TemplateConfig {
-	constructor(public cache: bool = true) {
+export class TemplateConfig
+{
+	constructor(public cache: boolean = true) {
 	}
 
-	setCacheTemporal(value: bool, callback: () => void): any {
+	setCacheTemporal(value: boolean, callback: () => void): any {
 		var oldValue = this.cache;
 		this.cache = value;
 		try {

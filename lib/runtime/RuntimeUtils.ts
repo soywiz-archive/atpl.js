@@ -1,4 +1,4 @@
-﻿import util = module('util');
+﻿import util = require('util');
 
 export function normalizePath(path) {
 	var components = [];
@@ -306,7 +306,7 @@ export var __sprintf = (function () {
 	};
 
 	str_format.format = function (parse_tree, argv) {
-		var cursor = 1, tree_length = parse_tree.length, node_type = '', arg: any, output = [], i, k, match, pad, pad_character, pad_length;
+		var cursor = 1, tree_length = parse_tree.length, node_type:string = '', arg: any, output = [], i, k, match, pad, pad_character, pad_length;
 		for (i = 0; i < tree_length; i++) {
 			node_type = get_type(parse_tree[i]);
 			if (node_type === 'string') {
@@ -369,7 +369,9 @@ export var __sprintf = (function () {
 			else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
 				if (match[2]) {
 					arg_names |= 1;
-					var field_list = [], replacement_field = match[2], field_match = [];
+					var field_list = [];
+					var replacement_field = match[2];
+					var field_match:any = [];
 					if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
 						field_list.push(field_match[1]);
 						while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
@@ -427,7 +429,7 @@ export function empty(value: any) {
 	return false;
 }
 
-export function isNumber(obj: any): bool {
+export function isNumber(obj: any): boolean {
 	return typeof obj == 'number';
 }
 
@@ -436,16 +438,16 @@ export function toString(obj: any): string {
 	return '' + obj;
 }
 
-export function isString(obj: any): bool {
+export function isString(obj: any): boolean {
 	return typeof obj == 'string';
 }
 
-export function isArray(obj: any): bool {
+export function isArray(obj: any): boolean {
 	if (!defined(obj)) return false;
 	return obj instanceof Array;
 }
 
-export function isObject(obj: any): bool {
+export function isObject(obj: any): boolean {
 	return typeof obj === 'object';
 }
 
@@ -566,7 +568,7 @@ export function date(format, date, timezone?) {
 		return date + "";
 	var jan1st: any = new Date(date.getFullYear(), 0, 1);
 	var me: any = date;
-	return format.replace(/[dDjlNSwzWFmMntLoYyaABgGhHisu]/g, function (option) {
+	return format.replace(/[dDjlNSwzWFmMntLoYyaABgGhHisu]/g, (option:string):any => {
 		switch (option) {
 			case "d": return ("0" + me.getDate()).replace(/^.+(..)$/, "$1"); // Day of the month, 2 digits with leading zeros
 			case "D": return date_shortDays[me.getDay()]; // A textual representation of a day, three letters
@@ -599,6 +601,7 @@ export function date(format, date, timezone?) {
 			case "i": return ("0" + me.getMinutes()).replace(/^.+(..)$/, "$1"); // Minutes with leading zeros
 			case "s": return ("0" + me.getSeconds()).replace(/^.+(..)$/, "$1"); // Seconds, with leading zeros
 			case "u": return me.getMilliseconds(); // Milliseconds
+			default: return "";
 		}
 	});
 }

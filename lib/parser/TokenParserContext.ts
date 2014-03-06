@@ -1,11 +1,11 @@
 ///<reference path='../imports.d.ts'/>
 
-import ParserNode = module('./ParserNode');
-import RuntimeUtils = module('../runtime/RuntimeUtils');
-import SandboxPolicy = module('../SandboxPolicy');
+import ParserNode = require('./ParserNode');
+import RuntimeUtils = require('../runtime/RuntimeUtils');
+import SandboxPolicy = require('../SandboxPolicy');
 
 export class TokenParserContextCommon {
-	sandbox: bool = false;
+	sandbox: boolean = false;
 
 	constructor(info: any = {}) {
 		if (RuntimeUtils.isObject(info)) for (var key in info) this[key] = info[key];

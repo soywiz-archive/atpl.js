@@ -1,8 +1,8 @@
 ///<reference path='./imports.d.ts'/>
 
-import assert = module('assert');
+import assert = require('assert');
 
-import tp  = module('../lib/TemplateProvider');
+import tp = require('../lib/TemplateProvider');
 var FileSystemTemplateProvider = tp.FileSystemTemplateProvider;
 var MemoryTemplateProvider     = tp.MemoryTemplateProvider;
 

@@ -1,10 +1,11 @@
 ﻿///<reference path='imports.d.ts'/>
 
-import TemplateParser = module('./parser/TemplateParser');
-import TemplateProvider = module('./TemplateProvider');
-import LanguageContext = module('./LanguageContext');
-import Default = module('./lang/Default');
-import fs = module('fs');
+
+import TemplateParser = require('./parser/TemplateParser');
+import TemplateProvider = require('./TemplateProvider');
+import LanguageContext = require('./LanguageContext');
+import Default = require('./lang/Default');
+import fs = require('fs');
 var FileSystemTemplateProvider = TemplateProvider.FileSystemTemplateProvider;
 var isWin = !!process.platform.match(/^win/);
 
@@ -21,14 +22,14 @@ var registryTemplateParser = {};
 export interface IOptions {
 	path?: string;
 	root?: string;
-	cache?: bool;
+	cache?: boolean;
 	content?: string;
 }
 
 export interface IOptionsExpress {
 	settings: {
-		//'x-powered-by': bool;
-		etag: bool;
+		//'x-powered-by': boolean;
+		etag: boolean;
 		env: string;
 		views: string;
 		//'jsonp callback name': string;
@@ -36,7 +37,7 @@ export interface IOptionsExpress {
 		//'view engine': string;
 	};
 	_locals();
-	cache: bool;
+	cache: boolean;
 }
 
 var languageContext = new LanguageContext.LanguageContext();
@@ -135,7 +136,13 @@ export function express2Compile(templateString: string, options?: any): (params:
 	return internalCompileString(templateString, options.settings['atpl options']);
 }
 
-function express3RenderFile(filename: string, options: any/*IOptionsExpress*/, callback: (err: Error, output?: string) => void) {
+/**
+ *
+ * @param filename
+ * @param options
+ * @param callback
+ */
+export function express3RenderFile(filename: string, options: any/*IOptionsExpress*/, callback: (err: Error, output?: string) => void) {
     // handle callback in options
     if ('function' == typeof options) {
         callback = options;
@@ -144,12 +151,11 @@ function express3RenderFile(filename: string, options: any/*IOptionsExpress*/, c
 
     try {
     	internalRenderAsync(filename, options, function (result) {
-    		return callback(null, result);
+    		callback(null, result);
     	});
     } catch (err) {
-    	return callback(err, undefined);
+    	callback(err, undefined);
     }
-    //return callback(null, result);
 }
 
 export function registerExtension(items: any) { return languageContext.registerExtension(items); }

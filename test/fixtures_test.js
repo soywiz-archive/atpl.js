@@ -179,3 +179,4 @@ describe('extra fixtures', function () {
         });
     });
 });
+//@ sourceMappingURL=fixtures_test.js.map

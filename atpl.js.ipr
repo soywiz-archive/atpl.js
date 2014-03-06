@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <option name="DEFAULT_COMPILER" value="Javac" />
+    <resourceExtensions />
+    <wildcardResourcePatterns>
+      <entry name="!?*.java" />
+      <entry name="!?*.form" />
+      <entry name="!?*.class" />
+      <entry name="!?*.groovy" />
+      <entry name="!?*.scala" />
+      <entry name="!?*.flex" />
+      <entry name="!?*.kt" />
+      <entry name="!?*.clj" />
+    </wildcardResourcePatterns>
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="false">
+        <processorPath useClasspath="true" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="CopyrightManager" default="">
+    <module2copyright />
+  </component>
+  <component name="DependencyValidationManager">
+    <option name="SKIP_IMPORT_STATEMENTS" value="false" />
+  </component>
+  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/atpl.js.iml" filepath="$PROJECT_DIR$/atpl.js.iml" />
+    </modules>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+  <component name="ProjectTasksOptions">
+    <TaskOptions isEnabled="true">
+      <option name="arguments" value="--sourcemap $FileName$" />
+      <option name="checkSyntaxErrors" value="true" />
+      <option name="description" value="Compiles .ts files into .js files" />
+      <option name="exitCodeBehavior" value="ERROR" />
+      <option name="fileExtension" value="ts" />
+      <option name="immediateSync" value="true" />
+      <option name="name" value="TypeScript" />
+      <option name="output" value="$FileNameWithoutExtension$.js:$FileNameWithoutExtension$.js.map" />
+      <option name="outputFilters">
+        <array>
+          <FilterInfo>
+            <option name="description" value="tsc error format" />
+            <option name="name" value="tsc" />
+            <option name="regExp" value="$FILE_PATH$\($LINE$,$COLUMN$\): $MESSAGE$$" />
+          </FilterInfo>
+        </array>
+      </option>
+      <option name="outputFromStdout" value="false" />
+      <option name="passParentEnvs" value="true" />
+      <option name="program" value="$USER_HOME$/AppData/Roaming/npm/tsc.cmd" />
+      <option name="scopeName" value="Project Files" />
+      <option name="trackOnlyRoot" value="true" />
+      <option name="workingDir" value="$FileDir$" />
+      <envs />
+    </TaskOptions>
+  </component>
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+  </component>
+  <component name="libraryTable">
+    <library name="Generated files" type="javaScript">
+      <properties>
+        <sourceFilesUrls>
+          <item url="file://$PROJECT_DIR$/lib/SandboxPolicy.js" />
+          <item url="file://$PROJECT_DIR$/test/StringReader_test.js" />
+          <item url="file://$PROJECT_DIR$/lib/LanguageContext.js" />
+          <item url="file://$PROJECT_DIR$/test/TemplateTokenizer_test.js" />
+          <item url="file://$PROJECT_DIR$/lib/TemplateProvider.js" />
+          <item url="file://$PROJECT_DIR$/test/utils_test.js" />
+          <item url="file://$PROJECT_DIR$/lib/runtime/Scope.js" />
+          <item url="file://$PROJECT_DIR$/test/express3_test.js" />
+          <item url="file://$PROJECT_DIR$/lib/atpl.js" />
+          <item url="file://$PROJECT_DIR$/test/expressionparser_test.js" />
+          <item url="file://$PROJECT_DIR$/test/RuntimeUtils_test.js" />
+          <item url="file://$PROJECT_DIR$/test/express_test.js" />
+          <item url="file://$PROJECT_DIR$/lib/lexer/ITokenizer.js" />
+          <item url="file://$PROJECT_DIR$/test/TemplateProvider_test.js" />
+          <item url="file://$PROJECT_DIR$/test/ExpressionTokenizer_test.js" />
+          <item url="file://$PROJECT_DIR$/lib/runtime/RuntimeContext.js" />
+          <item url="file://$PROJECT_DIR$/lib/parser/TokenParserContext.js" />
+          <item url="file://$PROJECT_DIR$/lib/lang/DefaultTests.js" />
+          <item url="file://$PROJECT_DIR$/lib/lexer/TokenReader.js" />
+          <item url="file://$PROJECT_DIR$/lib/TemplateConfig.js" />
+          <item url="file://$PROJECT_DIR$/benchmarks/benchmark.js" />
+          <item url="file://$PROJECT_DIR$/lib/parser/TemplateParser.js" />
+          <item url="file://$PROJECT_DIR$/lib/lexer/StringReader.js" />
+          <item url="file://$PROJECT_DIR$/lib/parser/ParserNode.js" />
+          <item url="file://$PROJECT_DIR$/lib/lang/DefaultTags.js" />
+          <item url="file://$PROJECT_DIR$/lib/lexer/TemplateTokenizer.js" />
+          <item url="file://$PROJECT_DIR$/lib/lang/DefaultFilters.js" />
+          <item url="file://$PROJECT_DIR$/lib/runtime/RuntimeUtils.js" />
+          <item url="file://$PROJECT_DIR$/lib/lang/Default.js" />
+          <item url="file://$PROJECT_DIR$/lib/lang/DefaultFunctions.js" />
+          <item url="file://$PROJECT_DIR$/lib/parser/ExpressionParser.js" />
+          <item url="file://$PROJECT_DIR$/lib/lexer/ExpressionTokenizer.js" />
+          <item url="file://$PROJECT_DIR$/test/app_test.js" />
+          <item url="file://$PROJECT_DIR$/test/fixtures_test.js" />
+        </sourceFilesUrls>
+      </properties>
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/test/StringReader_test.js" />
+        <root url="file://$PROJECT_DIR$/lib/SandboxPolicy.js" />
+        <root url="file://$PROJECT_DIR$/lib/LanguageContext.js" />
+        <root url="file://$PROJECT_DIR$/lib/TemplateProvider.js" />
+        <root url="file://$PROJECT_DIR$/test/TemplateTokenizer_test.js" />
+        <root url="file://$PROJECT_DIR$/lib/runtime/Scope.js" />
+        <root url="file://$PROJECT_DIR$/test/utils_test.js" />
+        <root url="file://$PROJECT_DIR$/test/express3_test.js" />
+        <root url="file://$PROJECT_DIR$/lib/atpl.js" />
+        <root url="file://$PROJECT_DIR$/test/expressionparser_test.js" />
+        <root url="file://$PROJECT_DIR$/test/RuntimeUtils_test.js" />
+        <root url="file://$PROJECT_DIR$/lib/lexer/ITokenizer.js" />
+        <root url="file://$PROJECT_DIR$/test/express_test.js" />
+        <root url="file://$PROJECT_DIR$/test/TemplateProvider_test.js" />
+        <root url="file://$PROJECT_DIR$/test/ExpressionTokenizer_test.js" />
+        <root url="file://$PROJECT_DIR$/lib/parser/TokenParserContext.js" />
+        <root url="file://$PROJECT_DIR$/lib/runtime/RuntimeContext.js" />
+        <root url="file://$PROJECT_DIR$/lib/lang/DefaultTests.js" />
+        <root url="file://$PROJECT_DIR$/lib/lexer/TokenReader.js" />
+        <root url="file://$PROJECT_DIR$/lib/TemplateConfig.js" />
+        <root url="file://$PROJECT_DIR$/benchmarks/benchmark.js" />
+        <root url="file://$PROJECT_DIR$/lib/parser/TemplateParser.js" />
+        <root url="file://$PROJECT_DIR$/lib/lexer/StringReader.js" />
+        <root url="file://$PROJECT_DIR$/lib/lexer/TemplateTokenizer.js" />
+        <root url="file://$PROJECT_DIR$/lib/lang/DefaultTags.js" />
+        <root url="file://$PROJECT_DIR$/lib/parser/ParserNode.js" />
+        <root url="file://$PROJECT_DIR$/lib/runtime/RuntimeUtils.js" />
+        <root url="file://$PROJECT_DIR$/lib/lang/DefaultFilters.js" />
+        <root url="file://$PROJECT_DIR$/lib/lang/Default.js" />
+        <root url="file://$PROJECT_DIR$/lib/lang/DefaultFunctions.js" />
+        <root url="file://$PROJECT_DIR$/lib/parser/ExpressionParser.js" />
+        <root url="file://$PROJECT_DIR$/test/app_test.js" />
+        <root url="file://$PROJECT_DIR$/lib/lexer/ExpressionTokenizer.js" />
+        <root url="file://$PROJECT_DIR$/test/fixtures_test.js" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+  </component>
+</project>
+

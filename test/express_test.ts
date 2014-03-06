@@ -1,9 +1,9 @@
 ﻿///<reference path='./imports.d.ts'/>
 
-import assert = module('assert');
-import fs = module('fs');
+import assert = require('assert');
+import fs = require('fs');
 var express = require('express');
-import atpl = module('../lib/atpl');
+import atpl = require('../lib/atpl');
 
 describe('__express', function () {
 	it('test cache:true for express', function () {

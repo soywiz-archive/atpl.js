@@ -1,5 +1,8 @@
-/*
-declare interface any {
+declare module "should" {
+
+}
+
+interface Object {
 	should: any;
 	be: any;
 	not: any;
@@ -39,4 +42,3 @@ declare interface any {
 }
 
 declare var should: any;
-*/

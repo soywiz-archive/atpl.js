@@ -1,5 +1,7 @@
-var assert = require('assert')
-var atpl = require('../lib/atpl')
+﻿///<reference path='./imports.d.ts'/>
+var assert = require('assert');
+var atpl = require('../lib/atpl');
+
 describe('express3', function () {
     it('invalid should fail', function (done) {
         atpl.__express('invalid.html', {

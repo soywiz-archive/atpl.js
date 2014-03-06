@@ -1,4 +1,5 @@
-﻿export class Scope {
+﻿export class Scope
+{
 	constructor(public scope: any = {}) {
 	}
 

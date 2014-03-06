@@ -1,13 +1,13 @@
 ///<reference path='../imports.d.ts'/>
 
-import ExpressionTokenizer = module('./ExpressionTokenizer');
-import ITokenizer = module('./ITokenizer');
+import ExpressionTokenizer = require('./ExpressionTokenizer');
+import ITokenizer = require('./ITokenizer');
 
-export class TokenReader {
+class TokenReader {
 	//private length: number;
 	private position: number;
 	private tokens: ExpressionTokenizer.Token[] = [];
-	private eof: bool = false;
+	private eof: boolean = false;
 
 	constructor(public tokenizer: ITokenizer.ITokenizer) {
 		//this.tokens = tokenizer.tokenizeAll();
@@ -37,7 +37,7 @@ export class TokenReader {
 		return this.getSlice(start, end);
 	}
 
-	hasMore(): bool {
+	hasMore(): boolean {
 		if (this.position < this.tokens.length) return true;
 		return this.tokenizer.hasMore();
 	}
@@ -94,3 +94,5 @@ export class TokenReader {
 		return ret;
 	}
 }
+
+export = TokenReader;

@@ -1,16 +1,16 @@
 ///<reference path='../imports.d.ts'/>
 
-import ParserNode = module('./ParserNode');
-import TokenReader = module('../lexer/TokenReader');
-import _TemplateTokenizer = module('../lexer/TemplateTokenizer');
-import ExpressionTokenizer = module('../lexer/ExpressionTokenizer');
-import StringReader = module('../lexer/StringReader');
-import TemplateProvider   = module('../TemplateProvider');
-import RuntimeContext  = module('../runtime/RuntimeContext');
-import TokenParserContext = module('./TokenParserContext');
-import ExpressionParser    = module('./ExpressionParser');
-import LanguageContext = module('../LanguageContext');
-import SandboxPolicy = module('../SandboxPolicy');
+import ParserNode = require('./ParserNode');
+import TokenReader = require('../lexer/TokenReader');
+import _TemplateTokenizer = require('../lexer/TemplateTokenizer');
+import ExpressionTokenizer = require('../lexer/ExpressionTokenizer');
+import StringReader = require('../lexer/StringReader');
+import TemplateProvider   = require('../TemplateProvider');
+import RuntimeContext  = require('../runtime/RuntimeContext');
+import TokenParserContext = require('./TokenParserContext');
+import ExpressionParser    = require('./ExpressionParser');
+import LanguageContext = require('../LanguageContext');
+import SandboxPolicy = require('../SandboxPolicy');
 
 var TemplateTokenizer = _TemplateTokenizer.TemplateTokenizer;
 
@@ -46,7 +46,7 @@ export class TemplateParser {
 	constructor(public templateProvider: TemplateProvider.TemplateProvider, public languageContext: LanguageContext.LanguageContext) {
 	}
 
-	private getCache(): bool {
+	private getCache(): boolean {
 		return this.languageContext.templateConfig.getCache();
 	}
 
@@ -81,7 +81,8 @@ export class TemplateParser {
 		var tokenParserContext = new TokenParserContext.TokenParserContext(tokenParserContextCommon || new TokenParserContext.TokenParserContextCommon(), this.sandboxPolicy);
 	
 		try {
-			tokenParserContext.setBlock('__main', this.parseTemplateSync(tokenParserContext, new TokenReader.TokenReader(templateTokenizer)));
+			var tokenReader:TokenReader = new TokenReader(templateTokenizer);
+			tokenParserContext.setBlock('__main', this.parseTemplateSync(tokenParserContext, tokenReader));
 		} catch (e) {
 			if (e instanceof FlowException) {
 				//console.log(e);
@@ -200,7 +201,7 @@ export class TemplateParser {
 		return <CompiledTemplate>this.registry[path];
 	}
 
-	parseTemplateSyncOne(tokenParserContext, tokenReader: TokenReader.TokenReader) {
+	parseTemplateSyncOne(tokenParserContext, tokenReader: TokenReader) {
 		if (!tokenReader.hasMore()) return null;
 		var item = tokenReader.peek();
 		debug('parseTemplateSync: ' + item.type);
@@ -216,18 +217,18 @@ export class TemplateParser {
 				item = tokenReader.read();
 				// Propagate the "not done".
 				
-				return (new ParserNode.ParserNodeRaw(this.parseTemplateExpressionSync(tokenParserContext, tokenReader, new TokenReader.TokenReader(item.value)).generateCode({ doWrite: true })));
+				return (new ParserNode.ParserNodeRaw(this.parseTemplateExpressionSync(tokenParserContext, tokenReader, new TokenReader(item.value)).generateCode({ doWrite: true })));
 			case 'block':
 				item = tokenReader.read();
 				// Propagate the "not done".
-				return (this.parseTemplateBlockSync(tokenParserContext, tokenReader, new TokenReader.TokenReader(item.value)));
+				return (this.parseTemplateBlockSync(tokenParserContext, tokenReader, new TokenReader(item.value)));
 		}
 
 		throw (new Error("Invalid item.type == '" + item.type + "'"));
 	}
 
-	parseTemplateSync(tokenParserContext, tokenReader: TokenReader.TokenReader) {
-		var nodes = new ParserNode.ParserNodeContainer();
+	parseTemplateSync(tokenParserContext, tokenReader: TokenReader) {
+		var nodes = new ParserNode.ParserNodeContainer([]);
 
 		while (tokenReader.hasMore()) {
 			nodes.add(this.parseTemplateSyncOne(tokenParserContext, tokenReader));
@@ -240,7 +241,7 @@ export class TemplateParser {
 		return new ParserNode.ParserNodeStatementExpression(new ParserNode.ParserNodeWriteExpression((new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression()));
 	}
 
-	parseTemplateBlockSync(tokenParserContext, templateTokenReader: TokenReader.TokenReader, expressionTokenReader: TokenReader.TokenReader): ParserNode.ParserNode {
+	parseTemplateBlockSync(tokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader): ParserNode.ParserNode {
 		var that = this;
 		var blockTypeToken = expressionTokenReader.read();
 		var blockType = blockTypeToken.value;

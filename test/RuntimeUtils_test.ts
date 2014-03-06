@@ -1,9 +1,9 @@
 ﻿///<reference path='./imports.d.ts'/>
 
-import assert = module('assert');
-import fs = module('fs');
+import assert = require('assert');
+import fs = require('fs');
 
-import RuntimeUtils = module('../lib/runtime/RuntimeUtils');
+import RuntimeUtils = require('../lib/runtime/RuntimeUtils');
 
 describe('RuntimeUtils', () => {
 	it('sprintf', () => {

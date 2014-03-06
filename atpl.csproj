@@ -77,6 +77,7 @@
     <Content Include="test\fixtures\syntax\exceptions\text_outside_block_in_extended_template.set" />
     <Content Include="test\fixtures\tags\include\include_extending.set" />
     <Content Include="test\fixtures\tags\set\set_end_set.set" />
+    <Content Include="test\fixtures\tags\macro\macro_escape.set" />
     <TypeScriptCompile Include="lib\TemplateConfig.ts" />
     <Content Include="test\templates\base\base.html" />
     <Content Include="test\templates\base\simple_extends.html" />
@@ -388,9 +389,10 @@
     <Content Include="test\fixtures\syntax\exceptions\unknown_filter.set" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <TypeScriptTarget>ES3</TypeScriptTarget>
+    <TypeScriptTarget>ES5</TypeScriptTarget>
     <TypeScriptIncludeComments>false</TypeScriptIncludeComments>
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
+    <TypeScriptModuleKind>commonjs</TypeScriptModuleKind>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptTarget>ES3</TypeScriptTarget>

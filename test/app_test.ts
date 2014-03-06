@@ -1,11 +1,11 @@
 ﻿///<reference path='./imports.d.ts'/>
 
-import assert = module('assert');
-import express3 = module("express3");
-import supertest = module('supertest');
-import moment = module('moment');
-import async = module('async');
-import atpl = module('../lib/atpl');
+import assert = require('assert');
+import express3 = require("express3");
+import supertest = require('supertest');
+import moment = require('moment');
+import async = require('async');
+import atpl = require('../lib/atpl');
 var express = require('express');
 var app:express3.Application = express();
 

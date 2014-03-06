@@ -1,10 +1,10 @@
 ﻿///<reference path='../_typings.d.ts'/>
-import util = module("util");
-import express3 = module("express3");
-import atpl = module('../lib/atpl');
-import supertest = module('supertest');
-import moment = module('moment');
-import async = module('async');
+import util = require("util");
+import express3 = require("express3");
+import atpl = require('../lib/atpl');
+import supertest = require('supertest');
+import moment = require('moment');
+import async = require('async');
 
 var express = require('express');
 var app: express3.Application = express();
@@ -53,7 +53,7 @@ function roundDecimals(number: number, decimals: number) {
 }
 
 function measure(path, done) {
-	var start = moment();
+	var start = (<any>moment)();
 	var requestCount = 0;
 	var measure = true;
 
@@ -64,10 +64,10 @@ function measure(path, done) {
 			.get(path)
 			.end((err, res) => {
 				if (requestCount == startMeasure) {
-					start = moment();
+                    start = (<any>moment)();
 				}
 				if (requestCount > totalRequests) {
-					var end = moment();
+                    var end = (<any>moment)();
 					if (measure) {
 						var measuredRequests = (totalRequests - startMeasure);
 						console.log(path + '(' + measuredRequests + '): total: ' + end.diff(start) + 'ms; per request: ' + roundDecimals(end.diff(start) / measuredRequests, 3) + "ms");

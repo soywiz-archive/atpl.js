@@ -1,5 +1,5 @@
-﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
-import RuntimeContext = module('../runtime/RuntimeContext');
+﻿import RuntimeUtils = require('../runtime/RuntimeUtils');
+import RuntimeContext = require('../runtime/RuntimeContext');
 
 /**
  *
@@ -77,7 +77,7 @@ export class DefaultFilters {
 	 * @see http://twig.sensiolabs.org/doc/filters/escape.html
 	 */
 	static e(value: string, strategy?: string) {
-		var runtimeContext: RuntimeContext.RuntimeContext = this;
+        var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
 		runtimeContext.currentAutoescape = strategy;
 		return value;
 	}
@@ -87,7 +87,7 @@ export class DefaultFilters {
 	 * @see http://twig.sensiolabs.org/doc/filters/escape.html
 	 */
 	static escape(value: string, strategy: any = true) {
-		var runtimeContext: RuntimeContext.RuntimeContext = this;
+        var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
 		runtimeContext.currentAutoescape = strategy;
 		return value;
 	}
@@ -196,7 +196,7 @@ export class DefaultFilters {
 	 * @see http://twig.sensiolabs.org/doc/filters/nl2br.html
 	 */
 	static nl2br(value: any) {
-		var runtimeContext: RuntimeContext.RuntimeContext = this;
+        var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
 		value = runtimeContext.getEscapedText(value);
 		runtimeContext.currentAutoescape = false;
 		return String(value).replace(/\n/g, '<br />\n');
@@ -215,7 +215,7 @@ export class DefaultFilters {
 	 * @see http://twig.sensiolabs.org/doc/filters/raw.html
 	 */
 	static raw(value: string) {
-		var runtimeContext: RuntimeContext.RuntimeContext = this;
+        var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
 		runtimeContext.currentAutoescape = false;
 		return value;
 	}

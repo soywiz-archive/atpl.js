@@ -1,7 +1,7 @@
 ﻿///<reference path='./imports.d.ts'/>
 
-import assert = module('assert');
-import atpl = module('../lib/atpl');
+import assert = require('assert');
+import atpl = require('../lib/atpl');
 
 describe('express3', () => {
 	it('invalid should fail', (done) => {

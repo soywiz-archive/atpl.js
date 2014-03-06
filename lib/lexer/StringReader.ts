@@ -102,12 +102,12 @@ export class StringReader {
 		if (match === null) {
 			return {
 				position : null,
-				length   : null,
+				length   : null
 			}
 		} else {
 			return {
 				position : match['index'],
-				length   : match[0].length,
+				length   : match[0].length
 			}
 		}
 	}

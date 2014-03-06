@@ -3,14 +3,14 @@
 // http://docs.python.org/reference/expressions.html#summary
 // https://developer.mozilla.org/en/JavaScript/Reference/Operators/Operator_Precedence
 
-import ParserNode = module('./ParserNode');
-import TokenParserContext = module('./TokenParserContext');
-import StringReader = module('../lexer/StringReader');
-import ExpressionTokenizer = module('../lexer/ExpressionTokenizer');
-import TokenReader = module('../lexer/TokenReader');
+import ParserNode = require('./ParserNode');
+import TokenParserContext = require('./TokenParserContext');
+import StringReader = require('../lexer/StringReader');
+import ExpressionTokenizer = require('../lexer/ExpressionTokenizer');
+import TokenReader = require('../lexer/TokenReader');
 
 export class ExpressionParser {
-	constructor(public tokenReader: TokenReader.TokenReader, private tokenParserContext: TokenParserContext.TokenParserContext) {
+	constructor(public tokenReader: TokenReader, private tokenParserContext: TokenParserContext.TokenParserContext) {
 		//if (!(this.tokenParserContext instanceof TokenParserContext.TokenParserContext)) { console.log(this.tokenParserContext); throw (new Error("ASSERT!")); }
 	}
 
@@ -47,42 +47,42 @@ export class ExpressionParser {
 		return this.parseFunctionCall();
 	}
 
-	parseFunctionCall() {
+	parseFunctionCall(): ParserNode.ParserNodeExpression {
 		return this.parseTernary();
 	}
 
-	parseTernary() {
-		var left = this.parseTernaryShortcut();
+	parseTernary(): ParserNode.ParserNodeExpression {
+		var left: ParserNode.ParserNodeExpression = this.parseTernaryShortcut();
 		if (this.tokenReader.peek().value == '?') {
 			this.tokenReader.skip();
-			var middle = this.parseExpression();
+			var middle: ParserNode.ParserNodeExpression = this.parseExpression();
 			this.tokenReader.expectAndMoveNext([':']);
-			var right = this.parseExpression();
+			var right: ParserNode.ParserNodeExpression = this.parseExpression();
 
 			left = new ParserNode.ParserNodeTernaryOperation(left, middle, right);
 		}
 		return left;
 	}
 
-	parseTernaryShortcut() { return this._parseBinary('parseTernaryShortcut', this.parseLogicOr, ['?:']); }
-	parseLogicOr() { return this._parseBinary('parseLogicOr', this.parseLogicAnd, ['||', 'or']); }
-	parseLogicAnd() { return this._parseBinary('parseLogicAnd', this.parseBitOr, ['&&', 'and']); }
-	parseBitOr() { return this._parseBinary('parseBitOr', this.parseBitXor, ['b-or']); }
-	parseBitXor() { return this._parseBinary('parseBitXor', this.parseBitAnd, ['b-xor']); }
-	parseBitAnd() { return this._parseBinary('parseBitAnd', this.parseCompare, ['b-and']); }
-	parseCompare() { return this._parseBinary('parseCompare', this.parseAddSub, ['==', '!=', '>=', '<=', '>', '<', '===', '!==', 'is not', 'not in', 'is', 'in']); }
-	parseAddSub() { return this._parseBinary('parseAddSub', this.parseMulDiv, ['+', '-']); }
-	parseMulDiv() { return this._parseBinary('parseMulDiv', this.parsePow, ['*', '/', '//', '%']); }
-	parsePow() { return this._parseBinary('parsePow', this.parseString, ['**']); }
-	parseString() { return this._parseBinary('parseString', this.parseLiteralUnary, ['~', '..']); }
+	parseTernaryShortcut(): ParserNode.ParserNodeExpression { return this._parseBinary('parseTernaryShortcut', this.parseLogicOr, ['?:']); }
+	parseLogicOr(): ParserNode.ParserNodeExpression { return this._parseBinary('parseLogicOr', this.parseLogicAnd, ['||', 'or']); }
+	parseLogicAnd(): ParserNode.ParserNodeExpression { return this._parseBinary('parseLogicAnd', this.parseBitOr, ['&&', 'and']); }
+	parseBitOr(): ParserNode.ParserNodeExpression { return this._parseBinary('parseBitOr', this.parseBitXor, ['b-or']); }
+	parseBitXor(): ParserNode.ParserNodeExpression { return this._parseBinary('parseBitXor', this.parseBitAnd, ['b-xor']); }
+	parseBitAnd(): ParserNode.ParserNodeExpression { return this._parseBinary('parseBitAnd', this.parseCompare, ['b-and']); }
+	parseCompare(): ParserNode.ParserNodeExpression { return this._parseBinary('parseCompare', this.parseAddSub, ['==', '!=', '>=', '<=', '>', '<', '===', '!==', 'is not', 'not in', 'is', 'in']); }
+	parseAddSub(): ParserNode.ParserNodeExpression { return this._parseBinary('parseAddSub', this.parseMulDiv, ['+', '-']); }
+	parseMulDiv(): ParserNode.ParserNodeExpression { return this._parseBinary('parseMulDiv', this.parsePow, ['*', '/', '//', '%']); }
+	parsePow(): ParserNode.ParserNodeExpression { return this._parseBinary('parsePow', this.parseString, ['**']); }
+	parseString(): ParserNode.ParserNodeExpression { return this._parseBinary('parseString', this.parseLiteralUnary, ['~', '..']); }
 
-	parseLiteralUnary() {
+	parseLiteralUnary(): ParserNode.ParserNodeExpression {
 		var token = this.tokenReader.peek();
 		var expr: ParserNode.ParserNodeExpression = undefined;
 	
 		// '(' <expression> ')'
 		if (this.tokenReader.checkAndMoveNext(['('])) {
-			var subExpression = this.parseExpression();
+			var subExpression: ParserNode.ParserNodeExpression = this.parseExpression();
 			this.tokenReader.expectAndMoveNext([')']);
 			expr = subExpression;
 		}
@@ -112,9 +112,9 @@ export class ExpressionParser {
 					this.tokenReader.skip();
 					break;
 				}
-				var key = this.parseExpression();
+				var key: ParserNode.ParserNodeExpression = this.parseExpression();
 				this.tokenReader.expectAndMoveNext([':']);
-				var value = this.parseExpression();
+				var value: ParserNode.ParserNodeExpression = this.parseExpression();
 				objectElements.push(new ParserNode.ParserNodeObjectItem(key, value));
 
 				if (this.tokenReader.peek().value == ']') {
@@ -156,7 +156,7 @@ export class ExpressionParser {
 							expr = new ParserNode.ParserNodeBinaryOperation(
 								'~',
 								expr,
-								new ExpressionParser(new TokenReader.TokenReader(new ExpressionTokenizer.ExpressionTokenizer(new StringReader.StringReader(expressionString))), this.tokenParserContext).parseExpression()
+								new ExpressionParser(new TokenReader(new ExpressionTokenizer.ExpressionTokenizer(new StringReader.StringReader(expressionString))), this.tokenParserContext).parseExpression()
 							);
 						}
 					}
@@ -245,7 +245,7 @@ export class ExpressionParser {
 				var filterName = this.tokenReader.peek().value;
 				this.tokenReader.skip();
 
-				var arguments = new ParserNode.ParserNodeCommaExpression([]);
+				var arguments:any = new ParserNode.ParserNodeCommaExpression([]);
 
 				if (this.tokenReader.peek().value == '(') {
 					this.tokenReader.skip();
@@ -321,9 +321,9 @@ export class ExpressionParser {
 		throw(new Error("Unexpected token : " + JSON.stringify(token.value) + " type:'" + token.type + "'"));
 	}
 
-	_parseBinary(levelName: string, nextParseLevel: () => void, validOperators: string[]) {
-		var leftNode = nextParseLevel.apply(this);
-		var rightNode;
+	_parseBinary(levelName: string, nextParseLevel: () => void, validOperators: string[]): ParserNode.ParserNodeExpression {
+		var leftNode: ParserNode.ParserNodeExpression = <ParserNode.ParserNodeExpression>nextParseLevel.apply(this);
+		var rightNode: ParserNode.ParserNodeExpression;
 		var currentOperator;
 
 		//console.log(this.tokenReader);
@@ -332,7 +332,7 @@ export class ExpressionParser {
 		while (this.tokenReader.hasMore()) {
 			if ((currentOperator = this.tokenReader.checkAndMoveNextMultiToken(validOperators)) === undefined) break;
 
-			rightNode = nextParseLevel.apply(this);
+			rightNode = <ParserNode.ParserNodeExpression>nextParseLevel.apply(this);
 			leftNode = new ParserNode.ParserNodeBinaryOperation(currentOperator, leftNode, rightNode);
 		}
 

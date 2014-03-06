@@ -1,8 +1,8 @@
 ///<reference path='../imports.d.ts'/>
 
-import StringReader = module('./StringReader');
-import ITokenizer = module('./ITokenizer');
-import RuntimeUtils = module('../runtime/RuntimeUtils');
+import StringReader = require('./StringReader');
+import ITokenizer = require('./ITokenizer');
+import RuntimeUtils = require('../runtime/RuntimeUtils');
 
 /**
  * Token
@@ -25,17 +25,17 @@ export class ExpressionTokenizer implements ITokenizer.ITokenizer {
 	}
 
 	private static operators3 = [
-		'===', '!==',
+		'===', '!=='
 	];
 
 	private static operators2 = [
 		'++', '--', '&&', '||', '..', '//', '**',
-		'==', '>=', '<=', '!=', '?:',
+		'==', '>=', '<=', '!=', '?:'
 	];
 
 	private static operators1 = [
 		'+', '-', '*', '/', '%', '|', '(', ')',
-		'{', '}', '[', ']', '.', ':', ',', '<', '>', '?', '=', '~',
+		'{', '}', '[', ']', '.', ':', ',', '<', '>', '?', '=', '~'
 	];
 
 	//static tokenizeString(string: string) {
@@ -70,7 +70,7 @@ export class ExpressionTokenizer implements ITokenizer.ITokenizer {
 	/**
 	 *
 	 */
-	hasMore(): bool {
+	hasMore(): boolean {
 		if (this.end) return false;
 		//console.log(this.stringReader);
 		//console.log(this.stringReader.hasMore());
@@ -94,7 +94,7 @@ export class ExpressionTokenizer implements ITokenizer.ITokenizer {
 			type: type,
 			value: value,
 			rawValue: rawValue,
-			stringOffset: this.stringOffset,
+			stringOffset: this.stringOffset
 		};
 	}
 

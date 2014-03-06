@@ -1,11 +1,11 @@
 ﻿///<reference path='imports.d.ts'/>
 
-import fs    = module('fs');
-import util  = module('util');
-import RuntimeUtils = module('./runtime/RuntimeUtils');
+import fs    = require('fs');
+import util  = require('util');
+import RuntimeUtils = require('./runtime/RuntimeUtils');
 
 export interface TemplateProvider {
-	getSync(path: string, cached: bool): string;
+	getSync(path: string, cached: boolean): string;
 }
 
 export class FileSystemTemplateProvider implements TemplateProvider {
@@ -20,7 +20,7 @@ export class FileSystemTemplateProvider implements TemplateProvider {
 		//process.exit(0);
 	}
 
-	getSync(path: string, cache: bool): string {
+	getSync(path: string, cache: boolean): string {
 		if (!cache) delete this.cacheObject[path];
 
 		//console.log(path);
@@ -49,7 +49,7 @@ export class MemoryTemplateProvider implements TemplateProvider {
 		this.registry[path] = data;
 	}
 
-	getSync(path: string, cache: bool): string {
+	getSync(path: string, cache: boolean): string {
 		if (!cache) delete this.registryCached[path];
 		if (this.registryCached[path] === undefined) this.registryCached[path] = this.registry[path];
 		var data = this.registryCached[path];

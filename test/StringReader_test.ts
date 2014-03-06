@@ -1,9 +1,9 @@
 ///<reference path='./imports.d.ts'/>
 
-import assert = module('assert');
-import fs     = module('fs');
+import assert = require('assert');
+import fs = require('fs');
 
-import StringReader = module('../lib/lexer/StringReader');
+import StringReader = require('../lib/lexer/StringReader');
 
 describe('StringReader', function() {
 	it('smart test', function() {

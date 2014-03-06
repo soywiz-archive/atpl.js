@@ -1,7 +1,7 @@
-﻿import RuntimeUtils = module('../runtime/RuntimeUtils');
-import RuntimeContext = module('../runtime/RuntimeContext');
-import TemplateParser = module('../parser/TemplateParser');
-import util = module('util');
+﻿import RuntimeUtils = require('../runtime/RuntimeUtils');
+import RuntimeContext = require('../runtime/RuntimeContext');
+import TemplateParser = require('../parser/TemplateParser');
+import util = require('util');
 
 /**
  *
@@ -37,7 +37,7 @@ export class DefaultFunctions {
 	 * @see http://twig.sensiolabs.org/doc/functions/include.html
 	 */
 	static include(name: string) {
-		var runtimeContext: RuntimeContext.RuntimeContext = this;
+        var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
 		runtimeContext.include(name);
 	}
 
@@ -60,7 +60,7 @@ export class DefaultFunctions {
 	 * @see http://twig.sensiolabs.org/doc/functions/attribute.html
 	 */
 	static attribute(object: any, method: any, _arguments?: any[]) {
-		var runtimeContext: RuntimeContext.RuntimeContext = this;
+		var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
 		return runtimeContext.accessCall(object, method, _arguments);
 	}
 
@@ -69,7 +69,7 @@ export class DefaultFunctions {
 	 * @see http://twig.sensiolabs.org/doc/functions/block.html
 	 */
 	static block(name: string) {
-		var runtimeContext: RuntimeContext.RuntimeContext = this;
+        var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
 		return runtimeContext.captureOutput(() => {
 			runtimeContext.putBlock('block_' + name);
 		});
@@ -80,7 +80,7 @@ export class DefaultFunctions {
 	 * @see http://twig.sensiolabs.org/doc/functions/parent.html
 	 */
 	static parent() {
-		var runtimeContext: RuntimeContext.RuntimeContext = this;
+        var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
 		return runtimeContext.autoescape(false, () => {
 			return runtimeContext.captureOutput(() => {
 				runtimeContext.putBlockParent(runtimeContext.currentBlockName);
@@ -93,7 +93,7 @@ export class DefaultFunctions {
 	 * @see http://twig.sensiolabs.org/doc/functions/dump.html
 	 */
 	static dump(...objects: any[]) {
-		var runtimeContext: RuntimeContext.RuntimeContext = this;
+        var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
 		if (objects.length > 0) {
 			var result = '';
 			for (var n = 0; n < objects.length; n++) result += RuntimeUtils.inspect_json(objects[n]);
@@ -117,7 +117,7 @@ export class DefaultFunctions {
 	 * @see http://twig.sensiolabs.org/doc/functions/template_from_string.html
 	 */
 	static template_from_string(template: string) {
-		var runtimeContext: RuntimeContext.RuntimeContext = this;
+        var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
 		return runtimeContext.compileString(template);
 	}
 

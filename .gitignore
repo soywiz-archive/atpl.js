@@ -4,4 +4,6 @@
 *.user
 *.dll
 *.pdb
+*.js.map
 /obj
+/*.iws

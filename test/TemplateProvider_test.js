@@ -20,3 +20,4 @@ describe('TemplateProvider', function () {
         assert.equal(templateContent, templateProvider.getSync('simple.atpl', false));
     });
 });
+//@ sourceMappingURL=TemplateProvider_test.js.map

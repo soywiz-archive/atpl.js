@@ -1,8 +1,8 @@
 ///<reference path='../imports.d.ts'/>
 
-import StringReader        = module('./StringReader');
-import ExpressionTokenizer = module('./ExpressionTokenizer');
-import ITokenizer = module('./ITokenizer');
+import StringReader        = require('./StringReader');
+import ExpressionTokenizer = require('./ExpressionTokenizer');
+import ITokenizer = require('./ITokenizer');
 
 /*
 export interface TemplateToken {
@@ -22,7 +22,7 @@ export class TemplateTokenizer implements ITokenizer.ITokenizer {
 		this.stringReader = new StringReader.StringReader(this.string);
 	}
 
-	hasMore(): bool {
+	hasMore(): boolean {
 		return this.stringReader.hasMore();
 	}
 
@@ -64,7 +64,7 @@ export class TemplateTokenizer implements ITokenizer.ITokenizer {
 			params: params,
 			offsetStart: this.stringOffsetStart,
 			offsetEnd: this.stringOffsetEnd,
-			rawText: this.stringReader.getSlice(this.stringOffsetStart, this.stringOffsetEnd),
+			rawText: this.stringReader.getSlice(this.stringOffsetStart, this.stringOffsetEnd)
 		};
 
 		this.stringOffsetStart = this.stringOffsetEnd;

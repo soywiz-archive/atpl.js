@@ -14,13 +14,13 @@
 //}
 
 export interface ParserNodeGenerateCodeContext {
-	doWrite: bool;
+	doWrite: boolean;
 }
 
 export class ParserNode {
 	type: string = '-';
 
-	generateCode(context: ParserNodeGenerateCodeContext) {
+	generateCode(context: ParserNodeGenerateCodeContext):string {
 		return '<invalid>';
 	}
 
@@ -37,7 +37,7 @@ export class ParserNodeWriteExpression extends ParserNodeExpression {
 		super();
 	}
 
-	generateCode(context: ParserNodeGenerateCodeContext) {
+	generateCode(context: ParserNodeGenerateCodeContext):string {
 		if (!context.doWrite) {
 			throw (new Error('A template that extends another one cannot have a body'));
 			return '';
@@ -57,7 +57,7 @@ export class ParserNodeWriteExpression extends ParserNodeExpression {
 export class ParserNodeContainer extends ParserNode {
 	type: string = 'ParserNodeContainer';
 
-	constructor(public nodes: ParserNode[] = null) {
+	constructor(public nodes: ParserNode[]) {
 		super();
 		if (this.nodes == null) this.nodes = [];
 	}
@@ -66,8 +66,8 @@ export class ParserNodeContainer extends ParserNode {
 		this.nodes.push(node);
 	}
 
-	generateCode(context: ParserNodeGenerateCodeContext) {
-		var output = '';
+	generateCode(context: ParserNodeGenerateCodeContext):string {
+		var output:string = '';
 		for (var n in this.nodes) {
 			output += this.nodes[n].generateCode(context);
 		}
@@ -85,7 +85,7 @@ export class ParserNodeContainer extends ParserNode {
 export class ParserNodeContainerExpression extends ParserNodeExpression {
 	type: string = 'ParserNodeContainerExpression';
 
-	constructor(public nodes: ParserNode[] = null) {
+	constructor(public nodes: ParserNode[]) {
 		super();
 		if (this.nodes == null) this.nodes = [];
 	}
@@ -94,8 +94,8 @@ export class ParserNodeContainerExpression extends ParserNodeExpression {
 		this.nodes.push(node);
 	}
 
-	generateCode(context: ParserNodeGenerateCodeContext) {
-		var output = '';
+	generateCode(context: ParserNodeGenerateCodeContext):string {
+		var output:string = '';
 		for (var n in this.nodes) {
 			output += this.nodes[n].generateCode(context);
 		}
@@ -225,7 +225,7 @@ export class ParserNodeStatement extends ParserNode {
 export class ParserNodeRaw extends ParserNodeExpression {
 	type: string = 'ParserNodeRaw';
 
-	constructor(public value: string, public putAlways: bool = true) {
+	constructor(public value: string, public putAlways: boolean = true) {
 		super();
 	}
 
@@ -466,7 +466,7 @@ export class ParserNodeBinaryOperation extends ParserNodeExpression {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-export class ParserNodeTernaryOperation extends ParserNode {
+export class ParserNodeTernaryOperation extends ParserNodeExpression {
 	type: string = 'ParserNodeTernaryOperation';
 
 	constructor(public cond: ParserNode, public exprTrue: ParserNode, public exprFalse: ParserNode) {

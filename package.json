@@ -1,7 +1,7 @@
 {
   "name": "atpl",
   "description": "A complete and fast template engine fully compatible with twig and similar to jinja with zero dependencies.",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "author": "Carlos Ballesteros <cballesterosvelasco@gmail.com> (http://cballesterosvelasco.es/)",
   "contributors": [ 
   ],
@@ -16,7 +16,7 @@
 	"moment": "2.0.x"
   },
   "homepage": "https://github.com/soywiz/atpl.js",
-  "keywords": ["template", "engine", "inheritance", "twig", "jinja", "django", "swig"],
+  "keywords": ["template", "engine", "inheritance", "twig", "jinja", "django", "swig", "consolidate", "express"],
   "repository": {
     "type": "git",
     "url": "git://github.com/soywiz/atpl.js.git"

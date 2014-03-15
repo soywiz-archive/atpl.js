@@ -11,12 +11,12 @@ macro_escape
 
 === TEMPLATE:_macros
 {% macro putStoryLink(story) %}<a href="{{ story.url }}">{{ story.title }}</a>{% endmacro %}
-{% macro putStory(story) %}<div>{{ macros.putStoryLink(story) }}</div>{% endmacro %}
+{% macro putStory(story) %}<div>{{ _self.putStoryLink(story) }}</div>{% endmacro %}
 {% macro putStories(title, stories) %}
 <h1>{{ title }}</h1>
 <ul>
 {% for story in stories %}
-	{{ macros.putStory(story) }}
+	{{ _self.putStory(story) }}
 {% endfor%}
 </ul>
 {% endmacro %}
@@ -27,3 +27,10 @@ macro_escape
 {{ macros.putStories('Story List', stories) }}
 
 === OUTPUT
+
+
+<h1>Story List</h1>
+<ul>
+    <div><a href="http://test/&#039;&#039;">My Title</a></div>
+    <div><a href="http://test/">&lt;strong&gt;Title&lt;/strong&gt;</a></div>
+</ul>

@@ -2,13 +2,13 @@ Build status on Travis:
 
 [![Build Status](https://secure.travis-ci.org/soywiz/atpl.js.png)](http://travis-ci.org/#!/soywiz/atpl.js)
 
-Install with NPM:
+**Install with NPM:**
 
 ```
 npm install atpl
 ```
 	
-Using with express3:
+**Using with express3:**
 
 ```
 app.engine('html', require('atpl').__express);
@@ -22,6 +22,17 @@ app.get('/simple', function(req, res) {
 });
 ```
 
+**Using as standalone:**
+```
+var atpl = require('atpl');
+console.log(atpl.renderFileSync(__dirname + '/views', 'simple.html', { name: 'MyName' }, false));
+atpl.renderFile(__dirname + '/views', 'simple.html', { name: 'MyName' }, false), function(err, result) {
+	console.log(result);
+});
+```
+
+**Typescript typings:** https://github.com/soywiz/atpl.js/blob/master/lib/atpl.d.ts
+
 This project is designed to be compatible with twig.
 So the documentation about tags, filters, functions and tests is on the twig page:
 
@@ -33,7 +44,7 @@ nesting blocks, or are slow because doesn't perform dynamic recompilation.
 
 This project will implement the full twig set and will be as fast as possible.
 
-Supported syntax:
+**Supported syntax:**
 
  * Inheritance
  * Conditional inheritance

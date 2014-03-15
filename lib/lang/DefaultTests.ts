@@ -1,6 +1,6 @@
 ﻿import RuntimeUtils = require('../runtime/RuntimeUtils');
 
-export class DefaultTests {
+class DefaultTests {
 	// http://twig.sensiolabs.org/doc/tests/constant.html
 	static constant(value: string, constant: string) {
 		throw (new Error("Not implemented test [constant] [no use on javascript]"));
@@ -48,3 +48,5 @@ export class DefaultTests {
 		return (value === right);
 	}
 }
+
+export = DefaultTests;

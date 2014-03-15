@@ -4,7 +4,7 @@ import RuntimeContext = require('../runtime/RuntimeContext');
 /**
  *
  */
-export class DefaultFilters {
+class DefaultFilters {
 	/**
 	 * Filter that obtains the absolute value of a number.
 	 *
@@ -324,3 +324,5 @@ export class DefaultFilters {
 		return RuntimeUtils.toString(value).replace(/>\s+</g, '><');
 	}
 }
+
+export = DefaultFilters;

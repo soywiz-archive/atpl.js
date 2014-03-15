@@ -6,7 +6,7 @@ import util = require('util');
 /**
  *
  */
-export class DefaultFunctions {
+class DefaultFunctions {
 	/**
 	 * Obtains a range of numbers
 	 *
@@ -129,3 +129,5 @@ export class DefaultFunctions {
 		return util.inspect(object, showHidden, depth, color);
 	}
 }
+
+export = DefaultFunctions;

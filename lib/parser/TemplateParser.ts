@@ -5,7 +5,7 @@ import TokenReader = require('../lexer/TokenReader');
 import TemplateTokenizer = require('../lexer/TemplateTokenizer');
 import ExpressionTokenizer = require('../lexer/ExpressionTokenizer');
 import StringReader = require('../lexer/StringReader');
-import TemplateProvider   = require('../TemplateProvider');
+import ITemplateProvider   = require('../provider/ITemplateProvider');
 import RuntimeContext  = require('../runtime/RuntimeContext');
 import TokenParserContext = require('./TokenParserContext');
 import ExpressionParser    = require('./ExpressionParser');
@@ -23,7 +23,7 @@ export var FlowException = function (blockType, templateParser, tokenParserConte
 FlowException.prototype['__proto__'] = Error.prototype;
 
 function debug(data) {
-	//console.log(data);
+    //console.log(data);
 }
 
 export interface CompiledTemplate {
@@ -39,9 +39,9 @@ export interface EvalResult {
 export class TemplateParser {
 	registry: any = {};
 	registryString: any = {};
-	sandboxPolicy: SandboxPolicy.SandboxPolicy = new SandboxPolicy.SandboxPolicy();
+	sandboxPolicy: SandboxPolicy = new SandboxPolicy();
 
-	constructor(public templateProvider: TemplateProvider.TemplateProvider, public languageContext: LanguageContext.LanguageContext) {
+    constructor(public templateProvider: ITemplateProvider, public languageContext: LanguageContext) {
 	}
 
 	private getCache(): boolean {
@@ -116,7 +116,8 @@ export class TemplateParser {
 		output += 'CurrentTemplate.prototype.macros.$runtimeContext = runtimeContext;\n';
 		
 		tokenParserContext.iterateMacros((macroNode, macroName) => {
-			output += 'CurrentTemplate.prototype.macros.' + macroName + ' = function() {\n';
+            output += 'CurrentTemplate.prototype.macros.' + macroName + ' = function() {\n';
+            //output += 'console.log(this);\n';
 			output += 'var runtimeContext = this.$runtimeContext || this;\n';
 			//output += 'console.log("<<<<<<<<<<<<<<<<<<<<<<");console.log(this);\n';
 			output += macroNode.generateCode({ doWrite: true });

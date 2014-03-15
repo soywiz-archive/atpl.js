@@ -16,19 +16,19 @@ export interface ITemplateParser
 
 export class RuntimeContext {
 	output: string = '';
-	scope: Scope.Scope;
+	scope: Scope;
 	currentAutoescape: any = true;
 	defaultAutoescape: any = true;
 	currentBlockName: string = 'none';
 	removeFollowingSpaces: boolean = false;
-	sandboxPolicy: SandboxPolicy.SandboxPolicy = new SandboxPolicy.SandboxPolicy();
+	sandboxPolicy: SandboxPolicy = new SandboxPolicy();
 
 	LeafTemplate: any;
 	CurrentTemplate: any;
 	RootTemplate: any;
 
-	constructor(public templateParser: ITemplateParser, scopeData: any, public languageContext: LanguageContext.LanguageContext) {
-		this.scope = new Scope.Scope(scopeData);
+	constructor(public templateParser: ITemplateParser, scopeData: any, public languageContext: LanguageContext) {
+		this.scope = new Scope(scopeData);
 	}
 
 	setTemplate(Template: any) {
@@ -61,7 +61,7 @@ export class RuntimeContext {
 		if (only) {
 			var oldScope = this.scope;
 			try {
-				this.scope = new Scope.Scope({});
+				this.scope = new Scope({});
 				inner();
 			} finally {
 				this.scope = oldScope;
@@ -313,7 +313,7 @@ export class RuntimeContext {
 		switch (key) {
 			case '_self':
 				// FIXME?: Probably not CurrentTemplate but the template that contains this functions.
-				return this.CurrentTemplate.macros;
+                return this.CurrentTemplate.macros;
 			case '_context':
 				// INFO: This will be SLOW.
 				return this.scope.getAll();

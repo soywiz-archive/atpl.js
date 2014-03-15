@@ -11,7 +11,7 @@ import ExpressionParser = require('../lib/parser/ExpressionParser');
 import TokenParserContext = require('../lib/parser/TokenParserContext');
 import SandboxPolicy = require('../lib/SandboxPolicy');
 
-var tokenParserContext = new TokenParserContext.TokenParserContext(new TokenParserContext.TokenParserContextCommon(), new SandboxPolicy.SandboxPolicy());
+var tokenParserContext = new TokenParserContext.TokenParserContext(new TokenParserContext.TokenParserContextCommon(), new SandboxPolicy());
 var parserNodeGenerateCodeContext: ParserNode.ParserNodeGenerateCodeContext = { doWrite: true };
 
 describe("ExpressionParser", () => {

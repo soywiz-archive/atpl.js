@@ -1,6 +1,6 @@
 ///<reference path='imports.d.ts'/>
 
-export class TemplateConfig
+class TemplateConfig
 {
 	constructor(public cache: boolean = true) {
 	}
@@ -19,3 +19,5 @@ export class TemplateConfig
 		return this.cache;
 	}
 }
+
+export = TemplateConfig;

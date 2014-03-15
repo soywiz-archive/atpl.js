@@ -2,9 +2,8 @@
 
 import assert = require('assert');
 
-import tp = require('../lib/TemplateProvider');
-var FileSystemTemplateProvider = tp.FileSystemTemplateProvider;
-var MemoryTemplateProvider     = tp.MemoryTemplateProvider;
+import FileSystemTemplateProvider = require('../lib/provider/FileSystemTemplateProvider');
+import MemoryTemplateProvider = require('../lib/provider/MemoryTemplateProvider');
 
 describe('TemplateProvider', () => {
 	it('test file system', function(done) {
@@ -22,7 +21,7 @@ describe('TemplateProvider', () => {
 		var templateProvider = new MemoryTemplateProvider();
 		try {
 			templateProvider.getSync('simple.atpl', false);
-			assert.assert(false, '');
+			assert(false, '');
 		} catch (e) {
 		}
 		

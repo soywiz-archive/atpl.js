@@ -1,4 +1,4 @@
-﻿export class Scope
+﻿class Scope
 {
 	constructor(public scope: any = {}) {
 	}
@@ -62,3 +62,5 @@
 		for (var key in object) this.set(key, object[key]);
 	}
 }
+
+export = Scope;

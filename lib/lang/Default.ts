@@ -9,10 +9,10 @@ import LanguageContext = require('../LanguageContext');
 /**
  *
  */
-export function register(languageContext: LanguageContext.LanguageContext): LanguageContext.LanguageContext {
-	languageContext.registerTags(DefaultTags.DefaultTags);
-	languageContext.registerFunctions(DefaultFunctions.DefaultFunctions);
-	languageContext.registerFilters(DefaultFilters.DefaultFilters);
-	languageContext.registerTests(DefaultTests.DefaultTests);
-	return languageContext;
+export function register(languageContext: LanguageContext): LanguageContext {
+	languageContext.registerTags(DefaultTags);
+	languageContext.registerFunctions(DefaultFunctions);
+	languageContext.registerFilters(DefaultFilters);
+    languageContext.registerTests(DefaultTests);
+    return languageContext;
 }

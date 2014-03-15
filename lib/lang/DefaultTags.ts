@@ -4,7 +4,7 @@ import TemplateParser = require('../parser/TemplateParser');
 import TokenParserContext = require('../parser/TokenParserContext');
 import TokenReader = require('../lexer/TokenReader');
 
-export interface ITemplateParser {
+interface ITemplateParser {
 	addBlockFlowExceptionHandler(name: string);
 	addBlockHandler(name: string, callback: (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) => void);
 }
@@ -45,7 +45,7 @@ function handleOpenedTag(blockType: string, templateParser: TemplateParser.Templ
 	}
 }
 
-export class ParserNodeAutoescape extends ParserNode.ParserNodeStatement {
+class ParserNodeAutoescape extends ParserNode.ParserNodeStatement {
 	constructor(public expression: ParserNode.ParserNodeExpression, public inner: ParserNode.ParserNode) {
 		super();
 	}
@@ -65,7 +65,7 @@ export class ParserNodeAutoescape extends ParserNode.ParserNodeStatement {
 	}
 }
 
-export class ParserNodeExpressionFilter extends ParserNode.ParserNodeExpression {
+class ParserNodeExpressionFilter extends ParserNode.ParserNodeExpression {
 	filters: { name: string; parameters: ParserNode.ParserNodeCommaExpression; }[] = [];
 
 	constructor(public inner: ParserNode.ParserNode) {
@@ -108,7 +108,7 @@ export class ParserNodeExpressionFilter extends ParserNode.ParserNodeExpression 
 	}
 }
 
-export class ParserNodeScopeSet extends ParserNode.ParserNodeStatement {
+class ParserNodeScopeSet extends ParserNode.ParserNodeStatement {
 	constructor(public key: string, public value: ParserNode.ParserNodeExpression) {
 		super();
 	}
@@ -123,7 +123,7 @@ export class ParserNodeScopeSet extends ParserNode.ParserNodeStatement {
 	}
 }
 
-export class ParserNodeIf extends ParserNode.ParserNodeStatement {
+class ParserNodeIf extends ParserNode.ParserNodeStatement {
 	conditions: { expression: ParserNode.ParserNodeExpression; code: ParserNode.ParserNodeContainer; }[] = [];
 
 	iterate(handler: (node: ParserNode.ParserNode) => void ) {
@@ -165,7 +165,7 @@ export class ParserNodeIf extends ParserNode.ParserNodeStatement {
 	}
 }
 
-export class ParserNodeFor extends ParserNode.ParserNodeStatement {
+class ParserNodeFor extends ParserNode.ParserNodeStatement {
 	constructor(public keyId: any, public condId: any, public valueId: ParserNode.ParserNodeLeftValue, public nodeList: ParserNode.ParserNodeExpression, public forCode: ParserNode.ParserNode, public elseCode: ParserNode.ParserNode) {
 		super();
 	}
@@ -210,10 +210,10 @@ export class ParserNodeFor extends ParserNode.ParserNodeStatement {
 	}
 }
 
-export class DefaultTags {
+class DefaultTags {
 	// autoescape
 	static endautoescape = _flowexception;
-	static autoescape(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+    static autoescape(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader): ParserNode.ParserNodeStatement {
 		var expressionNode = (new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
@@ -565,7 +565,7 @@ export class DefaultTags {
 	static $else = _flowexception;
 	static $elseif = _flowexception;
 	static $endif = _flowexception;
-	static $if(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static $if(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader):ParserNode.ParserNodeStatement {
 		var didElse = false;
 
 		var expressionNode = (new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
@@ -642,7 +642,7 @@ export class DefaultTags {
 
 	// http://twig.sensiolabs.org/doc/tags/for.html
 	static $endfor = _flowexception;
-	static $for(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static $for(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader):ParserNode.ParserNodeStatement {
 		var didElse = false;
 		var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
 		var valueId: any = expressionParser.parseIdentifier();
@@ -685,3 +685,5 @@ export class DefaultTags {
 		return new ParserNodeFor(keyId, condId, valueId, nodeList, forCode, elseCode);
 	}
 }
+
+export = DefaultTags;

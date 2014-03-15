@@ -1,6 +1,6 @@
 ///<reference path='../imports.d.ts'/>
 
-import StringReader        = require('./StringReader');
+import StringReader = require('./StringReader');
 import ExpressionTokenizer = require('./ExpressionTokenizer');
 import ITokenizer = require('./ITokenizer');
 

@@ -3,13 +3,13 @@
 import assert = require('assert');
 import fs = require('fs');
 
-var TemplateParser         = require('../lib/parser/TemplateParser.js').TemplateParser;
-var MemoryTemplateProvider = require('../lib/TemplateProvider.js').MemoryTemplateProvider;
-var LanguageContext = require('../lib/LanguageContext.js');
-var TemplateConfig = require('../lib/TemplateConfig.js').TemplateConfig;
-var RuntimeContext = require('../lib/runtime/RuntimeContext.js').RuntimeContext;
-var RuntimeUtils = require('../lib/runtime/RuntimeUtils.js');
-var Default = require('../lib/lang/Default.js');
+import TemplateParser = require('../lib/parser/TemplateParser');
+import MemoryTemplateProvider = require('../lib/provider/MemoryTemplateProvider');
+import LanguageContext = require('../lib/LanguageContext');
+import TemplateConfig = require('../lib/TemplateConfig');
+import RuntimeContext = require('../lib/runtime/RuntimeContext');
+import RuntimeUtils = require('../lib/runtime/RuntimeUtils');
+import Default = require('../lib/lang/Default');
 
 function handleSet(name, data) {
 	var parts = data.split('===');
@@ -70,7 +70,14 @@ function handleSet(name, data) {
 			assert.equal(e.message, test.exception);
 			return;
 		}
-		if (test.exception !== undefined) (<any>assert.fail)('Excepting exception "' + test.exception + '"');
+        if (test.exception !== undefined) (<any>assert.fail)('Excepting exception "' + test.exception + '"');
+        if (result !== expected) {
+            console.log('--------------------------------------');
+            console.log(test);
+            console.log('--------------------------------------');
+            console.log(templateParser.getEvalCode('main').output);
+            console.log('--------------------------------------');
+        }
 		assert.equal(result, expected);
 	});
 }
@@ -92,7 +99,7 @@ function handleSets(path, name) {
 
 function createTemplateParser(templates) {
 	var templateProvider = new MemoryTemplateProvider();
-	var templateParser = new TemplateParser(templateProvider, Default.register(new LanguageContext.LanguageContext()));
+	var templateParser = new TemplateParser.TemplateParser(templateProvider, Default.register(new LanguageContext()));
 
 	for (var key in templates) {
 		templateProvider.add(key, templates[key]);
@@ -142,14 +149,14 @@ describe('extra fixtures', function () {
 
 	it('test cache', function () {
 		var templateProvider = new MemoryTemplateProvider();
-		var languageContext = Default.register(new LanguageContext.LanguageContext());
-		var templateParser = new TemplateParser(templateProvider, languageContext);
+		var languageContext = Default.register(new LanguageContext());
+		var templateParser = new TemplateParser.TemplateParser(templateProvider, languageContext);
 
-		languageContext.templateConfig.setCacheTemporal(false, function () {
+        languageContext.templateConfig.setCacheTemporal(false, function () {
 			templateProvider.add('test', 'a');
-			assert.equal(templateParser.compileAndRenderToString('test'), 'a');
+            assert.equal(templateParser.compileAndRenderToString('test', {}), 'a');
 			templateProvider.add('test', 'b');
-			assert.equal(templateParser.compileAndRenderToString('test'), 'b');
+            assert.equal(templateParser.compileAndRenderToString('test', {}), 'b');
 		});
 
 		languageContext.templateConfig.setCacheTemporal(true, function () {

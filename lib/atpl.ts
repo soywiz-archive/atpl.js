@@ -2,11 +2,10 @@
 
 
 import TemplateParser = require('./parser/TemplateParser');
-import TemplateProvider = require('./TemplateProvider');
+import FileSystemTemplateProvider = require('./provider/FileSystemTemplateProvider');
 import LanguageContext = require('./LanguageContext');
 import Default = require('./lang/Default');
 import fs = require('fs');
-var FileSystemTemplateProvider = TemplateProvider.FileSystemTemplateProvider;
 var isWin = !!process.platform.match(/^win/);
 
 function normalizePath(path) {
@@ -40,7 +39,7 @@ export interface IOptionsExpress {
 	cache: boolean;
 }
 
-var languageContext = new LanguageContext.LanguageContext();
+var languageContext = new LanguageContext();
 Default.register(languageContext);
 
 function internalCompile(options: IOptions, absolutePath = false) {

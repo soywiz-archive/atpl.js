@@ -63,6 +63,10 @@
     <Content Include="test\fixtures\regressions\issue_61.set" />
     <Content Include="test\fixtures\filters\nl2br.set" />
     <Content Include="test\fixtures\filters\json_encode.set" />
+    <Content Include=".npmignore" />
+    <Content Include=".travis.yml" />
+    <Content Include="package.json" />
+    <Content Include="test.bat" />
     <None Include="test\fixtures\regressions\issue_58.set" />
     <Content Include="test\templates\invalid.html" />
     <Content Include="test\fixtures\syntax\exceptions\incomplete_block.set" />
@@ -70,6 +74,7 @@
     <Content Include="test\fixtures\tags\include\include_extending.set" />
     <Content Include="test\fixtures\tags\set\set_end_set.set" />
     <Content Include="test\fixtures\tags\macro\macro_escape.set" />
+    <Content Include="test\fixtures\tags\macro\_self_other_file.set" />
     <TypeScriptCompile Include="lib\TemplateConfig.ts" />
     <Content Include="test\templates\base\base.html" />
     <Content Include="test\templates\base\simple_extends.html" />

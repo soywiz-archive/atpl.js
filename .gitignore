@@ -7,3 +7,4 @@
 *.js.map
 /obj
 /*.iws
+/npm-debug.log

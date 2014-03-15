@@ -1,17 +1,16 @@
 ﻿import TemplateConfig = require('./TemplateConfig');
 
-
 /**
  * Reusable context that holds tag, function, filter and test definitions.
  */
-export class LanguageContext {
+class LanguageContext {
     tags: any = {};
     functions: any = {};
     filters: any = {};
     tests: any = {};
 
-    constructor(public templateConfig: TemplateConfig.TemplateConfig = undefined) {
-        if (this.templateConfig === undefined) this.templateConfig = new TemplateConfig.TemplateConfig(true);
+    constructor(public templateConfig: TemplateConfig = undefined) {
+        if (this.templateConfig === undefined) this.templateConfig = new TemplateConfig(true);
     }
 
     private _registerSomethingItem(object: any, key: string, value: any) {
@@ -47,3 +46,5 @@ export class LanguageContext {
         this._registerSomething(this.tests, tests);
     }
 }
+
+export = LanguageContext;

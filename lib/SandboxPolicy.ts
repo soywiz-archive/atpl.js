@@ -1,4 +1,4 @@
-﻿export class SandboxPolicy
+﻿class SandboxPolicy
 {
     allowedTags: string[] = ['for', 'endfor', 'if', 'endif', 'include', 'sandbox', 'endsandbox'];
     allowedFunctions: string[] = [];
@@ -7,3 +7,5 @@
     constructor() {
     }
 }
+
+export = SandboxPolicy;

@@ -32,7 +32,7 @@ export class TokenParserContext {
 	private macrosOutput: any = {};
 	afterMainNodes: ParserNode.ParserNode[] = [];
 
-	constructor(public common: TokenParserContextCommon, public sandboxPolicy: SandboxPolicy.SandboxPolicy) {
+	constructor(public common: TokenParserContextCommon, public sandboxPolicy: SandboxPolicy) {
 	}
 
 	iterateBlocks(callback: (node: ParserNode.ParserNode, name: string) => void) {

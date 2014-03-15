@@ -8,7 +8,7 @@ var ExpressionParser = require('../lib/parser/ExpressionParser');
 var TokenParserContext = require('../lib/parser/TokenParserContext');
 var SandboxPolicy = require('../lib/SandboxPolicy');
 
-var tokenParserContext = new TokenParserContext.TokenParserContext(new TokenParserContext.TokenParserContextCommon(), new SandboxPolicy.SandboxPolicy());
+var tokenParserContext = new TokenParserContext.TokenParserContext(new TokenParserContext.TokenParserContextCommon(), new SandboxPolicy());
 var parserNodeGenerateCodeContext = { doWrite: true };
 
 describe("ExpressionParser", function () {

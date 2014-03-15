@@ -16,13 +16,13 @@ var parserNodeGenerateCodeContext: ParserNode.ParserNodeGenerateCodeContext = { 
 
 describe("ExpressionParser", () => {
 	it('operator precedence simple test', () => {
-		var expressionParser = new ExpressionParser.ExpressionParser(new TokenReader.TokenReader(new ExpressionTokenizer.ExpressionTokenizer(new StringReader.StringReader('1 + 2 * 3 + 1'))), tokenParserContext);
+		var expressionParser = new ExpressionParser(new TokenReader(new ExpressionTokenizer.ExpressionTokenizer(new StringReader('1 + 2 * 3 + 1'))), tokenParserContext);
 		var parseNode = expressionParser.parseExpression();
 		assert.equal('((1 + (2 * 3)) + 1)', parseNode.generateCode(parserNodeGenerateCodeContext));
 	});
 
 	it('array definition test', () => {
-		var expressionParser = new ExpressionParser.ExpressionParser(new TokenReader.TokenReader(new ExpressionTokenizer.ExpressionTokenizer(new StringReader.StringReader('[1, (2 + 3), -4]'))), tokenParserContext);
+		var expressionParser = new ExpressionParser(new TokenReader(new ExpressionTokenizer.ExpressionTokenizer(new StringReader('[1, (2 + 3), -4]'))), tokenParserContext);
 		var parseNode = expressionParser.parseExpression();
 		assert.equal('[1, (2 + 3), -(4)]', parseNode.generateCode(parserNodeGenerateCodeContext));
 	});

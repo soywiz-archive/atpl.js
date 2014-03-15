@@ -2,7 +2,7 @@
 
 import ParserNode = require('./ParserNode');
 import TokenReader = require('../lexer/TokenReader');
-import _TemplateTokenizer = require('../lexer/TemplateTokenizer');
+import TemplateTokenizer = require('../lexer/TemplateTokenizer');
 import ExpressionTokenizer = require('../lexer/ExpressionTokenizer');
 import StringReader = require('../lexer/StringReader');
 import TemplateProvider   = require('../TemplateProvider');
@@ -11,8 +11,6 @@ import TokenParserContext = require('./TokenParserContext');
 import ExpressionParser    = require('./ExpressionParser');
 import LanguageContext = require('../LanguageContext');
 import SandboxPolicy = require('../SandboxPolicy');
-
-var TemplateTokenizer = _TemplateTokenizer.TemplateTokenizer;
 
 export var FlowException = function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
 	this.blockType = blockType;
@@ -238,7 +236,7 @@ export class TemplateParser {
 	}
 
 	parseTemplateExpressionSync(tokenParserContext, templateTokenReader, expressionTokenReader) {
-		return new ParserNode.ParserNodeStatementExpression(new ParserNode.ParserNodeWriteExpression((new ExpressionParser.ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression()));
+		return new ParserNode.ParserNodeStatementExpression(new ParserNode.ParserNodeWriteExpression((new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression()));
 	}
 
 	parseTemplateBlockSync(tokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader): ParserNode.ParserNode {

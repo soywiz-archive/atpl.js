@@ -9,7 +9,7 @@ import StringReader = require('../lexer/StringReader');
 import ExpressionTokenizer = require('../lexer/ExpressionTokenizer');
 import TokenReader = require('../lexer/TokenReader');
 
-export class ExpressionParser {
+class ExpressionParser {
 	constructor(public tokenReader: TokenReader, private tokenParserContext: TokenParserContext.TokenParserContext) {
 		//if (!(this.tokenParserContext instanceof TokenParserContext.TokenParserContext)) { console.log(this.tokenParserContext); throw (new Error("ASSERT!")); }
 	}
@@ -156,7 +156,7 @@ export class ExpressionParser {
 							expr = new ParserNode.ParserNodeBinaryOperation(
 								'~',
 								expr,
-								new ExpressionParser(new TokenReader(new ExpressionTokenizer.ExpressionTokenizer(new StringReader.StringReader(expressionString))), this.tokenParserContext).parseExpression()
+								new ExpressionParser(new TokenReader(new ExpressionTokenizer.ExpressionTokenizer(new StringReader(expressionString))), this.tokenParserContext).parseExpression()
 							);
 						}
 					}
@@ -339,3 +339,5 @@ export class ExpressionParser {
 		return leftNode;
 	}
 }
+
+export = ExpressionParser;

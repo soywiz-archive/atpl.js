@@ -158,6 +158,37 @@ export function express3RenderFile(filename: string, options: any/*IOptionsExpre
     }
 }
 
+/**
+ *
+ */
+export function renderFileSync(viewsPath: string, filename: string, parameters: any = {}, cache: boolean = true):string
+{
+    if (registryTemplateParser[viewsPath] === undefined) {
+        registryTemplateParser[viewsPath] = new TemplateParser.TemplateParser(new FileSystemTemplateProvider(viewsPath), languageContext);
+    }
+
+    return languageContext.templateConfig.setCacheTemporal(cache, () => {
+        //console.log(options.path);
+        //console.log(options.root);
+        var templateParser = <TemplateParser.TemplateParser>registryTemplateParser[viewsPath];
+
+        var path = normalizePath(filename);
+        var root = normalizePath(viewsPath);
+        if (!path.match(/[\/\\]/)) path = normalizePath(root + '/' + path);
+        if (path.indexOf(root) !== 0) throw (new Error("Path '" + path + "' not inside root '" + root + "'"));
+        return templateParser.compileAndRenderToString(path.substr(root.length), parameters);
+    });
+}
+
+export function renderFile(viewsPath: string, filename: string, parameters: any, cache: boolean, done: (err: Error, result?: string) => void): void {
+    try {
+        var result = renderFileSync(viewsPath, filename, parameters, cache);
+        done(null, result);
+    } catch (e) {
+        done(e);
+    }
+}
+
 export function registerExtension(items: any) { return languageContext.registerExtension(items); }
 export function registerTags(items: any) { return languageContext.registerTags(items); }
 export function registerFunctions(items: any) { return languageContext.registerFunctions(items); }

@@ -23,6 +23,7 @@
   },
   "main": "lib/atpl.js",
   "scripts": {
+	"benchmark": "node benchmarks/benchmark.js",
     "test": "./node_modules/.bin/mocha --ui exports --globals name "
   },
   "license": "MIT",

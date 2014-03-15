@@ -65,14 +65,6 @@
     <Content Include="test\fixtures\filters\json_encode.set" />
     <None Include="test\fixtures\regressions\issue_58.set" />
     <Content Include="test\templates\invalid.html" />
-    <Content Include="typings\async.d.ts" />
-    <Content Include="typings\express.d.ts" />
-    <Content Include="typings\mocha.d.ts" />
-    <Content Include="typings\moment.d.ts" />
-    <Content Include="typings\node.d.ts" />
-    <Content Include="typings\should.d.ts" />
-    <Content Include="typings\superagent.d.ts" />
-    <Content Include="typings\supertest.d.ts" />
     <Content Include="test\fixtures\syntax\exceptions\incomplete_block.set" />
     <Content Include="test\fixtures\syntax\exceptions\text_outside_block_in_extended_template.set" />
     <Content Include="test\fixtures\tags\include\include_extending.set" />
@@ -113,6 +105,15 @@
     <Content Include="test\templates\simple_extends.html" />
     <Content Include="test\TemplateTokenizer_test.ts" />
     <Content Include="test\utils_test.ts" />
+    <Content Include="test\renderFileTest.ts" />
+    <TypeScriptCompile Include="typings\async\async.d.ts" />
+    <TypeScriptCompile Include="typings\express\express.d.ts" />
+    <TypeScriptCompile Include="typings\mocha\mocha.d.ts" />
+    <TypeScriptCompile Include="typings\moment\moment.d.ts" />
+    <TypeScriptCompile Include="typings\node\node.d.ts" />
+    <TypeScriptCompile Include="typings\superagent\superagent.d.ts" />
+    <TypeScriptCompile Include="typings\supertest\supertest.d.ts" />
+    <TypeScriptCompile Include="_typings.d.ts" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -2,9 +2,11 @@
 
 import StringReader = require('./StringReader');
 
-export interface ITokenizer {
+interface ITokenizer {
 	hasMore(): boolean;
 	readNext(): any;
 	tokenizeAll();
-	stringReader: StringReader.StringReader;
+	stringReader: StringReader;
 }
+
+export = ITokenizer;

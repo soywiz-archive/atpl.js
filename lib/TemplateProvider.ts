@@ -32,7 +32,7 @@ export class FileSystemTemplateProvider implements TemplateProvider {
 				throw (new Error("Outside the Base Path"));
 			}
 
-			this.cacheObject[path] = fs.readFileSync(normalizedPath, 'utf-8').replace(/^\uFEFF/, '');
+			this.cacheObject[path] = (<string><any>fs.readFileSync(normalizedPath, 'utf-8')).replace(/^\uFEFF/, '');
 		}
 		return this.cacheObject[path];
 	}

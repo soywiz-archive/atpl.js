@@ -9,7 +9,7 @@ class TokenReader {
 	private tokens: ExpressionTokenizer.Token[] = [];
 	private eof: boolean = false;
 
-	constructor(public tokenizer: ITokenizer.ITokenizer) {
+	constructor(public tokenizer: ITokenizer) {
 		//this.tokens = tokenizer.tokenizeAll();
 		//this.length = this.tokens.length;
 		this.position = 0;

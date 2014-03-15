@@ -1,8 +1,6 @@
 ///<reference path='./imports.d.ts'/>
-var ttlib = require('../lib/lexer/TemplateTokenizer');
+var TemplateTokenizer = require('../lib/lexer/TemplateTokenizer');
 var assert = require('assert');
-
-var TemplateTokenizer = ttlib.TemplateTokenizer;
 
 describe('TemplateTokenizer', function () {
     it('just plain text', function () {

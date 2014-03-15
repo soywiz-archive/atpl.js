@@ -1,2 +1,2 @@
 @echo off
-node "benchmarks/benchmark.js"
+npm run benchmark

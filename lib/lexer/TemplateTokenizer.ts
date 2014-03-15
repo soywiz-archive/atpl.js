@@ -15,11 +15,11 @@ export interface TemplateToken {
 }
 */
 
-export class TemplateTokenizer implements ITokenizer.ITokenizer {
-	public stringReader: StringReader.StringReader;
+class TemplateTokenizer implements ITokenizer {
+	public stringReader: StringReader;
 
 	constructor(public string: string) {
-		this.stringReader = new StringReader.StringReader(this.string);
+		this.stringReader = new StringReader(this.string);
 	}
 
 	hasMore(): boolean {
@@ -116,7 +116,7 @@ export class TemplateTokenizer implements ITokenizer.ITokenizer {
 							break;
 						case '{{':
 						case '{%':
-							var expressionTokenizer = new ExpressionTokenizer.ExpressionTokenizer(new StringReader.StringReader(
+							var expressionTokenizer = new ExpressionTokenizer.ExpressionTokenizer(new StringReader(
 								this.stringReader.getSliceWithCallback(() => {
 									(new ExpressionTokenizer.ExpressionTokenizer(this.stringReader)).tokenizeAll();
 								})
@@ -153,3 +153,5 @@ export class TemplateTokenizer implements ITokenizer.ITokenizer {
 		return null;
 	}
 }
+
+export = TemplateTokenizer;

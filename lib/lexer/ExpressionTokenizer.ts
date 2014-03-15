@@ -17,11 +17,11 @@ export interface Token {
 /**
  * ExpressionTokenizer
  */
-export class ExpressionTokenizer implements ITokenizer.ITokenizer {
+export class ExpressionTokenizer implements ITokenizer {
 	/**
 	 * Creates a new ExpressionTokenizer.
 	 */
-	constructor(public stringReader: StringReader.StringReader) {
+	constructor(public stringReader: StringReader) {
 	}
 
 	private static operators3 = [

@@ -1,13 +1,12 @@
 ﻿///<reference path='../_typings.d.ts'/>
 import util = require("util");
-import express3 = require("express3");
+import express = require("express");
 import atpl = require('../lib/atpl');
 import supertest = require('supertest');
 import moment = require('moment');
 import async = require('async');
 
-var express = require('express');
-var app: express3.Application = express();
+var app: express.Application = express();
 
 declare var setImmediate: (callback) => void;
 

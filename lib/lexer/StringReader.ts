@@ -3,7 +3,7 @@
 /**
  * StringReader
  */
-export class StringReader {
+class StringReader {
 	position: number = 0;
 	currentLine: number = 1;
 
@@ -112,3 +112,5 @@ export class StringReader {
 		}
 	}
 }
+
+export = StringReader;

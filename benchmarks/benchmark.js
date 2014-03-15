@@ -1,9 +1,9 @@
-﻿var atpl = require('../lib/atpl');
+﻿var express = require("express");
+var atpl = require('../lib/atpl');
 var supertest = require('supertest');
 var moment = require('moment');
 var async = require('async');
 
-var express = require('express');
 var app = express();
 
 function nextTick(callback) {

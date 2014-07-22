@@ -1,6 +1,7 @@
 Build status on Travis:
 
-[![Build Status](https://secure.travis-ci.org/soywiz/atpl.js.png)](http://travis-ci.org/#!/soywiz/atpl.js)
+[![Version](https://badge.fury.io/js/atpl.svg)](https://www.npmjs.org/package/atpl)
+[![Build Status](https://secure.travis-ci.org/soywiz/atpl.js.svg)](http://travis-ci.org/soywiz/atpl.js)
 
 **Install with NPM:**
 

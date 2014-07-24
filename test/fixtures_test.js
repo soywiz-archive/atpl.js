@@ -6,6 +6,7 @@ var TemplateParser = require('../lib/parser/TemplateParser');
 var MemoryTemplateProvider = require('../lib/provider/MemoryTemplateProvider');
 var LanguageContext = require('../lib/LanguageContext');
 
+var RuntimeUtils = require('../lib/runtime/RuntimeUtils');
 var Default = require('../lib/lang/Default');
 
 function handleSet(name, data) {
@@ -62,8 +63,9 @@ function handleSet(name, data) {
             console.log(test);
         }
 
-        if (test.eval !== undefined)
-            eval(test.eval);
+        if (test.eval !== undefined) {
+            Function("test", "RuntimeUtils", test.eval)(test, RuntimeUtils);
+        }
 
         try  {
             var result = templateParser.compileAndRenderToString('main', test.input).trim().replace(/\r\n/g, '\n');
@@ -150,14 +152,14 @@ describe('extra fixtures', function () {
         assert.equal(templateParser.compileAndRenderToString('main', { test: new TestClass() }), 'a=1,b=2,c=3,testClassValue=17,');
     });
 
-    it('method accessed as property', function () {
+    it('method not accessed as property', function () {
         var templateParser = createTemplateParser({
             main: '{{ test.func[2] }}'
         });
 
         assert.equal(templateParser.compileAndRenderToString('main', { test: { func: function () {
                     return [0, 1, 2, 3];
-                } } }), '2');
+                } } }), '');
     });
 
     it('test cache', function () {

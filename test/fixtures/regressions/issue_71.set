@@ -1,0 +1,40 @@
+﻿ === TITLE
+issue #71 Pass classes/functions containing fields calls instead of returning that function/object
+
+=== DESCRIPTION
+
+=== INPUT
+{ }
+
+=== EVAL
+var Test = (function () {
+    function Test() {
+    }
+    Test.prototype.method = function () {
+        return 2;
+    };
+    Object.defineProperty(Test.prototype, "property", {
+        get: function () {
+            return 3;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Test.staticField = 1;
+    return Test;
+})();
+
+test.input.Test = Test;
+test.input.test = new Test();
+
+=== TEMPLATE:main
+staticField:{{ Test.staticField }}
+method:{{ test.method }}
+method():{{ test.method() }}
+field:{{ test.property }}
+
+=== OUTPUT
+staticField:1
+method:undefined
+method():2
+field:3

@@ -52,7 +52,9 @@ function handleSet(name, data) {
 			console.log(test);
 		}
 
-		if (test.eval !== undefined) eval(test.eval);
+		if (test.eval !== undefined) {
+			Function("test", "RuntimeUtils", test.eval)(test, RuntimeUtils);
+		}
 
 		//console.log(templateParser.getEvalCode('test').output);
 		try {
@@ -136,14 +138,14 @@ describe('extra fixtures', function () {
 		);
 	});
 
-	it('method accessed as property', function () {
+	it('method not accessed as property', function () {
 		var templateParser = createTemplateParser({
 			main: '{{ test.func[2] }}',
 		});
 
 		assert.equal(
 			templateParser.compileAndRenderToString('main', { test: { func: function () { return [0, 1, 2, 3]; } } }),
-			'2'
+			''
 		);
 	});
 

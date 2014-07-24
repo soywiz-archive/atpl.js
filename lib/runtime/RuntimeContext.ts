@@ -337,7 +337,6 @@ export class RuntimeContext {
 
 	access(object: any, key: any) {
 		if (object === undefined || object === null) return null;
-		if (object instanceof Function) object = object();
 		var ret = object[key];
 		return ret;
 	}

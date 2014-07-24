@@ -8,12 +8,12 @@
   "dependencies": {
   },
   "devDependencies": {
-	"supertest": "0.6.x",
-	"express": "3.0.x",
-    "should": "1.2.x",
-    "mocha": "1.10.x",
-	"async": "0.2.x",
-	"moment": "2.0.x"
+	"supertest": "0.13.0",
+	"express": "3.0.6",
+    "should": "4.0.4",
+    "mocha": "1.21.0",
+	"async": "0.9.0",
+	"moment": "2.7.0"
   },
   "homepage": "https://github.com/soywiz/atpl.js",
   "keywords": ["template", "engine", "inheritance", "twig", "jinja", "django", "swig", "consolidate", "express"],

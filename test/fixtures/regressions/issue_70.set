@@ -1,0 +1,13 @@
+﻿=== TITLE
+issue #70 for loop inside another for loop
+
+=== DESCRIPTION
+
+=== INPUT
+{ "users": [ { "permissions": "p1" }, { "permissions": "p2" } ] }
+
+=== TEMPLATE:main
+{% for u in users %}{% for perm in u.permissions %}{{perm}}{% endfor %}{% endfor %}
+
+=== OUTPUT
+p1p2

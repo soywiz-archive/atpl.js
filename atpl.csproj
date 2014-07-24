@@ -73,8 +73,11 @@
     <Content Include="test\fixtures\syntax\exceptions\text_outside_block_in_extended_template.set" />
     <Content Include="test\fixtures\tags\include\include_extending.set" />
     <Content Include="test\fixtures\tags\set\set_end_set.set" />
-    <Content Include="test\fixtures\tags\macro\macro_escape.set" />
-    <Content Include="test\fixtures\tags\macro\_self_other_file.set" />
+    <Content Include="test\fixtures_disabled\tags\macro\macro_escape.set" />
+    <Content Include="test\fixtures_disabled\tags\macro\_self_other_file.set" />
+    <TypeScriptCompile Include="lib\provider\FileSystemTemplateProvider.ts" />
+    <TypeScriptCompile Include="lib\provider\ITemplateProvider.ts" />
+    <TypeScriptCompile Include="lib\provider\MemoryTemplateProvider.ts" />
     <TypeScriptCompile Include="lib\TemplateConfig.ts" />
     <Content Include="test\templates\base\base.html" />
     <Content Include="test\templates\base\simple_extends.html" />
@@ -95,7 +98,6 @@
     <Content Include="lib\runtime\RuntimeContext.ts" />
     <Content Include="lib\runtime\RuntimeUtils.ts" />
     <Content Include="lib\runtime\Scope.ts" />
-    <Content Include="lib\TemplateProvider.ts" />
     <Content Include="test\app_test.ts" />
     <Content Include="test\expressionparser_test.ts" />
     <Content Include="test\ExpressionTokenizer_test.ts" />
@@ -111,6 +113,8 @@
     <Content Include="test\TemplateTokenizer_test.ts" />
     <Content Include="test\utils_test.ts" />
     <Content Include="test\renderFileTest.ts" />
+    <None Include="test\fixtures\regressions\issue_70.set" />
+    <None Include="test\fixtures\regressions\issue_71.set" />
     <TypeScriptCompile Include="typings\async\async.d.ts" />
     <TypeScriptCompile Include="typings\express\express.d.ts" />
     <TypeScriptCompile Include="typings\mocha\mocha.d.ts" />

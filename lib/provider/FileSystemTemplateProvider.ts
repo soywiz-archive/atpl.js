@@ -4,8 +4,8 @@ import RuntimeUtils = require('../runtime/RuntimeUtils');
 import ITemplateProvider = require('./ITemplateProvider');
 
 class FileSystemTemplateProvider implements ITemplateProvider {
-    basePath;
-    basePathComponents;
+    basePath: string;
+    basePathComponents: string[];
     cacheObject: any = {};
 
     constructor(basePath: string) {

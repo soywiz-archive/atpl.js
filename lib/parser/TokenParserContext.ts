@@ -8,12 +8,12 @@ export class TokenParserContextCommon {
 	sandbox: boolean = false;
 
 	constructor(info: any = {}) {
-		if (RuntimeUtils.isObject(info)) for (var key in info) this[key] = info[key];
+		if (RuntimeUtils.isObject(info)) for (var key in info) (<any>this)[key] = info[key];
 	}
 
 	serialize() {
-		var ret = {};
-		for (var key in this) ret[key] = this[key];
+		var ret:any = {};
+		for (var key in this) ret[key] = (<any>this)[key];
 		return ret;
 	}
 
@@ -47,11 +47,11 @@ export class TokenParserContext {
 		this.afterMainNodes.forEach(callback);
 	}
 
-	setBlock(blockName, node: ParserNode.ParserNode) {
+	setBlock(blockName:string, node: ParserNode.ParserNode) {
 		return this.blocksOutput[blockName] = node;
 	}
 
-	setMacro(macroName, node: ParserNode.ParserNode) {
+	setMacro(macroName:string, node: ParserNode.ParserNode) {
 		return this.macrosOutput[macroName] = node;
 	}
 

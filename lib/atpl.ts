@@ -8,7 +8,7 @@ import Default = require('./lang/Default');
 import fs = require('fs');
 var isWin = !!process.platform.match(/^win/);
 
-function normalizePath(path) {
+function normalizePath(path:string) {
 	path = path.replace(/\\/g, '/');
 	if (isWin && path.match(/^[A-Za-z]:\//)) {
 		path = path.substr(0, 1).toLowerCase() + path.substr(1);
@@ -16,7 +16,7 @@ function normalizePath(path) {
 	return path;
 }
 
-var registryTemplateParser = {};
+var registryTemplateParser: { [name:string]:any; } = {};
 
 export interface IOptions {
 	path?: string;
@@ -35,7 +35,7 @@ export interface IOptionsExpress {
 		//'json spaces': number;
 		//'view engine': string;
 	};
-	_locals();
+	_locals(): void;
 	cache: boolean;
 }
 
@@ -88,7 +88,7 @@ function internalCompile(options: IOptions, absolutePath = false) {
 	}
 }
 
-var rootPathCache = {};
+var rootPathCache: { [name:string]:string; } = {};
 
 function internalRenderSync(filename: string, options: any/*IOptionsExpress*/, absolutePath = false): string {
 	//console.log(filename);
@@ -100,7 +100,7 @@ function internalRenderSync(filename: string, options: any/*IOptionsExpress*/, a
 	if (options.settings === undefined) options.settings = {};
 
     var rootPath = options.settings['views'] || '.';
-    if (rootPathCache[rootPath] === undefined) rootPathCache[rootPath] = fs.realpathSync(rootPath);
+    if (rootPathCache[rootPath] === undefined) rootPathCache[rootPath] = <any>fs.realpathSync(rootPath);
 
     var params: IOptions = {
         path: filename,

@@ -22,7 +22,7 @@ class DefaultFilters {
 	 */
 	static batch(_items: any[], groupCount: number) {
 		var items = RuntimeUtils.ensureArray(_items);
-		var groupList = [];
+		var groupList:any[] = [];
 		groupCount = RuntimeUtils.ensureNumber(groupCount);
 
 		for (var n = 0; n < items.length; n += groupCount) {
@@ -52,7 +52,7 @@ class DefaultFilters {
 	 *
 	 * @see http://twig.sensiolabs.org/doc/filters/date.html
 	 */
-	static date(value: any, format?, timezone?) {
+	static date(value: any, format?:any, timezone?:any) {
 		return RuntimeUtils.date(format, value, timezone);
 	}
 
@@ -130,7 +130,7 @@ class DefaultFilters {
 	static keys(value: any) {
 		if (!RuntimeUtils.defined(value)) return [];
 		if (RuntimeUtils.isString(value)) return [];
-		var keys = [];
+		var keys:any[] = [];
 		for (var key in value) keys.push(key);
 		return keys;
 	}
@@ -164,7 +164,7 @@ class DefaultFilters {
 		if (!RuntimeUtils.defined(value)) return undefined;
 		if (RuntimeUtils.isArray(value)) return value[value.length - 1];
 		if (RuntimeUtils.isString(value)) return value.substr(-1, 1);
-		if (RuntimeUtils.isObject(value)) { var last; for (var k in value) last = value[k]; return last; }
+		if (RuntimeUtils.isObject(value)) { var last:any; for (var k in value) last = value[k]; return last; }
 		return undefined;
 	}
 
@@ -184,7 +184,7 @@ class DefaultFilters {
 		if (RuntimeUtils.isArray(value)) {
 			return (<any[]>value).concat(add);
 		} else {
-			var object = {};
+			var object:{[name:string]:any;} = {};
 			for (var key in value) object[key] = value[key];
 			for (var key in add) object[key] = add[key];
 			return object;
@@ -251,7 +251,7 @@ class DefaultFilters {
 	 *
 	 * @see http://twig.sensiolabs.org/doc/filters/slice.html
 	 */
-	static slice(value: any, start, length, preserve_keys?) {
+	static slice(value: any, start: any, length: any, preserve_keys?: any) {
 		if (RuntimeUtils.isArray(value)) return (<any[]>value).slice(start, start + length);
 		if (RuntimeUtils.isNumber(value)) value = value.toString();
 		if (RuntimeUtils.isString(value)) return (<string>value).substr(start, length);

@@ -5,7 +5,7 @@ import StringReader = require('./StringReader');
 interface ITokenizer {
 	hasMore(): boolean;
 	readNext(): any;
-	tokenizeAll();
+	tokenizeAll(): void;
 	stringReader: StringReader;
 }
 

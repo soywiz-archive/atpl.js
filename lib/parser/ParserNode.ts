@@ -172,7 +172,7 @@ export class ParserNodeArrayContainer extends ParserNodeExpression {
 export interface ParseNodeLiteralIdentifier {
 	type: string;
 	value: any;
-	generateCode(context: ParserNodeGenerateCodeContext);
+	generateCode(context: ParserNodeGenerateCodeContext): any;
 }
 
 export class ParserNodeLiteral extends ParserNodeExpression implements ParseNodeLiteralIdentifier {
@@ -333,40 +333,40 @@ export class ParserNodeArraySlice extends ParserNodeExpression {
 export class ParserNodeFunctionCall extends ParserNodeExpression {
 	type: string = 'ParserNodeFunctionCall';
 
-	constructor(public functionExpr: ParserNodeExpression, public arguments: ParserNodeCommaExpression) {
+	constructor(public functionExpr: ParserNodeExpression, public args: ParserNodeCommaExpression) {
 		super();
 	}
 
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		if (this.functionExpr instanceof ParserNodeArrayAccess) {
 			var arrayAccess = <ParserNodeArrayAccess>this.functionExpr;
-			return 'runtimeContext.callContext(' + arrayAccess.object.generateCode(context) + ', ' + arrayAccess.key.generateCode(context) + ', [' + this.arguments.generateCode(context) + '], ' + JSON.stringify(this.arguments.names) + ')';
+			return 'runtimeContext.callContext(' + arrayAccess.object.generateCode(context) + ', ' + arrayAccess.key.generateCode(context) + ', [' + this.args.generateCode(context) + '], ' + JSON.stringify(this.args.names) + ')';
 		} else {
-			return 'runtimeContext.call(' + this.functionExpr.generateCode(context) + ', [' + this.arguments.generateCode(context) + '], ' + JSON.stringify(this.arguments.names) + ')';
+			return 'runtimeContext.call(' + this.functionExpr.generateCode(context) + ', [' + this.args.generateCode(context) + '], ' + JSON.stringify(this.args.names) + ')';
 		}
 	}
 
 	iterate(handler: (node: ParserNode) => void ) {
 		handler(this);
 		this.functionExpr.iterate(handler);
-		this.arguments.iterate(handler);
+		this.args.iterate(handler);
 	}
 }
 
 export class ParserNodeFilterCall extends ParserNodeExpression {
 	type: string = 'ParserNodeFilterCall';
 
-	constructor(public filterName: string, public arguments: ParserNodeCommaExpression) {
+	constructor(public filterName: string, public args: ParserNodeCommaExpression) {
 		super();
 	}
 
 	generateCode(context: ParserNodeGenerateCodeContext) {
-		return 'runtimeContext.filter(' + JSON.stringify(this.filterName) + ', [' + this.arguments.generateCode(context) + '])';
+		return 'runtimeContext.filter(' + JSON.stringify(this.filterName) + ', [' + this.args.generateCode(context) + '])';
 	}
 
 	iterate(handler: (node: ParserNode) => void ) {
 		handler(this);
-		this.arguments.iterate(handler);
+		this.args.iterate(handler);
 	}
 }
 
@@ -439,7 +439,7 @@ export class ParserNodeBinaryOperation extends ParserNodeExpression {
 
 				if (right instanceof ParserNodeFunctionCall) {
 					//throw (new Error("Not implemented ParserNodeFunctionCall"));
-					ret = 'runtimeContext.test(' + (<ParserNodeFunctionCall>right).functionExpr.generateCode(context) + ', [' + left.generateCode(context) + ',' + (<ParserNodeFunctionCall>right).arguments.generateCode(context) + '])';
+					ret = 'runtimeContext.test(' + (<ParserNodeFunctionCall>right).functionExpr.generateCode(context) + ', [' + left.generateCode(context) + ',' + (<ParserNodeFunctionCall>right).args.generateCode(context) + '])';
 				} else if (right instanceof ParserNodeIdentifier) {
 					ret = 'runtimeContext.test(' + JSON.stringify((<ParserNodeIdentifier>right).value) + ', [' + left.generateCode(context) + '])';
 				} else if (right instanceof ParserNodeLiteral && (<ParserNodeLiteral>right).value === null) {

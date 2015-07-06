@@ -32,7 +32,7 @@ class TemplateTokenizer implements ITokenizer {
 	 * @return list of tokenized tokens.
 	 */
 	tokenizeAll(): any[] {
-		var tokens = [];
+		var tokens:any[] = [];
 		while (this.hasMore()) {
 			var token = this.readNext();
 			//console.log(token);
@@ -46,14 +46,14 @@ class TemplateTokenizer implements ITokenizer {
 	regExp = /\{[\{%#]-?/;
 	stringOffsetStart = 0;
 	stringOffsetEnd = 0;
-	openMatch;
-	openChars3;
-	openChars;
-	removeSpacesBefore;
-	removeSpacesAfter;
+	openMatch: any;
+	openChars3: any;
+	openChars: any;
+	removeSpacesBefore: any;
+	removeSpacesAfter: any;
 	state = 0;
 
-	private emitToken(type, value?, params?) {
+	private emitToken(type:string, value?:any, params?:any) {
 		if (type == 'text' && value == '') return undefined;
 
 		this.stringOffsetEnd = this.stringReader.getOffset();
@@ -73,7 +73,7 @@ class TemplateTokenizer implements ITokenizer {
 	}
 
 	readNext() {
-		var token = undefined;
+		var token:any = undefined;
 		while (true) {
 			if (token !== undefined) return token;
 			switch (this.state) {

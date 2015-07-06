@@ -5,11 +5,11 @@ import TokenParserContext = require('../parser/TokenParserContext');
 import TokenReader = require('../lexer/TokenReader');
 
 interface ITemplateParser {
-	addBlockFlowExceptionHandler(name: string);
-	addBlockHandler(name: string, callback: (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) => void);
+	addBlockFlowExceptionHandler(name: string):void;
+	addBlockHandler(name: string, callback: (blockType:any, templateParser:any, tokenParserContext:any, templateTokenReader:any, expressionTokenReader:any) => void):void;
 }
 
-function checkNoMoreTokens(expressionTokenReader) {
+function checkNoMoreTokens(expressionTokenReader:TokenReader) {
 	//console.log(expressionTokenReader);
 	//console.log(expressionTokenReader.hasMore());
 	if (expressionTokenReader.hasMore()) {
@@ -19,14 +19,14 @@ function checkNoMoreTokens(expressionTokenReader) {
 	return expressionTokenReader;
 }
 
-function _flowexception(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
-	throw(new TemplateParser.FlowException(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader));
+function _flowexception(blockType:string, templateParser:TemplateParser.TemplateParser, tokenParserContext:TokenParserContext.TokenParserContext, templateTokenReader:TokenReader, expressionTokenReader:TokenReader) {
+	throw(new (<any>TemplateParser.FlowException)(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader));
 }
 
-function handleOpenedTag(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader, handlers, innerNodeHandler: (node: ParserNode.ParserNode) => void) {
+function handleOpenedTag(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader, handlers:any, innerNodeHandler: (node: ParserNode.ParserNode) => void) {
 	while (true) {
 		try {
-			var keys = []; for (var key in handlers) keys.push(key);
+			var keys:any[] = []; for (var key in handlers) keys.push(key);
 			//console.log("[[");
 			var node = templateParser.parseTemplateSyncOne(tokenParserContext, templateTokenReader);
 			if (node == null) throw (new Error("Unexpected end of '" + blockType + "' no any of [" + keys.map((key) => "'" + key + "'").join(', ') + "]"));
@@ -220,7 +220,7 @@ class DefaultTags {
 		var innerNode = new ParserNode.ParserNodeContainer([]);
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'endautoescape': (e) => {
+			'endautoescape': (e:any) => {
 				return true;
 			},
 		}, (node) => {
@@ -253,7 +253,7 @@ class DefaultTags {
 
 			//console.log('************************');
 			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-				'endset': (e) => {
+				'endset': (e:any) => {
 					return true;
 				},
 			}, (node) => {
@@ -289,7 +289,7 @@ class DefaultTags {
 		var offsetEnd = offsetStart;
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'endembed': (e) => { offsetEnd = templateTokenReader.getOffset() - 1; return true; },
+			'endembed': (e:any) => { offsetEnd = templateTokenReader.getOffset() - 1; return true; },
 		}, (node) => {
 		});
 		var rawText = templateTokenReader.getSlice(offsetStart, offsetEnd).map((item) => (<any>item).rawText).join('');
@@ -304,7 +304,7 @@ class DefaultTags {
 		var innerNode = new ParserNode.ParserNodeContainer([]);
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'endfilter': (e) => { return true; },
+			'endfilter': (e:any) => { return true; },
 		}, (node) => {
 			innerNode.add(node);
 		});
@@ -314,7 +314,7 @@ class DefaultTags {
 		var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
 		while (true) {
 			var filterName = (<any>expressionParser.parseIdentifier()).value;
-			var parameters = null;
+			var parameters:ParserNode.ParserNodeCommaExpression = null;
 
 			//console.log(filterName);
 
@@ -347,7 +347,7 @@ class DefaultTags {
 	static macro(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
 		var macroName = expressionTokenReader.read().value;
-		var paramNames = [];
+		var paramNames:ParserNode.ParserNodeExpression[] = [];
 		expressionTokenReader.expectAndMoveNext(['(']);
 		if (expressionTokenReader.peek().value != ")") {
 			while (true) {
@@ -365,13 +365,13 @@ class DefaultTags {
 		macroNode.add(new ParserNode.ParserNodeRaw('return runtimeContext.autoescape(false, function() { '));
 		macroNode.add(new ParserNode.ParserNodeRaw('runtimeContext.createScope(function() { '));
 
-		paramNames.forEach((paramName, index) => {
+		paramNames.forEach((paramName:any, index:any) => {
 			var assign = new ParserNode.ParserNodeAssignment(paramName, new ParserNode.ParserNodeRaw('_arguments[' + index + ']'))
 			macroNode.add(new ParserNode.ParserNodeStatementExpression(assign));
 		});
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'endmacro': (e) => {
+			'endmacro': (e:any) => {
 				return true;
 			},
 		}, (node) => {
@@ -392,7 +392,7 @@ class DefaultTags {
 		var fileNameNode = expressionParser.parseExpression();
 		expressionTokenReader.expectAndMoveNext(['import']);
 
-		var pairs = [];
+		var pairs:any[] = [];
 
 		while (expressionTokenReader.peek().value != null) {
 			var fromNode = expressionTokenReader.read().value;
@@ -439,7 +439,7 @@ class DefaultTags {
 		var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
 		var fileName = expressionParser.parseStringLiteral().value;
 
-		var pairs = {};
+		var pairs:{[name:string]:string} = {};
 
 		while (expressionTokenReader.checkAndMoveNext(['with'])) {
 			var fromNode = expressionParser.parseIdentifierOnly().value;
@@ -519,7 +519,7 @@ class DefaultTags {
 
 		tokenParserContext.common.setSandbox(() => {
 			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-				'endsandbox': (e) => {
+				'endsandbox': (e:any) => {
 					return true;
 				},
 			}, (node) => {
@@ -545,7 +545,7 @@ class DefaultTags {
 
 		//console.log('************************');
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'endspaceless': (e) => {
+			'endspaceless': (e:any) => {
 				return true;
 			},
 		}, (node) => {
@@ -576,19 +576,19 @@ class DefaultTags {
 		parserNodeIf.addCaseCondition(expressionNode);
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'elseif': (e) => {
+			'elseif': (e:any) => {
 				if (didElse) throw (new Error("Can't put 'elseif' after the 'else'"));
 
 				var expressionNode = (new ExpressionParser(e.expressionTokenReader, tokenParserContext)).parseExpression();
 				checkNoMoreTokens(expressionTokenReader);
 				parserNodeIf.addCaseCondition(expressionNode);
 			},
-			'else': (e) => {
+			'else': (e:any) => {
 				if (didElse) throw (new Error("Can't have two 'else'"));
 				parserNodeIf.addElseCondition();
 				didElse = true;
 			},
-			'endif': (e) => {
+			'endif': (e:any) => {
 				return true;
 			},
 		}, (node) => {
@@ -613,7 +613,7 @@ class DefaultTags {
 		} else {
 
 			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-				'endblock': (e) => {
+				'endblock': (e:any) => {
 					return true;
 				},
 			}, (node) => {
@@ -667,11 +667,11 @@ class DefaultTags {
 		var elseCode = new ParserNode.ParserNodeContainer([]);
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'else': (e) => {
+			'else': (e:any) => {
 				if (didElse) throw (new Error("Can't have two 'else'"));
 				didElse = true;
 			},
-			'endfor': (e) => {
+			'endfor': (e:any) => {
 				return true;
 			},
 		}, (node) => {

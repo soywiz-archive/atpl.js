@@ -52,7 +52,7 @@ export class ExpressionTokenizer implements ITokenizer {
 	 * @return list of tokenized tokens.
 	 */
 	tokenizeAll(): Token[]{
-		var tokens = [];
+		var tokens:Token[] = [];
 		while (this.hasMore()) {
 			var token = this.readNext();
 			
@@ -87,7 +87,7 @@ export class ExpressionTokenizer implements ITokenizer {
 	end = false;
 	stringOffset: number = 0;
 
-	private emitToken(type, rawValue, value?) {
+	private emitToken(type:any, rawValue:any, value?:any) {
 		if (value === undefined) value = rawValue;
 		//console.log("emitToken('" + type + "', '" + value + "')");
 		return {
@@ -111,7 +111,7 @@ export class ExpressionTokenizer implements ITokenizer {
 
 			this.stringOffset = this.stringReader.getOffset();
 			var currentChar = this.stringReader.peekChars(1);
-			var token;
+			//var token;
 			//console.log(currentChar);
 		
 			switch (currentChar) {
@@ -146,7 +146,7 @@ export class ExpressionTokenizer implements ITokenizer {
 					}
 					else {
 						var operatorIndex = -1;
-						var _parts;
+						var _parts: RegExpMatchArray;
 						var currentChars = this.stringReader.peekChars(5);
 
 						// Found a bit operator

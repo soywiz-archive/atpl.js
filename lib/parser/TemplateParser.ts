@@ -12,7 +12,7 @@ import ExpressionParser    = require('./ExpressionParser');
 import LanguageContext = require('../LanguageContext');
 import SandboxPolicy = require('../SandboxPolicy');
 
-export var FlowException = function (blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader) {
+export var FlowException = function (blockType:any, templateParser:any, tokenParserContext:any, templateTokenReader:any, expressionTokenReader:any) {
 	this.blockType = blockType;
 	this.templateParser = templateParser;
 	this.tokenParserContext = tokenParserContext;
@@ -22,7 +22,7 @@ export var FlowException = function (blockType, templateParser, tokenParserConte
 
 FlowException.prototype['__proto__'] = Error.prototype;
 
-function debug(data) {
+function debug(data:any) {
     //console.log(data);
 }
 
@@ -150,7 +150,7 @@ export class TemplateParser {
 			var info = this.getEvalCodeString(content, 'inline', tokenParserContextCommon);
 			var output = info.output;
 			var tokenParserContext = info.tokenParserContext;
-			var CurrentTemplate = undefined;
+			var CurrentTemplate:any = undefined;
 
 			//console.log(runtimeContext);
 
@@ -181,7 +181,7 @@ export class TemplateParser {
 			var info = this.getEvalCode(path, tokenParserContextCommon);
 			var output = info.output;
 			var tokenParserContext = info.tokenParserContext;
-			var CurrentTemplate = undefined;
+			var CurrentTemplate:any = undefined;
 
 			try {
 				eval(output);
@@ -200,7 +200,7 @@ export class TemplateParser {
 		return <CompiledTemplate>this.registry[path];
 	}
 
-	parseTemplateSyncOne(tokenParserContext, tokenReader: TokenReader) {
+	parseTemplateSyncOne(tokenParserContext:any, tokenReader: TokenReader) {
 		if (!tokenReader.hasMore()) return null;
 		var item = tokenReader.peek();
 		debug('parseTemplateSync: ' + item.type);
@@ -226,7 +226,7 @@ export class TemplateParser {
 		throw (new Error("Invalid item.type == '" + item.type + "'"));
 	}
 
-	parseTemplateSync(tokenParserContext, tokenReader: TokenReader) {
+	parseTemplateSync(tokenParserContext:any, tokenReader: TokenReader) {
 		var nodes = new ParserNode.ParserNodeContainer([]);
 
 		while (tokenReader.hasMore()) {
@@ -236,11 +236,11 @@ export class TemplateParser {
 		return nodes;
 	}
 
-	parseTemplateExpressionSync(tokenParserContext, templateTokenReader, expressionTokenReader) {
+	parseTemplateExpressionSync(tokenParserContext:any, templateTokenReader:any, expressionTokenReader:any) {
 		return new ParserNode.ParserNodeStatementExpression(new ParserNode.ParserNodeWriteExpression((new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression()));
 	}
 
-	parseTemplateBlockSync(tokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader): ParserNode.ParserNode {
+	parseTemplateBlockSync(tokenParserContext:any, templateTokenReader: TokenReader, expressionTokenReader: TokenReader): ParserNode.ParserNode {
 		var that = this;
 		var blockTypeToken = expressionTokenReader.read();
 		var blockType = blockTypeToken.value;

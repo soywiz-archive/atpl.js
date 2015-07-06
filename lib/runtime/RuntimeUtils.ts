@@ -1,7 +1,7 @@
 ﻿import util = require('util');
 
-export function normalizePath(path) {
-	var components = [];
+export function normalizePath(path:string) {
+	var components:string[] = [];
 	var notNormalizedComponents = path.split(/[\\\/]/g);
 	path = path.replace(/\\/g, '/');
 	for (var index in notNormalizedComponents) {
@@ -30,14 +30,14 @@ export function quoteRegExp(str: string): string {
 	return (str + '').replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
 };
 
-export function pathIsInside(basePath, path) {
+export function pathIsInside(basePath:string, path:string) {
 	basePath = normalizePath(basePath) + '/';
 	path = normalizePath(path) + '/';
 
 	return (path.substr(0, basePath.length) == basePath);
 }
 
-export function interpretNumber(number, radix?) {
+export function interpretNumber(number:string, radix?:number):number {
 	number = String(number);
 	if (number == '0') return 0;
 	if (radix === undefined) {
@@ -134,7 +134,7 @@ export function strip_tags(input: string, allowed?: string): string {
 export function split(value: string, delimiter: string, limit?: number): string[]{
 	if (delimiter == '') {
 		if (limit === undefined) limit = 1;
-		var ret = [];
+		var ret:string[] = [];
 		for (var n = 0; n < value.length; n += limit) ret.push(value.substr(n, limit));
 		return ret;
 	} else {
@@ -146,12 +146,12 @@ export function split(value: string, delimiter: string, limit?: number): string[
 	}
 }
 
-export function strtotime(text: any, now?: any): any {
-	if (!text) return null;
+export function strtotime(_text: string|Date, now?: Date|number): any {
+	if (!_text) return null;
 
-	if (text instanceof Date) return text;
+	if (_text instanceof Date) return _text;
 
-	text = String(text);
+	var text = String(_text);
 
 	// Unecessary spaces
 	text = text.trim()
@@ -159,15 +159,15 @@ export function strtotime(text: any, now?: any): any {
 		.replace(/[\t\r\n]/g, '')
 		.toLowerCase();
 
-	var parse;
-	var parsed;
-	var match;
+	var parse:number;
+	//var parsed: any;
+	var match:RegExpMatchArray;
 
-	var date;
+	var date:Date;
 	if (now instanceof Date) {
 		date = now;
 	} else if (now) {
-		date = new Date(now * 1000);
+		date = new Date(<number>now * 1000);
 	} else {
 		date = new Date();
 	}
@@ -196,10 +196,10 @@ export function strtotime(text: any, now?: any): any {
 		);
 	}
 
-	var days = { 'sun': 0, 'mon': 1, 'tue': 2, 'wed': 3, 'thu': 4, 'fri': 5, 'sat': 6 };
-	var ranges = { 'yea': 'FullYear', 'mon': 'Month', 'day': 'Date', 'hou': 'Hours', 'min': 'Minutes', 'sec': 'Seconds' };
+	var days: { [key:string]:number; } = { 'sun': 0, 'mon': 1, 'tue': 2, 'wed': 3, 'thu': 4, 'fri': 5, 'sat': 6 };
+	var ranges: { [key:string]:any; } = { 'yea': 'FullYear', 'mon': 'Month', 'day': 'Date', 'hou': 'Hours', 'min': 'Minutes', 'sec': 'Seconds' };
 
-	function lastNext(type, range, modifier) {
+	function lastNext(type:string, range:string, modifier:number) {
 		var day = days[range];
 
 		if (typeof (day) !== 'undefined') {
@@ -225,10 +225,13 @@ export function strtotime(text: any, now?: any): any {
 		if (typeIsNumber)
 			num *= parseInt(type, 10);
 
-		if (ranges.hasOwnProperty(range))
-			return date['set' + ranges[range]](date['get' + ranges[range]]() + num);
-		else if (range === 'wee')
+		if (ranges.hasOwnProperty(range)) {
+			return (<any>date)['set' + ranges[range]](
+				((<any>date)['get' + ranges[range]])() + num
+			);
+		} else if (range === 'wee') {
 			return date.setDate(date.getDate() + (num * 7));
+		}
 
 		if (type === 'next' || type === 'last')
 			lastNext(type, range, num);
@@ -264,7 +267,7 @@ export function strtotime(text: any, now?: any): any {
 }
 
 export function rangeNumbers(from: any, to: any, step: any = 1): number[] {
-	var out = [];
+	var out:number[] = [];
 	from = parseInt(from);
 	to = parseInt(to);
 	step = parseInt(step);
@@ -290,11 +293,11 @@ export function random(min: number = 0, max: number = 2147483647): number {
 }
 
 export var __sprintf = (function () {
-	function get_type(variable) {
+	function get_type(variable: any) {
 		return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase();
 	}
-	function str_repeat(input, multiplier) {
-		for (var output = []; multiplier > 0; output[--multiplier] = input) {/* do nothing */ }
+	function str_repeat(input: any, multiplier: number) {
+		for (var output: any[] = []; multiplier > 0; output[--multiplier] = input) {/* do nothing */ }
 		return output.join('');
 	}
 
@@ -305,8 +308,10 @@ export var __sprintf = (function () {
 		return str_format.format.call(null, str_format.cache[arguments[0]], arguments);
 	};
 
-	str_format.format = function (parse_tree, argv) {
-		var cursor = 1, tree_length = parse_tree.length, node_type:string = '', arg: any, output = [], i, k, match, pad, pad_character, pad_length;
+	str_format.format = function (parse_tree:any, argv:any) {
+		var cursor = 1, tree_length = parse_tree.length, node_type:string = '', arg: any, output:any = [];
+		var i:any, k:any, match:any, pad:any, pad_character:any, pad_length:any;
+		
 		for (i = 0; i < tree_length; i++) {
 			node_type = get_type(parse_tree[i]);
 			if (node_type === 'string') {
@@ -357,8 +362,8 @@ export var __sprintf = (function () {
 
 	str_format.cache = {};
 
-	str_format.parse = function (fmt) {
-		var _fmt = fmt, match: any = [], parse_tree = [], arg_names = 0, field_match: any;
+	str_format.parse = function (fmt:string) {
+		var _fmt = fmt, match: any = [], parse_tree:string[] = [], arg_names = 0, field_match: any;
 		while (_fmt) {
 			if ((match = /^[^\x25]+/.exec(_fmt)) !== null) {
 				parse_tree.push(match[0]);
@@ -369,7 +374,7 @@ export var __sprintf = (function () {
 			else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
 				if (match[2]) {
 					arg_names |= 1;
-					var field_list = [];
+					var field_list:string[] = [];
 					var replacement_field = match[2];
 					var field_match:any = [];
 					if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
@@ -451,11 +456,11 @@ export function isObject(obj: any): boolean {
 	return typeof obj === 'object';
 }
 
-export function inspect_json(obj) {
+export function inspect_json(obj:any) {
 	return util.inspect(obj, false, null, false);
 }
 
-export function json_encode_circular(obj, already_encoded: any[] = undefined) {
+export function json_encode_circular(obj:any, already_encoded: any[] = undefined) {
 	if (already_encoded === undefined) already_encoded = [];
 	if (already_encoded.indexOf(obj) != -1) return 'null';
 	var ret = '';
@@ -531,12 +536,12 @@ export function escapeUrlString(str: string) {
 	return encodeURIComponent(String(str)).replace(/[!'\(\)\*]/g, (match) => { return '%' + (('00' + match.charCodeAt(0).toString(16)).substr(-2)); });
 }
 
-export function getOrdinalFor(intNum) {
+export function getOrdinalFor(intNum:number) {
 	return (((intNum = Math.abs(intNum) % 100) % 10 == 1 && intNum != 11) ? "st"
             : (intNum % 10 == 2 && intNum != 12) ? "nd" : (intNum % 10 == 3
             && intNum != 13) ? "rd" : "th");
 }
-export function getISO8601Year(aDate) {
+export function getISO8601Year(aDate:any) {
 	var d: any = new Date(aDate.getFullYear() + 1, 0, 4);
 	if ((d - aDate) / 86400000 < 7 && (aDate.getDay() + 6) % 7 < (d.getDay() + 6) % 7)
 		return d.getFullYear();
@@ -544,7 +549,7 @@ export function getISO8601Year(aDate) {
 		return aDate.getFullYear();
 	return aDate.getFullYear() - (((aDate.getDay() + 6) % 7 - aDate.getDate() > 2) ? 1 : 0);
 }
-export function getISO8601Week(aDate) {
+export function getISO8601Week(aDate:any) {
 	// Get a day during the first week of the year.
 	var d:any = new Date(getISO8601Year(aDate), 0, 4);
 	// Get the first monday of the year.
@@ -557,7 +562,7 @@ var date_fullDays = "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday".s
 var date_shortMonths = "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec".split(",");
 var date_fullMonths = "January,February,March,April,May,June,July,August,September,October,November,December".split(",");
 
-export function date(format, date, timezone?) {
+export function date(format:any, date:any, timezone?:any) {
 	if (date === undefined) date = new Date();
 	if (!(date instanceof Date)) {
 		// Number (unix timestamp?)
@@ -622,8 +627,8 @@ export function getFunctionParameterNames(func: Function): string[] {
 export function callFunctionWithNamedArguments($context: any, $function: Function, $arguments: any[], $namedArguments: string[]) {
 	if ($namedArguments !== null && $namedArguments !== undefined) {
 		var argumentNames = getFunctionParameterNames($function);
-		var namedPairs = {};
-		var unnamedList = [];
+		var namedPairs:{ [name:string]:string; } = {};
+		var unnamedList:string[] = [];
 		//console.log('------------------');
 		for (var n = 0; n < $arguments.length; n++) {
 			//console.log($namedArguments[n]);

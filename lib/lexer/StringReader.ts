@@ -22,7 +22,7 @@ class StringReader {
 		return this.position;
 	}
 
-	getSlice(start, end) {
+	getSlice(start:number, end:number):string {
 		return this.string.substr(start, end - start);
 	}
 
@@ -52,7 +52,7 @@ class StringReader {
 	 *
 	 * @param count Number of characters to skip
 	 */
-	skipChars(count) {
+	skipChars(count:number):void {
 		this.currentLine += this.string.substr(this.position, count).split("\n").length - 1;
 		this.position    += count;
 	}
@@ -69,7 +69,7 @@ class StringReader {
 	 *
 	 * @param count Number of characters to peek.
 	 */
-	peekChars(count) {
+	peekChars(count:number) {
 		return this.string.substr(this.position, count);
 	}
 
@@ -78,7 +78,7 @@ class StringReader {
 	 *
 	 * @param count Number of characters to read.
 	 */
-	readChars(count) {
+	readChars(count:number) {
 		var str = this.peekChars(count);
 		this.skipChars(count);
 		return str;

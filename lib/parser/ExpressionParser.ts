@@ -179,11 +179,11 @@ class ExpressionParser {
 			if (this.tokenReader.peek().value == '(')
 			{
 				this.tokenReader.skip();
-				var arguments;
+				var args:ParserNode.ParserNodeCommaExpression;
 				if (this.tokenReader.peek().value != ')') {
-					arguments = this.parseCommaExpressionWithNames();
+					args = this.parseCommaExpressionWithNames();
 				} else {
-					arguments = new ParserNode.ParserNodeCommaExpression([]);
+					args = new ParserNode.ParserNodeCommaExpression([]);
 				}
 				this.tokenReader.expectAndMoveNext([')']);
 				if (expr instanceof ParserNode.ParserNodeIdentifier) {
@@ -193,15 +193,15 @@ class ExpressionParser {
 						if (this.tokenParserContext.sandboxPolicy.allowedFunctions.indexOf(functionName) == -1) throw (new Error("SandboxPolicy disallows function '" + functionName + "'"));
 					}
 
-					expr = new ParserNode.ParserNodeFunctionCall(new ParserNode.ParserNodeLiteral(functionName), arguments);
+					expr = new ParserNode.ParserNodeFunctionCall(new ParserNode.ParserNodeLiteral(functionName), args);
 				} else {
-					expr = new ParserNode.ParserNodeFunctionCall(expr, arguments);
+					expr = new ParserNode.ParserNodeFunctionCall(expr, args);
 				}
 			}
 			// Array access/slicing
 			if (this.tokenReader.peek().value == '[') {
 				this.tokenReader.skip();
-				var parts = [];
+				var parts: ParserNode.ParserNodeExpression[] = [];
 
 				// Slicing without first expression
 				if (this.tokenReader.peek().value == ':') {
@@ -245,22 +245,22 @@ class ExpressionParser {
 				var filterName = this.tokenReader.peek().value;
 				this.tokenReader.skip();
 
-				var arguments:any = new ParserNode.ParserNodeCommaExpression([]);
+				var args = new ParserNode.ParserNodeCommaExpression([]);
 
 				if (this.tokenReader.peek().value == '(') {
 					this.tokenReader.skip();
 					if (this.tokenReader.peek().value != ')') {
-						arguments = this.parseCommaExpression();
+						args = this.parseCommaExpression();
 					}
 					this.tokenReader.expectAndMoveNext([')']);
 				}
 
-				arguments.expressions.unshift(expr);
+				args.expressions.unshift(expr);
 
 				if (this.tokenParserContext.common.sandbox) {
 					if (this.tokenParserContext.sandboxPolicy.allowedFilters.indexOf(filterName) == -1) throw (new Error("SandboxPolicy disallows filter '" + filterName + "'"));
 				}
-				expr = new ParserNode.ParserNodeFilterCall(filterName, arguments);
+				expr = new ParserNode.ParserNodeFilterCall(filterName, args);
 			}
 				// End or other
 			else {
@@ -324,7 +324,7 @@ class ExpressionParser {
 	_parseBinary(levelName: string, nextParseLevel: () => void, validOperators: string[]): ParserNode.ParserNodeExpression {
 		var leftNode: ParserNode.ParserNodeExpression = <ParserNode.ParserNodeExpression>nextParseLevel.apply(this);
 		var rightNode: ParserNode.ParserNodeExpression;
-		var currentOperator;
+		var currentOperator: string;
 
 		//console.log(this.tokenReader);
 		//console.log(this.tokenReader.hasMore());

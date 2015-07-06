@@ -10,7 +10,7 @@ import util = require('util');
 
 export interface ITemplateParser
 {
-    compile(path: string, runtimeContext: any, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon);
+    compile(path: string, runtimeContext: any, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon):any;
 	compileString(templateString: string, runtimeContext:any): any;
 }
 
@@ -167,7 +167,7 @@ export class RuntimeContext {
 	}
 
 	// TODO: Probably better to create a object separate to RuntimeContext that holds those values.
-	_KeepTemplateHierarchy(callback) {
+	_KeepTemplateHierarchy(callback: () => void) {
 		var LeafTemplateOld = this.LeafTemplate;
 		var CurrentTemplateOld = this.CurrentTemplate;
 		var RootTemplateOld = this.RootTemplate;
@@ -231,7 +231,7 @@ export class RuntimeContext {
 		return this.LeafTemplate.__main(this);
 	}
 
-	each(list: any, callback: (key, value) => void ) {
+	each(list: any, callback: (key:any, value:any) => void ) {
 		var index = 0;
 		var length = list.length;
 		for (var k in list) {
@@ -257,7 +257,7 @@ export class RuntimeContext {
 	}
 
 	private _getBlocks(Current: any) {
-		var ret = {};
+		var ret:any = {};
 		//console.log('-------------');
 		//console.log(util.inspect(Current['__proto__'], false));
 		//console.log('+++++++++++++');
@@ -309,7 +309,7 @@ export class RuntimeContext {
 		}
 	}
 
-	scopeGet(key) {
+	scopeGet(key:string) {
 		switch (key) {
 			case '_self':
 				// FIXME?: Probably not CurrentTemplate but the template that contains this functions.
@@ -321,7 +321,7 @@ export class RuntimeContext {
 		return this.scope.get(key);
 	}
 
-	scopeSet(key, value) {
+	scopeSet(key:string, value:any) {
 		return this.scope.set(key, value);
 	}
 

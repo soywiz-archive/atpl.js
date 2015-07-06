@@ -107,7 +107,7 @@ class DefaultFunctions {
 	 *
 	 * @see http://twig.sensiolabs.org/doc/functions/date.html
 	 */
-	static date(date?, timezone?) {
+	static date(date?:any, timezone?:any) {
 		if (timezone !== undefined) throw (new Error("Not implemented function [date] with [timezone] parameter"));
 		return RuntimeUtils.strtotime(date);
 	}
@@ -125,7 +125,7 @@ class DefaultFunctions {
 	 *
 	 * @see https://github.com/soywiz/atpl.js/issues/13
 	 */
-	static inspect(object, showHidden?, depth?, color?) {
+	static inspect(object:any, showHidden?:any, depth?:any, color?:any) {
 		return util.inspect(object, showHidden, depth, color);
 	}
 }

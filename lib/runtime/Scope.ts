@@ -14,7 +14,7 @@
 	createScope(inner: () => void) {
 		var newScope = {};
 		var oldScope = this.scope;
-		newScope['__proto__'] = oldScope;
+		(<any>newScope)['__proto__'] = oldScope;
 		this.scope = newScope;
 		try {
 			return inner();
@@ -41,7 +41,7 @@
 	 * Gets all the scope values. (slow)
 	 */
 	getAll() {
-		var object = {};
+		var object:any = {};
 		var parentScope = this.getParent();
 		if (parentScope instanceof Scope) object = parentScope.getAll();
 		for (var key in this.scope) object[key] = this.scope[key];

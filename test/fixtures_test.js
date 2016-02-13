@@ -1,21 +1,25 @@
 ///<reference path='./imports.d.ts'/>
 var assert = require('assert');
 var fs = require('fs');
-
-var TemplateParser = require('../lib/parser/TemplateParser');
-var MemoryTemplateProvider = require('../lib/provider/MemoryTemplateProvider');
-var LanguageContext = require('../lib/LanguageContext');
-
+var TemplateParser_1 = require('../lib/parser/TemplateParser');
+var MemoryTemplateProvider_1 = require('../lib/provider/MemoryTemplateProvider');
+var LanguageContext_1 = require('../lib/LanguageContext');
 var RuntimeUtils = require('../lib/runtime/RuntimeUtils');
 var Default = require('../lib/lang/Default');
-
 function handleSet(name, data) {
     var parts = data.split('===');
-    var test = { title: 'untitled: ' + name, description: '', input: {}, expected: '', templates: {}, eval: undefined, eval_after: undefined, exception: undefined };
+    var test = {
+        title: 'untitled: ' + name, description: '',
+        input: {},
+        expected: '',
+        templates: {},
+        eval: undefined,
+        eval_after: undefined,
+        exception: undefined
+    };
     for (var n = 0; n < parts.length; n++) {
         var part = parts[n].trim();
         var token = /^([\w:]+)\s+([\S\s]*)$/igm.exec(part);
-
         //if (name == 'autoescape.set') { console.log('""' + part + '""'); console.log(JSON.stringify(token)); console.log(''); }
         if (token != null) {
             var key = token[1].trim().toLowerCase();
@@ -55,24 +59,22 @@ function handleSet(name, data) {
             }
         }
     }
-
     it(test.title, function () {
         var templateParser = createTemplateParser(test.templates);
-
         if (test.templates['main'] === undefined) {
             console.log(test);
         }
-
         if (test.eval !== undefined) {
             Function("test", "RuntimeUtils", test.eval)(test, RuntimeUtils);
         }
-
-        try  {
+        //console.log(templateParser.getEvalCode('test').output);
+        try {
             var result = templateParser.compileAndRenderToString('main', test.input).trim().replace(/\r\n/g, '\n');
             var expected = test.expected.trim().replace(/\r\n/g, '\n');
             if (test.eval_after)
                 eval(test.eval_after);
-        } catch (e) {
+        }
+        catch (e) {
             if (test.exception === undefined) {
                 console.log(test);
                 console.log(templateParser.getEvalCode('main').output);
@@ -80,8 +82,7 @@ function handleSet(name, data) {
             }
             if (e.message === undefined)
                 throw (new Error("ERROR, INVALID EXCEPTION! " + JSON.stringify(e)));
-
-            //console.log(e);
+            //console.log(e); 
             assert.equal(e.message, test.exception);
             return;
         }
@@ -97,7 +98,6 @@ function handleSet(name, data) {
         assert.equal(result, expected);
     });
 }
-
 function handleSets(path, name) {
     describe(name, function () {
         var rpath = path + '/' + name;
@@ -106,74 +106,62 @@ function handleSets(path, name) {
             var rfile = rpath + '/' + sets[n];
             if (fs.statSync(rfile).isDirectory()) {
                 handleSets(rpath, sets[n]);
-            } else {
+            }
+            else {
                 handleSet(sets[n], fs.readFileSync(rfile, 'utf-8'));
             }
         }
     });
 }
-
 function createTemplateParser(templates) {
-    var templateProvider = new MemoryTemplateProvider();
-    var templateParser = new TemplateParser.TemplateParser(templateProvider, Default.register(new LanguageContext()));
-
+    var templateProvider = new MemoryTemplateProvider_1.MemoryTemplateProvider();
+    var templateParser = new TemplateParser_1.TemplateParser(templateProvider, Default.register(new LanguageContext_1.LanguageContext()));
     for (var key in templates) {
         templateProvider.add(key, templates[key]);
     }
-
     return templateParser;
 }
-
 handleSets(__dirname, 'fixtures');
-
-var TestClass = function () {
-    this.testClassValue = 17;
-};
-TestClass.prototype.testMethod = function (a, b, c) {
-    return 'a=' + a + "," + 'b=' + b + "," + 'c=' + c + "," + 'testClassValue=' + this.testClassValue + ",";
-};
-
+/*
+var TestClass = function () { this.testClassValue = 17; };
+TestClass.prototype.testMethod = function (a, b, c) { return 'a=' + a + "," + 'b=' + b + "," + 'c=' + c + "," + 'testClassValue=' + this.testClassValue + "," }
+*/
+var TestClass = (function () {
+    function TestClass() {
+        this.testClassValue = 17;
+    }
+    TestClass.prototype.testMethod = function (a, b, c) { return 'a=' + a + "," + 'b=' + b + "," + 'c=' + c + "," + 'testClassValue=' + this.testClassValue + ","; };
+    return TestClass;
+})();
 describe('extra fixtures', function () {
     it('function call as argument', function () {
         var templateParser = createTemplateParser({
-            main: '{{ test.func(1, 2, 3) }}'
+            main: '{{ test.func(1, 2, 3) }}',
         });
-
-        assert.equal(templateParser.compileAndRenderToString('main', { test: { func: function (a, b, c) {
-                    return 'hello' + a + b + c;
-                } } }), 'hello123');
+        assert.equal(templateParser.compileAndRenderToString('main', { test: { func: function (a, b, c) { return 'hello' + a + b + c; } } }), 'hello123');
     });
-
     it('function call as argument with context', function () {
         var templateParser = createTemplateParser({
-            main: '{{ test.testMethod(1, 2, 3) }}'
+            main: '{{ test.testMethod(1, 2, 3) }}',
         });
-
         assert.equal(templateParser.compileAndRenderToString('main', { test: new TestClass() }), 'a=1,b=2,c=3,testClassValue=17,');
     });
-
     it('method not accessed as property', function () {
         var templateParser = createTemplateParser({
-            main: '{{ test.func[2] }}'
+            main: '{{ test.func[2] }}',
         });
-
-        assert.equal(templateParser.compileAndRenderToString('main', { test: { func: function () {
-                    return [0, 1, 2, 3];
-                } } }), '');
+        assert.equal(templateParser.compileAndRenderToString('main', { test: { func: function () { return [0, 1, 2, 3]; } } }), '');
     });
-
     it('test cache', function () {
-        var templateProvider = new MemoryTemplateProvider();
-        var languageContext = Default.register(new LanguageContext());
-        var templateParser = new TemplateParser.TemplateParser(templateProvider, languageContext);
-
+        var templateProvider = new MemoryTemplateProvider_1.MemoryTemplateProvider();
+        var languageContext = Default.register(new LanguageContext_1.LanguageContext());
+        var templateParser = new TemplateParser_1.TemplateParser(templateProvider, languageContext);
         languageContext.templateConfig.setCacheTemporal(false, function () {
             templateProvider.add('test', 'a');
             assert.equal(templateParser.compileAndRenderToString('test', {}), 'a');
             templateProvider.add('test', 'b');
             assert.equal(templateParser.compileAndRenderToString('test', {}), 'b');
         });
-
         languageContext.templateConfig.setCacheTemporal(true, function () {
             templateProvider.add('test2', 'a');
             assert.equal(templateParser.compileAndRenderToString('test2'), 'a');

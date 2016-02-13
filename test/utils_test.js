@@ -1,7 +1,6 @@
 ///<reference path='./imports.d.ts'/>
 var RuntimeUtils = require('../lib/runtime/RuntimeUtils');
 var assert = require('assert');
-
 describe('utils', function () {
     it('simple normalize path', function () {
         assert.equal(RuntimeUtils.normalizePath('/this/is//a/path/../test'), '/this/is/a/test');
@@ -22,7 +21,6 @@ describe('utils', function () {
         assert.equal(0, RuntimeUtils.interpretNumber('0'));
         assert.equal(10, RuntimeUtils.interpretNumber('10'));
         assert.equal(0x10, RuntimeUtils.interpretNumber('0x10'));
-
         //assert.equal(0777 , RuntimeUtils.interpretNumber('0777'));
         assert.equal(511, RuntimeUtils.interpretNumber('0777'));
         assert.equal(7, RuntimeUtils.interpretNumber('0b111'));

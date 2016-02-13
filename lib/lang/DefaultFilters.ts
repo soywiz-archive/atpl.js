@@ -1,10 +1,14 @@
-﻿import RuntimeUtils = require('../runtime/RuntimeUtils');
-import RuntimeContext = require('../runtime/RuntimeContext');
+﻿import { RuntimeContext } from '../runtime/RuntimeContext';
+import RuntimeUtils = require('../runtime/RuntimeUtils');
 
 /**
  *
  */
-class DefaultFilters {
+export class DefaultFilters {
+    constructor() {
+        
+    }
+    
 	/**
 	 * Filter that obtains the absolute value of a number.
 	 *
@@ -45,7 +49,7 @@ class DefaultFilters {
 	 * @see http://twig.sensiolabs.org/doc/filters/convert_encoding.html
 	 */
 	static convert_encoding(value: string, from: string, to: string) {
-		throw (new Error("Not implemented [no use on javascript that works with unicode]"));
+		throw new Error("Not implemented [no use on javascript that works with unicode]");
 	}
 
 	/**
@@ -77,7 +81,7 @@ class DefaultFilters {
 	 * @see http://twig.sensiolabs.org/doc/filters/escape.html
 	 */
 	static e(value: string, strategy?: string) {
-        var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
+        var runtimeContext: RuntimeContext = <any>this;
 		runtimeContext.currentAutoescape = strategy;
 		return value;
 	}
@@ -87,7 +91,7 @@ class DefaultFilters {
 	 * @see http://twig.sensiolabs.org/doc/filters/escape.html
 	 */
 	static escape(value: string, strategy: any = true) {
-        var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
+        var runtimeContext: RuntimeContext = <any>this;
 		runtimeContext.currentAutoescape = strategy;
 		return value;
 	}
@@ -196,7 +200,7 @@ class DefaultFilters {
 	 * @see http://twig.sensiolabs.org/doc/filters/nl2br.html
 	 */
 	static nl2br(value: any) {
-        var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
+        var runtimeContext: RuntimeContext = <any>this;
 		value = runtimeContext.getEscapedText(value);
 		runtimeContext.currentAutoescape = false;
 		return String(value).replace(/\n/g, '<br />\n');
@@ -215,7 +219,7 @@ class DefaultFilters {
 	 * @see http://twig.sensiolabs.org/doc/filters/raw.html
 	 */
 	static raw(value: string) {
-        var runtimeContext: RuntimeContext.RuntimeContext = <any>this;
+        var runtimeContext: RuntimeContext = <any>this;
 		runtimeContext.currentAutoescape = false;
 		return value;
 	}
@@ -324,5 +328,3 @@ class DefaultFilters {
 		return RuntimeUtils.toString(value).replace(/>\s+</g, '><');
 	}
 }
-
-export = DefaultFilters;

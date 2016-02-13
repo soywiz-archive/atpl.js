@@ -1,10 +1,10 @@
 ﻿///<reference path='../imports.d.ts'/>
 
-import DefaultTags = require('./DefaultTags');
-import DefaultFunctions = require('./DefaultFunctions');
-import DefaultFilters = require('./DefaultFilters');
-import DefaultTests = require('./DefaultTests');
-import LanguageContext = require('../LanguageContext');
+import { DefaultTags } from './DefaultTags';
+import { DefaultFunctions } from './DefaultFunctions';
+import { DefaultFilters } from './DefaultFilters';
+import { DefaultTests } from './DefaultTests';
+import { LanguageContext } from '../LanguageContext';
 
 /**
  *

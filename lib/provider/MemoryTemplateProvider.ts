@@ -1,9 +1,7 @@
-﻿import fs = require('fs');
-import util = require('util');
+﻿import { ITemplateProvider } from './ITemplateProvider';
 import RuntimeUtils = require('../runtime/RuntimeUtils');
-import ITemplateProvider = require('./ITemplateProvider');
 
-class MemoryTemplateProvider implements ITemplateProvider {
+export class MemoryTemplateProvider implements ITemplateProvider {
     registry: any = {};
     registryCached: any = {};
 
@@ -22,5 +20,3 @@ class MemoryTemplateProvider implements ITemplateProvider {
         return data;
     }
 }
-
-export = MemoryTemplateProvider;

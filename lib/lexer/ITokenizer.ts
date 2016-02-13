@@ -1,12 +1,10 @@
 ///<reference path='../imports.d.ts'/>
 
-import StringReader = require('./StringReader');
+import { StringReader } from './StringReader';
 
-interface ITokenizer {
+export interface ITokenizer {
 	hasMore(): boolean;
 	readNext(): any;
 	tokenizeAll(): void;
 	stringReader: StringReader;
 }
-
-export = ITokenizer;

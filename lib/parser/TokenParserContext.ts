@@ -1,31 +1,8 @@
 ///<reference path='../imports.d.ts'/>
 
+import { SandboxPolicy } from '../SandboxPolicy';
 import ParserNode = require('./ParserNode');
 import RuntimeUtils = require('../runtime/RuntimeUtils');
-import SandboxPolicy = require('../SandboxPolicy');
-
-export class TokenParserContextCommon {
-	sandbox: boolean = false;
-
-	constructor(info: any = {}) {
-		if (RuntimeUtils.isObject(info)) for (var key in info) (<any>this)[key] = info[key];
-	}
-
-	serialize() {
-		var ret:any = {};
-		for (var key in this) ret[key] = (<any>this)[key];
-		return ret;
-	}
-
-	setSandbox(callback: () => void ) {
-		this.sandbox = true;
-		try {
-			callback();
-		} finally {
-			this.sandbox = false;
-		}
-	}
-}
 
 export class TokenParserContext {
 	private blocksOutput: any = {};
@@ -57,5 +34,28 @@ export class TokenParserContext {
 
 	addAfterMainNode(node: ParserNode.ParserNode) {
 		this.afterMainNodes.push(node);
+	}
+}
+
+export class TokenParserContextCommon {
+	sandbox: boolean = false;
+
+	constructor(info: any = {}) {
+		if (RuntimeUtils.isObject(info)) for (var key in info) (<any>this)[key] = info[key];
+	}
+
+	serialize() {
+		var ret:any = {};
+		for (var key in this) ret[key] = (<any>this)[key];
+		return ret;
+	}
+
+	setSandbox(callback: () => void ) {
+		this.sandbox = true;
+		try {
+			callback();
+		} finally {
+			this.sandbox = false;
+		}
 	}
 }

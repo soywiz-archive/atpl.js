@@ -1,8 +1,6 @@
-﻿///<reference path='./imports.d.ts'/>
+///<reference path='./imports.d.ts'/>
 var assert = require('assert');
-
 var RuntimeUtils = require('../lib/runtime/RuntimeUtils');
-
 describe('RuntimeUtils', function () {
     it('sprintf', function () {
         assert.equal(RuntimeUtils.sprintf('Hello %03d %s', 10, 'World'), 'Hello 010 World');

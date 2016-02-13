@@ -1,6 +1,6 @@
 ///<reference path='./imports.d.ts'/>
 
-import TemplateTokenizer = require('../lib/lexer/TemplateTokenizer');
+import { TemplateTokenizer } from '../lib/lexer/TemplateTokenizer';
 import assert = require('assert');
 import fs = require('fs');
 

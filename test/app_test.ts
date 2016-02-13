@@ -1,13 +1,13 @@
 ﻿///<reference path='./imports.d.ts'/>
 
 import assert = require('assert');
-import express3 = require("express3");
+var express3 = require("express3");
 import supertest = require('supertest');
 import moment = require('moment');
 import async = require('async');
 import atpl = require('../lib/atpl');
 var express = require('express');
-var app:express3.Application = express();
+var app = express();
 
 app.engine('html', atpl.__express);
 app.set('devel', false);
@@ -15,12 +15,12 @@ app.set('view engine', 'html');
 app.set('view cache', true);
 app.set('views', __dirname + '/../test/templates');
 
-var AtplExtension;
+var AtplExtension:any;
 AtplExtension = {
 	functions: (function () {
 		function functions() { };
 
-		(<any>functions).hashByDate = function hashByDate(count) {
+		(<any>functions).hashByDate = function hashByDate(count:number) {
 			var index = Math.round(new Date(2012, 0, 1).getTime() / (1000 * 3600 * 24));
 			index += 3;
 			return ((index) % (count)) + 1;
@@ -31,11 +31,11 @@ AtplExtension = {
 
 atpl.registerExtension(AtplExtension);
 
-app.get('/simple', (req, res) => {
+app.get('/simple', (req:any, res:any) => {
 	res.render('simple', { name : 'Test' });
 });
 
-app.get('/extension', (req, res) => {
+app.get('/extension', (req:any, res:any) => {
 	res.render('extension', {});
 });
 

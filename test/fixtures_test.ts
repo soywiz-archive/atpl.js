@@ -3,17 +3,26 @@
 import assert = require('assert');
 import fs = require('fs');
 
-import TemplateParser = require('../lib/parser/TemplateParser');
-import MemoryTemplateProvider = require('../lib/provider/MemoryTemplateProvider');
-import LanguageContext = require('../lib/LanguageContext');
-import TemplateConfig = require('../lib/TemplateConfig');
-import RuntimeContext = require('../lib/runtime/RuntimeContext');
+import { TemplateParser } from '../lib/parser/TemplateParser';
+import { MemoryTemplateProvider } from '../lib/provider/MemoryTemplateProvider';
+import { LanguageContext } from '../lib/LanguageContext';
+import { TemplateConfig } from '../lib/TemplateConfig';
+import { RuntimeContext } from '../lib/runtime/RuntimeContext';
 import RuntimeUtils = require('../lib/runtime/RuntimeUtils');
 import Default = require('../lib/lang/Default');
 
-function handleSet(name, data) {
+function handleSet(name:string, data:any) {
 	var parts = data.split('===');
-	var test = { title: 'untitled: ' + name, description: '', input: {}, expected: '', templates: {}, eval: undefined, eval_after: undefined, exception: undefined };
+	var test = { 
+        title: 'untitled: ' + name, description: '',
+        input: {},
+        expected: '',
+        templates: <{[key:string]:string}>{  },
+        eval: <any>undefined,
+        eval_after: <any>undefined,
+        exception: <any>undefined
+    };
+    
 	for (var n = 0; n < parts.length; n++) {
 		var part = parts[n].trim();
 		var token = /^([\w:]+)\s+([\S\s]*)$/igm.exec(part);
@@ -35,7 +44,7 @@ function handleSet(name, data) {
 					var pp = key.split(':');
 					switch (pp[0]) {
 						case 'template':
-							test.templates[pp[1]] = value;
+							(<{[key:string]:string}>test.templates)[pp[1]] = value;
 							break;
 						default:
 							throw(new Error("Unknown key '" + key + "'"));
@@ -46,9 +55,9 @@ function handleSet(name, data) {
 	}
 
 	it(test.title, function () {
-		var templateParser = createTemplateParser(test.templates);
+		var templateParser = createTemplateParser(<{[key:string]:string}>test.templates);
 
-		if (test.templates['main'] === undefined) {
+		if ((<{[key:string]:string}>test.templates)['main'] === undefined) {
 			console.log(test);
 		}
 
@@ -84,7 +93,7 @@ function handleSet(name, data) {
 	});
 }
 
-function handleSets(path, name) {
+function handleSets(path:string, name:string) {
 	describe(name, function() {
 		var rpath = path + '/' + name;
 		var sets = fs.readdirSync(rpath);
@@ -99,9 +108,9 @@ function handleSets(path, name) {
 	});
 }
 
-function createTemplateParser(templates) {
+function createTemplateParser(templates: { [key:string]:string }) {
 	var templateProvider = new MemoryTemplateProvider();
-	var templateParser = new TemplateParser.TemplateParser(templateProvider, Default.register(new LanguageContext()));
+	var templateParser = new TemplateParser(templateProvider, Default.register(new LanguageContext()));
 
 	for (var key in templates) {
 		templateProvider.add(key, templates[key]);
@@ -112,8 +121,14 @@ function createTemplateParser(templates) {
 
 handleSets(__dirname, 'fixtures');
 
+/*
 var TestClass = function () { this.testClassValue = 17; };
 TestClass.prototype.testMethod = function (a, b, c) { return 'a=' + a + "," + 'b=' + b + "," + 'c=' + c + "," + 'testClassValue=' + this.testClassValue + "," }
+*/
+class TestClass {
+    testClassValue = 17;
+    testMethod(a:any, b:any, c:any) { return 'a=' + a + "," + 'b=' + b + "," + 'c=' + c + "," + 'testClassValue=' + this.testClassValue + "," }
+}
 
 describe('extra fixtures', function () {
 	it('function call as argument', function () {
@@ -122,7 +137,7 @@ describe('extra fixtures', function () {
 		});
 
 		assert.equal(
-			templateParser.compileAndRenderToString('main', { test: { func: function (a, b, c) { return 'hello' + a + b + c; } } }),
+			templateParser.compileAndRenderToString('main', { test: { func: function (a:any, b:any, c:any) { return 'hello' + a + b + c; } } }),
 			'hello123'
 		);
 	});
@@ -152,7 +167,7 @@ describe('extra fixtures', function () {
 	it('test cache', function () {
 		var templateProvider = new MemoryTemplateProvider();
 		var languageContext = Default.register(new LanguageContext());
-		var templateParser = new TemplateParser.TemplateParser(templateProvider, languageContext);
+		var templateParser = new TemplateParser(templateProvider, languageContext);
 
         languageContext.templateConfig.setCacheTemporal(false, function () {
 			templateProvider.add('test', 'a');

@@ -3,14 +3,14 @@
 // http://docs.python.org/reference/expressions.html#summary
 // https://developer.mozilla.org/en/JavaScript/Reference/Operators/Operator_Precedence
 
+import { TokenParserContext } from './TokenParserContext';
+import { StringReader } from '../lexer/StringReader';
+import { ExpressionTokenizer } from '../lexer/ExpressionTokenizer';
+import { TokenReader } from '../lexer/TokenReader';
 import ParserNode = require('./ParserNode');
-import TokenParserContext = require('./TokenParserContext');
-import StringReader = require('../lexer/StringReader');
-import ExpressionTokenizer = require('../lexer/ExpressionTokenizer');
-import TokenReader = require('../lexer/TokenReader');
 
-class ExpressionParser {
-	constructor(public tokenReader: TokenReader, private tokenParserContext: TokenParserContext.TokenParserContext) {
+export class ExpressionParser {
+	constructor(public tokenReader: TokenReader, private tokenParserContext: TokenParserContext) {
 		//if (!(this.tokenParserContext instanceof TokenParserContext.TokenParserContext)) { console.log(this.tokenParserContext); throw (new Error("ASSERT!")); }
 	}
 
@@ -156,7 +156,7 @@ class ExpressionParser {
 							expr = new ParserNode.ParserNodeBinaryOperation(
 								'~',
 								expr,
-								new ExpressionParser(new TokenReader(new ExpressionTokenizer.ExpressionTokenizer(new StringReader(expressionString))), this.tokenParserContext).parseExpression()
+								new ExpressionParser(new TokenReader(new ExpressionTokenizer(new StringReader(expressionString))), this.tokenParserContext).parseExpression()
 							);
 						}
 					}
@@ -339,5 +339,3 @@ class ExpressionParser {
 		return leftNode;
 	}
 }
-
-export = ExpressionParser;

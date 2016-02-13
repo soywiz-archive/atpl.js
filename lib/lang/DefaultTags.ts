@@ -1,8 +1,26 @@
-﻿import ExpressionParser = require('../parser/ExpressionParser');
-import ParserNode = require('../parser/ParserNode');
-import TemplateParser = require('../parser/TemplateParser');
-import TokenParserContext = require('../parser/TokenParserContext');
-import TokenReader = require('../lexer/TokenReader');
+﻿import { ExpressionParser } from '../parser/ExpressionParser';
+import {
+    ParserNode,
+    ParserNodeExpression,
+    ParserNodeStatement,
+    ParserNodeGenerateCodeContext,
+    ParserNodeCommaExpression,
+    ParserNodeContainer,
+    ParserNodeLeftValue,
+    ParserNodeAssignment,
+    ParserNodeRaw,
+    ParserNodeContainerExpression,
+    ParserNodeStatementExpression,
+    ParserNodeIdentifier,
+    ParserNodeOutputNodeExpression,
+    ParserNodeReturnStatement,
+    ParserNodeOutputText,
+    ParserNodeWriteExpression
+} from '../parser/ParserNode';
+import { TokenParserContext } from '../parser/TokenParserContext';
+import { TemplateParser, FlowException } from '../parser/TemplateParser';
+import { TokenReader } from '../lexer/TokenReader';
+import RuntimeUtils = require('../runtime/RuntimeUtils');
 
 interface ITemplateParser {
 	addBlockFlowExceptionHandler(name: string):void;
@@ -19,11 +37,11 @@ function checkNoMoreTokens(expressionTokenReader:TokenReader) {
 	return expressionTokenReader;
 }
 
-function _flowexception(blockType:string, templateParser:TemplateParser.TemplateParser, tokenParserContext:TokenParserContext.TokenParserContext, templateTokenReader:TokenReader, expressionTokenReader:TokenReader) {
-	throw(new (<any>TemplateParser.FlowException)(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader));
+function _flowexception(blockType:string, templateParser:TemplateParser, tokenParserContext:TokenParserContext, templateTokenReader:TokenReader, expressionTokenReader:TokenReader) {
+	throw(new (<any>FlowException)(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader));
 }
 
-function handleOpenedTag(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader, handlers:any, innerNodeHandler: (node: ParserNode.ParserNode) => void) {
+function handleOpenedTag(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader, handlers:any, innerNodeHandler: (node: ParserNode) => void) {
 	while (true) {
 		try {
 			var keys:any[] = []; for (var key in handlers) keys.push(key);
@@ -34,7 +52,7 @@ function handleOpenedTag(blockType: string, templateParser: TemplateParser.Templ
 			//console.log(node);
 			innerNodeHandler(node);
 		} catch (e) {
-			if (!(e instanceof TemplateParser.FlowException)) throw (e);
+			if (!(e instanceof FlowException)) throw (e);
 			var handler = handlers[e.blockType];
 			if (handler !== undefined) {
 				if (handler(e)) return;
@@ -45,18 +63,18 @@ function handleOpenedTag(blockType: string, templateParser: TemplateParser.Templ
 	}
 }
 
-class ParserNodeAutoescape extends ParserNode.ParserNodeStatement {
-	constructor(public expression: ParserNode.ParserNodeExpression, public inner: ParserNode.ParserNode) {
+class ParserNodeAutoescape extends ParserNodeStatement {
+	constructor(public expression: ParserNodeExpression, public inner: ParserNode) {
 		super();
 	}
 
-	iterate(handler: (node: ParserNode.ParserNode) => void ) {
+	iterate(handler: (node: ParserNode) => void ) {
 		handler(this);
 		this.expression.iterate(handler);
 		this.inner.iterate(handler);
 	}
 
-	generateCode(context: ParserNode.ParserNodeGenerateCodeContext) {
+	generateCode(context: ParserNodeGenerateCodeContext) {
 		return (
 			'runtimeContext.autoescape(' + this.expression.generateCode(context) + ', function() {' +
 				this.inner.generateCode(context) +
@@ -65,27 +83,27 @@ class ParserNodeAutoescape extends ParserNode.ParserNodeStatement {
 	}
 }
 
-class ParserNodeExpressionFilter extends ParserNode.ParserNodeExpression {
-	filters: { name: string; parameters: ParserNode.ParserNodeCommaExpression; }[] = [];
+class ParserNodeExpressionFilter extends ParserNodeExpression {
+	filters: { name: string; parameters: ParserNodeCommaExpression; }[] = [];
 
-	constructor(public inner: ParserNode.ParserNode) {
+	constructor(public inner: ParserNode) {
 		super();
 	}
 
-	iterate(handler: (node: ParserNode.ParserNode) => void ) {
+	iterate(handler: (node: ParserNode) => void ) {
 		handler(this);
 		this.inner.iterate(handler);
 		this.filters.forEach(item => item.parameters.iterate(handler));
 	}
 
-	addFilter(filterName: string, filterParameters: ParserNode.ParserNodeCommaExpression) {
+	addFilter(filterName: string, filterParameters: ParserNodeCommaExpression) {
 		this.filters.push({
 			name: filterName,
 			parameters: filterParameters,
 		});
 	}
 
-	generateCode(context: ParserNode.ParserNodeGenerateCodeContext) {
+	generateCode(context: ParserNodeGenerateCodeContext) {
 		var out = '';
 
 		this.filters.reverse().forEach((filter) => {
@@ -108,48 +126,48 @@ class ParserNodeExpressionFilter extends ParserNode.ParserNodeExpression {
 	}
 }
 
-class ParserNodeScopeSet extends ParserNode.ParserNodeStatement {
-	constructor(public key: string, public value: ParserNode.ParserNodeExpression) {
+class ParserNodeScopeSet extends ParserNodeStatement {
+	constructor(public key: string, public value: ParserNodeExpression) {
 		super();
 	}
 
-	iterate(handler: (node: ParserNode.ParserNode) => void ) {
+	iterate(handler: (node: ParserNode) => void ) {
 		handler(this);
 		this.value.iterate(handler);
 	}
 
-	generateCode(context: ParserNode.ParserNodeGenerateCodeContext) {
+	generateCode(context: ParserNodeGenerateCodeContext) {
 		return 'runtimeContext.scope.set(' + JSON.stringify(this.key) + ', ' + this.value.generateCode(context) + ');';
 	}
 }
 
-class ParserNodeIf extends ParserNode.ParserNodeStatement {
-	conditions: { expression: ParserNode.ParserNodeExpression; code: ParserNode.ParserNodeContainer; }[] = [];
+class ParserNodeIf extends ParserNodeStatement {
+	conditions: { expression: ParserNodeExpression; code: ParserNodeContainer; }[] = [];
 
-	iterate(handler: (node: ParserNode.ParserNode) => void ) {
+	iterate(handler: (node: ParserNode) => void ) {
 		handler(this);
 		this.conditions.forEach(node => { node.code.iterate(handler); node.expression.iterate(handler); });
 	}
 
-    addCaseCondition(expression: ParserNode.ParserNodeExpression) {
+    addCaseCondition(expression: ParserNodeExpression) {
 		this.conditions.push({
 			expression: expression,
-			code: new ParserNode.ParserNodeContainer([]),
+			code: new ParserNodeContainer([]),
 		});
 	}
 
 	addElseCondition() {
 		this.conditions.push({
 			expression: null,
-			code: new ParserNode.ParserNodeContainer([]),
+			code: new ParserNodeContainer([]),
 		});
 	}
 
-	addCodeToCondition(node: ParserNode.ParserNode) {
+	addCodeToCondition(node: ParserNode) {
 		this.conditions[this.conditions.length - 1].code.add(node);
 	}
 
-	generateCode(context: ParserNode.ParserNodeGenerateCodeContext) {
+	generateCode(context: ParserNodeGenerateCodeContext) {
 		var out = '';
 
 		for (var n = 0; n < this.conditions.length; n++) {
@@ -165,12 +183,12 @@ class ParserNodeIf extends ParserNode.ParserNodeStatement {
 	}
 }
 
-class ParserNodeFor extends ParserNode.ParserNodeStatement {
-	constructor(public keyId: any, public condId: any, public valueId: ParserNode.ParserNodeLeftValue, public nodeList: ParserNode.ParserNodeExpression, public forCode: ParserNode.ParserNode, public elseCode: ParserNode.ParserNode) {
+class ParserNodeFor extends ParserNodeStatement {
+	constructor(public keyId: any, public condId: any, public valueId: ParserNodeLeftValue, public nodeList: ParserNodeExpression, public forCode: ParserNode, public elseCode: ParserNode) {
 		super();
 	}
 
-	iterate(handler: (node: ParserNode.ParserNode) => void ) {
+	iterate(handler: (node: ParserNode) => void ) {
 		handler(this);
 		this.valueId.iterate(handler);
 		this.nodeList.iterate(handler);
@@ -178,15 +196,15 @@ class ParserNodeFor extends ParserNode.ParserNodeStatement {
 		this.elseCode.iterate(handler);
 	}
 
-	generateCode(context: ParserNode.ParserNodeGenerateCodeContext) {
+	generateCode(context: ParserNodeGenerateCodeContext) {
 		var out = '';
 		out += ('runtimeContext.createScope((function() { ');
 		out += (' var list = ' + this.nodeList.generateCode(context) + ';');
 		out += (' if (!runtimeContext.emptyList(list)) {');
 		out += ('  runtimeContext.each(list, function(k, v) { ');
-		out += ('   ' + (new ParserNode.ParserNodeAssignment(this.valueId, new ParserNode.ParserNodeRaw("v"))).generateCode(context) + ';');
+		out += ('   ' + (new ParserNodeAssignment(this.valueId, new ParserNodeRaw("v"))).generateCode(context) + ';');
 		if (this.keyId !== undefined) {
-			out += ('   ' + (new ParserNode.ParserNodeAssignment(this.keyId, new ParserNode.ParserNodeRaw("k"))).generateCode(context) + ';');
+			out += ('   ' + (new ParserNodeAssignment(this.keyId, new ParserNodeRaw("k"))).generateCode(context) + ';');
 		}
 		if (this.condId) {
 			out += ('   if (' + this.condId.generateCode() + ') { ');
@@ -210,14 +228,14 @@ class ParserNodeFor extends ParserNode.ParserNodeStatement {
 	}
 }
 
-class DefaultTags {
+export class DefaultTags {
 	// autoescape
 	static endautoescape = _flowexception;
-    static autoescape(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader): ParserNode.ParserNodeStatement {
+    static autoescape(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader): ParserNodeStatement {
 		var expressionNode = (new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
-		var innerNode = new ParserNode.ParserNodeContainer([]);
+		var innerNode = new ParserNodeContainer([]);
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
 			'endautoescape': (e:any) => {
@@ -232,7 +250,7 @@ class DefaultTags {
 
 	// DO/SET
 	static endset = _flowexception;
-	static set (blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader): ParserNode.ParserNode {
+	static set (blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader): ParserNode {
 		var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
 		var nodeIds = expressionParser.parseIdentifierCommaList();
 		if (expressionTokenReader.checkAndMoveNext(['='])) {
@@ -241,7 +259,7 @@ class DefaultTags {
 
 			if (nodeIds.length != nodeValues.expressions.length) throw (new Error("variables doesn't match values"));
 
-			var container = new ParserNode.ParserNodeContainer([]);
+			var container = new ParserNodeContainer([]);
 
 			for (var n = 0; n < nodeIds.length; n++) {
 				container.add(new ParserNodeScopeSet(String((<any>nodeIds[n]).value), nodeValues.expressions[n]));
@@ -249,7 +267,7 @@ class DefaultTags {
 
 			return container;
 		} else {
-			var innerNode = new ParserNode.ParserNodeContainer([]);
+			var innerNode = new ParserNodeContainer([]);
 
 			//console.log('************************');
 			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
@@ -262,24 +280,24 @@ class DefaultTags {
 			});
 			//console.log('************************');
 
-			return new ParserNode.ParserNodeStatementExpression(<ParserNode.ParserNodeExpression><any>(new ParserNode.ParserNodeContainer([
-				new ParserNode.ParserNodeRaw('runtimeContext.scopeSet(' + JSON.stringify((<ParserNode.ParserNodeIdentifier>nodeIds[0]).value) + ', (runtimeContext.captureOutput(function() { '),
+			return new ParserNodeStatementExpression(<ParserNodeExpression><any>(new ParserNodeContainer([
+				new ParserNodeRaw('runtimeContext.scopeSet(' + JSON.stringify((<ParserNodeIdentifier>nodeIds[0]).value) + ', (runtimeContext.captureOutput(function() { '),
 				innerNode,
-				new ParserNode.ParserNodeRaw('})))')
+				new ParserNodeRaw('})))')
 			])));
 		}
 	}
-	static $do(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static $do(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		var expressionNode = (new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
-		return new ParserNode.ParserNodeStatementExpression(expressionNode);
+		return new ParserNodeStatementExpression(expressionNode);
 	}
 
 	// EMBED
 	// http://twig.sensiolabs.org/doc/tags/embed.html
 	static endembed = _flowexception;
-	static embed(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static embed(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		var expressionString = expressionTokenReader.getSliceWithCallback(() => {
 			var includeName = (new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		}).map(item => item.rawValue);
@@ -294,14 +312,14 @@ class DefaultTags {
 		});
 		var rawText = templateTokenReader.getSlice(offsetStart, offsetEnd).map((item) => (<any>item).rawText).join('');
 		var templateString = '{% extends ' + expressionString + ' %}' + rawText;
-		return new ParserNode.ParserNodeRaw('runtimeContext.include(runtimeContext.compileString(' + JSON.stringify(templateString) + '));');
+		return new ParserNodeRaw('runtimeContext.include(runtimeContext.compileString(' + JSON.stringify(templateString) + '));');
 	}
 
 	// FILTER
 	// http://twig.sensiolabs.org/doc/tags/filter.html
 	static endfilter = _flowexception;
-	static filter(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
-		var innerNode = new ParserNode.ParserNodeContainer([]);
+	static filter(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+		var innerNode = new ParserNodeContainer([]);
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
 			'endfilter': (e:any) => { return true; },
@@ -314,7 +332,7 @@ class DefaultTags {
 		var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
 		while (true) {
 			var filterName = (<any>expressionParser.parseIdentifier()).value;
-			var parameters:ParserNode.ParserNodeCommaExpression = null;
+			var parameters:ParserNodeCommaExpression = null;
 
 			//console.log(filterName);
 
@@ -333,21 +351,21 @@ class DefaultTags {
 
 		checkNoMoreTokens(expressionTokenReader);
 
-		return new ParserNode.ParserNodeStatementExpression(new ParserNode.ParserNodeOutputNodeExpression(filterNode));
+		return new ParserNodeStatementExpression(new ParserNodeOutputNodeExpression(filterNode));
 	}
 
 	// FLUSH
 	// http://twig.sensiolabs.org/doc/tags/flush.html
-	static flush(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static flush(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		// do nothing (all output is buffered and can't be flushed)
 	}
 
 	// MACRO/FROM/IMPORTUSE
 	static endmacro = _flowexception;
-	static macro(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static macro(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
 		var macroName = expressionTokenReader.read().value;
-		var paramNames:ParserNode.ParserNodeExpression[] = [];
+		var paramNames:ParserNodeExpression[] = [];
 		expressionTokenReader.expectAndMoveNext(['(']);
 		if (expressionTokenReader.peek().value != ")") {
 			while (true) {
@@ -359,15 +377,15 @@ class DefaultTags {
 		}
 		checkNoMoreTokens(expressionTokenReader);
 
-		var macroNode = new ParserNode.ParserNodeContainer([]);
-		macroNode.add(new ParserNode.ParserNodeRaw('var _arguments = arguments;'));
-		macroNode.add(new ParserNode.ParserNodeRaw('return runtimeContext.captureOutput(function() { '));
-		macroNode.add(new ParserNode.ParserNodeRaw('return runtimeContext.autoescape(false, function() { '));
-		macroNode.add(new ParserNode.ParserNodeRaw('runtimeContext.createScope(function() { '));
+		var macroNode = new ParserNodeContainer([]);
+		macroNode.add(new ParserNodeRaw('var _arguments = arguments;'));
+		macroNode.add(new ParserNodeRaw('return runtimeContext.captureOutput(function() { '));
+		macroNode.add(new ParserNodeRaw('return runtimeContext.autoescape(false, function() { '));
+		macroNode.add(new ParserNodeRaw('runtimeContext.createScope(function() { '));
 
 		paramNames.forEach((paramName:any, index:any) => {
-			var assign = new ParserNode.ParserNodeAssignment(paramName, new ParserNode.ParserNodeRaw('_arguments[' + index + ']'))
-			macroNode.add(new ParserNode.ParserNodeStatementExpression(assign));
+			var assign = new ParserNodeAssignment(paramName, new ParserNodeRaw('_arguments[' + index + ']'))
+			macroNode.add(new ParserNodeStatementExpression(assign));
 		});
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
@@ -378,16 +396,16 @@ class DefaultTags {
 			macroNode.add(node);
 		});
 
-		macroNode.add(new ParserNode.ParserNodeRaw('});')); // createScope
-		macroNode.add(new ParserNode.ParserNodeRaw('});')); // autoescape
-		macroNode.add(new ParserNode.ParserNodeRaw('});')); // captureOutput
+		macroNode.add(new ParserNodeRaw('});')); // createScope
+		macroNode.add(new ParserNodeRaw('});')); // autoescape
+		macroNode.add(new ParserNodeRaw('});')); // captureOutput
 
 		var macroCode = tokenParserContext.setMacro(macroName, macroNode);
 		//console.log(macroCode);
-		return new ParserNode.ParserNodeRaw('');
+		return new ParserNodeRaw('');
 
 	}
-	static from(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static from(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
 		var fileNameNode = expressionParser.parseExpression();
 		expressionTokenReader.expectAndMoveNext(['import']);
@@ -407,27 +425,27 @@ class DefaultTags {
 
 		checkNoMoreTokens(expressionTokenReader);
 
-		return new ParserNode.ParserNodeContainer([
-			new ParserNode.ParserNodeRaw('runtimeContext.fromImport('),
+		return new ParserNodeContainer([
+			new ParserNodeRaw('runtimeContext.fromImport('),
 			fileNameNode,
-			new ParserNode.ParserNodeRaw(', ' + JSON.stringify(pairs) + ');')
+			new ParserNodeRaw(', ' + JSON.stringify(pairs) + ');')
 		]);
 	}
-	static $import(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static $import(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
 		var fileNameNode = expressionParser.parseExpression();
 		expressionTokenReader.expectAndMoveNext(['as']);
-		var aliasNode = <ParserNode.ParserNodeLeftValue>expressionParser.parseIdentifier();
+		var aliasNode = <ParserNodeLeftValue>expressionParser.parseIdentifier();
 
 		checkNoMoreTokens(expressionTokenReader);
 
-		return new ParserNode.ParserNodeStatementExpression(
-			new ParserNode.ParserNodeAssignment(
+		return new ParserNodeStatementExpression(
+			new ParserNodeAssignment(
 				aliasNode,
-				new ParserNode.ParserNodeContainerExpression([
-					new ParserNode.ParserNodeRaw('runtimeContext.import('),
+				new ParserNodeContainerExpression([
+					new ParserNodeRaw('runtimeContext.import('),
 					fileNameNode,
-					new ParserNode.ParserNodeRaw(')'),
+					new ParserNodeRaw(')'),
 				])
 			)
 		);
@@ -435,7 +453,7 @@ class DefaultTags {
 
 	// USE
 	// http://twig.sensiolabs.org/doc/tags/use.html
-	static use(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static use(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
 		var fileName = expressionParser.parseStringLiteral().value;
 
@@ -462,30 +480,30 @@ class DefaultTags {
 			}
 		});
 
-		return new ParserNode.ParserNodeRaw('');
+		return new ParserNodeRaw('');
 	}
 
 	// INCLUDE
-	static include(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static include(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		//console.log(tokenParserContext.common);
-		var node = new ParserNode.ParserNodeContainer([]);
-		node.add(new ParserNode.ParserNodeRaw('runtimeContext.include('));
+		var node = new ParserNodeContainer([]);
+		node.add(new ParserNodeRaw('runtimeContext.include('));
 		var expressionNode = (new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		node.add(expressionNode);
 		if (expressionTokenReader.checkAndMoveNext(['with'])) {
-			node.add(new ParserNode.ParserNodeRaw(','));
+			node.add(new ParserNodeRaw(','));
 			node.add((new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression());
 		} else {
-			node.add(new ParserNode.ParserNodeRaw(', undefined'));
+			node.add(new ParserNodeRaw(', undefined'));
 		}
 		if (expressionTokenReader.checkAndMoveNext(['only'])) {
-			node.add(new ParserNode.ParserNodeRaw(', true'));
+			node.add(new ParserNodeRaw(', true'));
 		} else {
-			node.add(new ParserNode.ParserNodeRaw(', false'));
+			node.add(new ParserNodeRaw(', false'));
 		}
-		node.add(new ParserNode.ParserNodeRaw(', ' + JSON.stringify(tokenParserContext.common.serialize())));
+		node.add(new ParserNodeRaw(', ' + JSON.stringify(tokenParserContext.common.serialize())));
 		checkNoMoreTokens(expressionTokenReader);
-		node.add(new ParserNode.ParserNodeRaw(');'));
+		node.add(new ParserNodeRaw(');'));
 
 		return node;
 	}
@@ -494,7 +512,7 @@ class DefaultTags {
 	// http://twig.sensiolabs.org/doc/tags/verbatim.html
 	static endraw = _flowexception;
 	static endverbatim = _flowexception;
-	static raw(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static raw(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		checkNoMoreTokens(expressionTokenReader);
 		//console.log(templateTokenReader);
 
@@ -505,17 +523,17 @@ class DefaultTags {
 		var rawText = templateTokenReader.tokenizer.stringReader.readChars(res.position);
 		templateTokenReader.tokenizer.stringReader.skipChars(res.length);
 
-		return new ParserNode.ParserNodeOutputText(rawText);
+		return new ParserNodeOutputText(rawText);
 	}
 	static verbatim = DefaultTags.raw;
 
 	// SANDBOX
 	// http://twig.sensiolabs.org/doc/tags/sandbox.html
 	static endsandbox = _flowexception;
-	static sandbox(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static sandbox(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		checkNoMoreTokens(expressionTokenReader);
 
-		var innerNode = new ParserNode.ParserNodeContainer([]);
+		var innerNode = new ParserNodeContainer([]);
 
 		tokenParserContext.common.setSandbox(() => {
 			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
@@ -527,21 +545,21 @@ class DefaultTags {
 			});
 		});
 
-		return new ParserNode.ParserNodeContainer([
-			new ParserNode.ParserNodeRaw('runtimeContext.createScope(function() { '),
-			new ParserNode.ParserNodeRaw('  runtimeContext.scopeSet("__sandboxed", true);'),
+		return new ParserNodeContainer([
+			new ParserNodeRaw('runtimeContext.createScope(function() { '),
+			new ParserNodeRaw('  runtimeContext.scopeSet("__sandboxed", true);'),
 			innerNode,
-			new ParserNode.ParserNodeRaw('});')
+			new ParserNodeRaw('});')
 		]);
 	}
 
 	// SPACELESS
 	// http://twig.sensiolabs.org/doc/tags/spaceless.html
 	static endspaceless = _flowexception;
-	static spaceless(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static spaceless(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		checkNoMoreTokens(expressionTokenReader);
 
-		var innerNode = new ParserNode.ParserNodeContainer([]);
+		var innerNode = new ParserNodeContainer([]);
 
 		//console.log('************************');
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
@@ -554,10 +572,10 @@ class DefaultTags {
 		});
 		//console.log('************************');
 
-		return new ParserNode.ParserNodeStatementExpression(new ParserNode.ParserNodeOutputNodeExpression(new ParserNode.ParserNodeContainer([
-			new ParserNode.ParserNodeRaw('runtimeContext.filter("spaceless", [runtimeContext.captureOutput(function() { '),
+		return new ParserNodeStatementExpression(new ParserNodeOutputNodeExpression(new ParserNodeContainer([
+			new ParserNodeRaw('runtimeContext.filter("spaceless", [runtimeContext.captureOutput(function() { '),
 			innerNode,
-			new ParserNode.ParserNodeRaw('})])')
+			new ParserNodeRaw('})])')
 		])));
 	}
 
@@ -565,7 +583,7 @@ class DefaultTags {
 	static $else = _flowexception;
 	static $elseif = _flowexception;
 	static $endif = _flowexception;
-	static $if(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader):ParserNode.ParserNodeStatement {
+	static $if(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader):ParserNodeStatement {
 		var didElse = false;
 
 		var expressionNode = (new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
@@ -600,16 +618,16 @@ class DefaultTags {
 
 	// BLOCK/ENDBLOCK
 	static endblock = _flowexception;
-	static block(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static block(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		var blockName = 'block_' + expressionTokenReader.read().value;
 
-		var innerNode = new ParserNode.ParserNodeContainer([]);
+		var innerNode = new ParserNodeContainer([]);
 
 		if (expressionTokenReader.hasMore()) {
 			var expressionNode = (new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 			checkNoMoreTokens(expressionTokenReader);
 
-			innerNode.add(new ParserNode.ParserNodeReturnStatement(new ParserNode.ParserNodeWriteExpression(expressionNode)));
+			innerNode.add(new ParserNodeReturnStatement(new ParserNodeWriteExpression(expressionNode)));
 		} else {
 
 			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
@@ -623,26 +641,26 @@ class DefaultTags {
 
 		tokenParserContext.setBlock(blockName, innerNode);
 
-		return new ParserNode.ParserNodeRaw('runtimeContext.putBlock(' + JSON.stringify(blockName) + ');', false);
+		return new ParserNodeRaw('runtimeContext.putBlock(' + JSON.stringify(blockName) + ');', false);
 	}
 
 	// EXTENDS
-	static $extends(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+	static $extends(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		var expressionNode = (new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
 		checkNoMoreTokens(expressionTokenReader);
 
-		tokenParserContext.addAfterMainNode(new ParserNode.ParserNodeContainer([
-			new ParserNode.ParserNodeRaw('return runtimeContext.extends('),
+		tokenParserContext.addAfterMainNode(new ParserNodeContainer([
+			new ParserNodeRaw('return runtimeContext.extends('),
 			expressionNode,
-			new ParserNode.ParserNodeRaw(');')
+			new ParserNodeRaw(');')
 		]));
 
-		return new ParserNode.ParserNodeRaw('');
+		return new ParserNodeRaw('');
 	}
 
 	// http://twig.sensiolabs.org/doc/tags/for.html
 	static $endfor = _flowexception;
-	static $for(blockType: string, templateParser: TemplateParser.TemplateParser, tokenParserContext: TokenParserContext.TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader):ParserNode.ParserNodeStatement {
+	static $for(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader):ParserNodeStatement {
 		var didElse = false;
 		var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
 		var valueId: any = expressionParser.parseIdentifier();
@@ -663,8 +681,8 @@ class DefaultTags {
 
 		checkNoMoreTokens(expressionTokenReader);
 
-		var forCode = new ParserNode.ParserNodeContainer([]);
-		var elseCode = new ParserNode.ParserNodeContainer([]);
+		var forCode = new ParserNodeContainer([]);
+		var elseCode = new ParserNodeContainer([]);
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
 			'else': (e:any) => {
@@ -685,5 +703,3 @@ class DefaultTags {
 		return new ParserNodeFor(keyId, condId, valueId, nodeList, forCode, elseCode);
 	}
 }
-
-export = DefaultTags;

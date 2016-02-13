@@ -1,12 +1,9 @@
 ///<reference path='../imports.d.ts'/>
 
-import StringReader = require('./StringReader');
-import ITokenizer = require('./ITokenizer');
+import { StringReader } from './StringReader';
+import { ITokenizer } from './ITokenizer';
 import RuntimeUtils = require('../runtime/RuntimeUtils');
 
-/**
- * Token
- */
 export interface Token {
 	type: string;
 	value: any;

@@ -1,18 +1,14 @@
 ///<reference path='../imports.d.ts'/>
 
-import RuntimeUtils = require('./RuntimeUtils');
-import LanguageContext = require('../LanguageContext');
+import { LanguageContext } from '../LanguageContext';
+import { TokenParserContext, TokenParserContextCommon } from '../parser/TokenParserContext';
+import { Scope } from './Scope';
+import { SandboxPolicy } from '../SandboxPolicy';
+import { ITemplateParser } from './ITemplateParser';
 //import TemplateParser = require('../parser/TemplateParser');
-import TokenParserContext = require('../parser/TokenParserContext');
-import Scope = require('./Scope');
-import SandboxPolicy = require('../SandboxPolicy');
-import util = require('util');
 
-export interface ITemplateParser
-{
-    compile(path: string, runtimeContext: any, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon):any;
-	compileString(templateString: string, runtimeContext:any): any;
-}
+import RuntimeUtils = require('./RuntimeUtils');
+
 
 export class RuntimeContext {
 	output: string = '';
@@ -185,7 +181,7 @@ export class RuntimeContext {
 			if (scope !== undefined) this.scope.setAll(scope);
 			if (RuntimeUtils.isString(info)) {
                 var name = <string>info;
-				var IncludeTemplate = new ((this.templateParser.compile(name, this, new TokenParserContext.TokenParserContextCommon(tokenParserContextCommonInfo))).class )();
+				var IncludeTemplate = new ((this.templateParser.compile(name, this, new TokenParserContextCommon(tokenParserContextCommonInfo))).class )();
 				this._KeepTemplateHierarchy(() => {
 					this.LeafTemplate = this.CurrentTemplate = this.RootTemplate = IncludeTemplate;
 					IncludeTemplate.__main(this);

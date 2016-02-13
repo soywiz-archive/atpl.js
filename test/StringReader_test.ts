@@ -3,7 +3,7 @@
 import assert = require('assert');
 import fs = require('fs');
 
-import StringReader = require('../lib/lexer/StringReader');
+import { StringReader } from '../lib/lexer/StringReader';
 
 describe('StringReader', function() {
 	it('smart test', function() {

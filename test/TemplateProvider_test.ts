@@ -2,8 +2,8 @@
 
 import assert = require('assert');
 
-import FileSystemTemplateProvider = require('../lib/provider/FileSystemTemplateProvider');
-import MemoryTemplateProvider = require('../lib/provider/MemoryTemplateProvider');
+import { FileSystemTemplateProvider } from '../lib/provider/FileSystemTemplateProvider';
+import { MemoryTemplateProvider } from '../lib/provider/MemoryTemplateProvider';
 
 describe('TemplateProvider', () => {
 	it('test file system', function(done) {

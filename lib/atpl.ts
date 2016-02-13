@@ -1,9 +1,9 @@
 ﻿///<reference path='imports.d.ts'/>
 
+import { FileSystemTemplateProvider} from './provider/FileSystemTemplateProvider';
+import { LanguageContext } from './LanguageContext';
+import { TemplateParser } from './parser/TemplateParser';
 
-import TemplateParser = require('./parser/TemplateParser');
-import FileSystemTemplateProvider = require('./provider/FileSystemTemplateProvider');
-import LanguageContext = require('./LanguageContext');
 import Default = require('./lang/Default');
 import fs = require('fs');
 var isWin = !!process.platform.match(/^win/);
@@ -48,7 +48,7 @@ function internalCompile(options: IOptions, absolutePath = false) {
 	// options.cache
 
 	if (registryTemplateParser[options.root] === undefined) {
-		var templateParser = new TemplateParser.TemplateParser(
+		var templateParser = new TemplateParser(
 			new FileSystemTemplateProvider(options.root),
 			languageContext
 		);
@@ -68,7 +68,7 @@ function internalCompile(options: IOptions, absolutePath = false) {
 		return languageContext.templateConfig.setCacheTemporal(cache, () => {
 			//console.log(options.path);
 			//console.log(options.root);
-			var templateParser = <TemplateParser.TemplateParser>registryTemplateParser[options.root];
+			var templateParser = <TemplateParser>registryTemplateParser[options.root];
 
 			if (options.path === undefined) {
 				if (options.content === undefined) throw (new Error("No content or path"));
@@ -163,13 +163,13 @@ export function express3RenderFile(filename: string, options: any/*IOptionsExpre
 export function renderFileSync(viewsPath: string, filename: string, parameters: any = {}, cache: boolean = true):string
 {
     if (registryTemplateParser[viewsPath] === undefined) {
-        registryTemplateParser[viewsPath] = new TemplateParser.TemplateParser(new FileSystemTemplateProvider(viewsPath), languageContext);
+        registryTemplateParser[viewsPath] = new TemplateParser(new FileSystemTemplateProvider(viewsPath), languageContext);
     }
 
     return languageContext.templateConfig.setCacheTemporal(cache, () => {
         //console.log(options.path);
         //console.log(options.root);
-        var templateParser = <TemplateParser.TemplateParser>registryTemplateParser[viewsPath];
+        var templateParser = <TemplateParser>registryTemplateParser[viewsPath];
 
         var path = normalizePath(filename);
         var root = normalizePath(viewsPath);

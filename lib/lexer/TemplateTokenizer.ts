@@ -1,8 +1,8 @@
 ///<reference path='../imports.d.ts'/>
 
-import StringReader = require('./StringReader');
-import ExpressionTokenizer = require('./ExpressionTokenizer');
-import ITokenizer = require('./ITokenizer');
+import { StringReader } from './StringReader';
+import { ExpressionTokenizer } from './ExpressionTokenizer';
+import { ITokenizer } from './ITokenizer';
 
 /*
 export interface TemplateToken {
@@ -15,7 +15,7 @@ export interface TemplateToken {
 }
 */
 
-class TemplateTokenizer implements ITokenizer {
+export class TemplateTokenizer implements ITokenizer {
 	public stringReader: StringReader;
 
 	constructor(public string: string) {
@@ -116,9 +116,9 @@ class TemplateTokenizer implements ITokenizer {
 							break;
 						case '{{':
 						case '{%':
-							var expressionTokenizer = new ExpressionTokenizer.ExpressionTokenizer(new StringReader(
+							var expressionTokenizer = new ExpressionTokenizer(new StringReader(
 								this.stringReader.getSliceWithCallback(() => {
-									(new ExpressionTokenizer.ExpressionTokenizer(this.stringReader)).tokenizeAll();
+									(new ExpressionTokenizer(this.stringReader)).tokenizeAll();
 								})
 							));
 							var peekMinus = this.stringReader.peekChars(1);
@@ -153,5 +153,3 @@ class TemplateTokenizer implements ITokenizer {
 		return null;
 	}
 }
-
-export = TemplateTokenizer;

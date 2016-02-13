@@ -1,5 +1,9 @@
 ﻿import util = require('util');
 
+export function inspect(object: any, showHidden?: boolean, depth?: number, color?: boolean): string {
+     return util.inspect(object, showHidden, depth, color);
+}
+
 export function normalizePath(path:string) {
 	var components:string[] = [];
 	var notNormalizedComponents = path.split(/[\\\/]/g);

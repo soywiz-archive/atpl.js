@@ -1,9 +1,8 @@
-﻿import fs = require('fs');
-import util = require('util');
+﻿import { ITemplateProvider } from './ITemplateProvider';
+import fs = require('fs');
 import RuntimeUtils = require('../runtime/RuntimeUtils');
-import ITemplateProvider = require('./ITemplateProvider');
 
-class FileSystemTemplateProvider implements ITemplateProvider {
+export class FileSystemTemplateProvider implements ITemplateProvider {
     basePath: string;
     basePathComponents: string[];
     cacheObject: any = {};
@@ -32,5 +31,3 @@ class FileSystemTemplateProvider implements ITemplateProvider {
         return this.cacheObject[path];
     }
 }
-
-export = FileSystemTemplateProvider;

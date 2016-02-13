@@ -1,12 +1,12 @@
 ///<reference path='../imports.d.ts'/>
 
-import ExpressionTokenizer = require('./ExpressionTokenizer');
-import ITokenizer = require('./ITokenizer');
+import { ExpressionTokenizer, Token } from './ExpressionTokenizer';
+import { ITokenizer } from './ITokenizer';
 
-class TokenReader {
+export class TokenReader {
 	//private length: number;
 	private position: number;
-	private tokens: ExpressionTokenizer.Token[] = [];
+	private tokens: Token[] = [];
 	private eof: boolean = false;
 
 	constructor(public tokenizer: ITokenizer) {
@@ -26,11 +26,11 @@ class TokenReader {
 		return this.position;
 	}
 
-	getSlice(start: number, end: number): ExpressionTokenizer.Token[] {
+	getSlice(start: number, end: number): Token[] {
 		return this.tokens.slice(start, end);
 	}
 
-	getSliceWithCallback(readCallback: () => void ): ExpressionTokenizer.Token[] {
+	getSliceWithCallback(readCallback: () => void ): Token[] {
 		var start = this.getOffset();
 		readCallback();
 		var end = this.getOffset();
@@ -42,7 +42,7 @@ class TokenReader {
 		return this.tokenizer.hasMore();
 	}
 
-	peek(offset: number = 0): ExpressionTokenizer.Token {
+	peek(offset: number = 0): Token {
 		while (this.tokens.length <= this.position + offset) {
 			if (!this.readToken()) return { type: 'eof', value: null, rawValue: null, stringOffset: -1 };
 		}
@@ -53,7 +53,7 @@ class TokenReader {
 		this.position += count;
 	}
 
-	read(): ExpressionTokenizer.Token {
+	read(): Token {
 		try {
 			return this.peek();
 		} finally {
@@ -94,5 +94,3 @@ class TokenReader {
 		return ret;
 	}
 }
-
-export = TokenReader;

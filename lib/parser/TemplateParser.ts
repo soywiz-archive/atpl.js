@@ -1,16 +1,17 @@
 ///<reference path='../imports.d.ts'/>
 
+import { TokenParserContext, TokenParserContextCommon } from './TokenParserContext';
+import { LanguageContext } from '../LanguageContext';
+import { RuntimeContext } from '../runtime/RuntimeContext';
+import { TokenReader } from '../lexer/TokenReader';
+import { ExpressionParser } from './ExpressionParser';
+import { SandboxPolicy } from '../SandboxPolicy';
+import { TemplateTokenizer } from '../lexer/TemplateTokenizer';
+import { ExpressionTokenizer } from '../lexer/ExpressionTokenizer';
+import { ITemplateProvider } from '../provider/ITemplateProvider';
+import { StringReader } from '../lexer/StringReader';
+
 import ParserNode = require('./ParserNode');
-import TokenReader = require('../lexer/TokenReader');
-import TemplateTokenizer = require('../lexer/TemplateTokenizer');
-import ExpressionTokenizer = require('../lexer/ExpressionTokenizer');
-import StringReader = require('../lexer/StringReader');
-import ITemplateProvider   = require('../provider/ITemplateProvider');
-import RuntimeContext  = require('../runtime/RuntimeContext');
-import TokenParserContext = require('./TokenParserContext');
-import ExpressionParser    = require('./ExpressionParser');
-import LanguageContext = require('../LanguageContext');
-import SandboxPolicy = require('../SandboxPolicy');
 
 export var FlowException = function (blockType:any, templateParser:any, tokenParserContext:any, templateTokenReader:any, expressionTokenReader:any) {
 	this.blockType = blockType;
@@ -33,7 +34,7 @@ export interface CompiledTemplate {
 
 export interface EvalResult {
 	output: string;
-	tokenParserContext: TokenParserContext.TokenParserContext;
+	tokenParserContext: TokenParserContext;
 }
 
 export class TemplateParser {
@@ -48,35 +49,35 @@ export class TemplateParser {
 		return this.languageContext.templateConfig.getCache();
 	}
 
-	compileAndRenderStringToString(content: string, scope: any, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon): string {
+	compileAndRenderStringToString(content: string, scope: any, tokenParserContextCommon?: TokenParserContextCommon): string {
 		if (scope === undefined) scope = {};
-		var runtimeContext = new RuntimeContext.RuntimeContext(this, scope, this.languageContext);
+		var runtimeContext = new RuntimeContext(this, scope, this.languageContext);
 		this.compileAndRenderString(content, runtimeContext, tokenParserContextCommon);
 		return runtimeContext.output;
 	}
 
-	compileAndRenderToString(path: string, scope: any, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon): string {
+	compileAndRenderToString(path: string, scope?: any, tokenParserContextCommon?: TokenParserContextCommon): string {
 		if (scope === undefined) scope = {};
-		var runtimeContext = new RuntimeContext.RuntimeContext(this, scope, this.languageContext);
+		var runtimeContext = new RuntimeContext(this, scope, this.languageContext);
 		this.compileAndRender(path, runtimeContext, tokenParserContextCommon);
 		return runtimeContext.output;
 	}
 
-	compileAndRenderString(content: string, runtimeContext: RuntimeContext.RuntimeContext, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon) {
+	compileAndRenderString(content: string, runtimeContext: RuntimeContext, tokenParserContextCommon?: TokenParserContextCommon) {
 		var template = new (this.compileString(content, runtimeContext, tokenParserContextCommon).class)();
 		template.render(runtimeContext);
 		return template;
 	}
 
-	compileAndRender(path: string, runtimeContext: RuntimeContext.RuntimeContext, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon) {
+	compileAndRender(path: string, runtimeContext: RuntimeContext, tokenParserContextCommon?: TokenParserContextCommon) {
 		var template = new (this.compile(path, runtimeContext, tokenParserContextCommon).class)();
 		template.render(runtimeContext);
 		return template;
 	}
 
-	getEvalCodeString(content: string, path: string, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon): EvalResult {
+	getEvalCodeString(content: string, path: string, tokenParserContextCommon?: TokenParserContextCommon): EvalResult {
 		var templateTokenizer  = new TemplateTokenizer(content);
-		var tokenParserContext = new TokenParserContext.TokenParserContext(tokenParserContextCommon || new TokenParserContext.TokenParserContextCommon(), this.sandboxPolicy);
+		var tokenParserContext = new TokenParserContext(tokenParserContextCommon || new TokenParserContextCommon(), this.sandboxPolicy);
 	
 		try {
 			var tokenReader:TokenReader = new TokenReader(templateTokenizer);
@@ -128,7 +129,7 @@ export class TemplateParser {
 		return { output: output, tokenParserContext: tokenParserContext };
 	}
 
-	getEvalCode(path: string, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon): EvalResult {
+	getEvalCode(path: string, tokenParserContextCommon?: TokenParserContextCommon): EvalResult {
 		if (!this.getCache()) delete this.registry[path];
 
 		if (this.registry[path] !== undefined) {
@@ -142,7 +143,7 @@ export class TemplateParser {
 		return this.getEvalCodeString(content, path, tokenParserContextCommon);
 	}
 
-	compileString(content: string, runtimeContext: RuntimeContext.RuntimeContext, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon) {
+	compileString(content: string, runtimeContext: RuntimeContext, tokenParserContextCommon?: TokenParserContextCommon) {
 		runtimeContext.sandboxPolicy = this.sandboxPolicy;
 		if (!this.getCache()) delete this.registryString[content];
 
@@ -173,7 +174,7 @@ export class TemplateParser {
 		return <CompiledTemplate>this.registryString[content];
 	}
 
-	compile(path: string, runtimeContext: RuntimeContext.RuntimeContext, tokenParserContextCommon?: TokenParserContext.TokenParserContextCommon) {
+	compile(path: string, runtimeContext: RuntimeContext, tokenParserContextCommon?: TokenParserContextCommon) {
 		runtimeContext.sandboxPolicy = this.sandboxPolicy;
 		if (!this.getCache()) delete this.registry[path];
 

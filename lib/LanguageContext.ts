@@ -1,9 +1,9 @@
-﻿import TemplateConfig = require('./TemplateConfig');
+﻿import { TemplateConfig } from './TemplateConfig';
 
 /**
  * Reusable context that holds tag, function, filter and test definitions.
  */
-class LanguageContext {
+export class LanguageContext {
     tags: any = {};
     functions: any = {};
     filters: any = {};
@@ -46,5 +46,3 @@ class LanguageContext {
         this._registerSomething(this.tests, tests);
     }
 }
-
-export = LanguageContext;

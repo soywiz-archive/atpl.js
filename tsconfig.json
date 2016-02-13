@@ -7,7 +7,19 @@
     },
 
     "files": [
-        "lib/atpl.ts"
+        "lib/atpl.ts",
+        "test/utils_test.ts",
+        "test/TemplateTokenizer_test.ts",
+        "test/TemplateProvider_test.ts",
+        "test/StringReader_test.ts",
+        "test/RuntimeUtils_test.ts",
+        "test/renderFileTest.ts",
+        "test/fixtures_test.ts",
+        "test/ExpressionTokenizer_test.ts",
+        "test/expressionparser_test.ts",
+        "test/express_test.ts",
+        "test/express3_test.ts",
+        "test/app_test.ts"
     ],
     
     "formatCodeOptions": {

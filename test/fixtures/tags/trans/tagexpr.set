@@ -1,0 +1,8 @@
+== TITLE
+mytitle2
+
+=== TEMPLATE:main
+{% trans "hello" %}
+
+=== OUTPUT
+FIXTRANS:hello

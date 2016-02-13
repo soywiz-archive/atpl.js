@@ -327,4 +327,12 @@ export class DefaultFilters {
 	static spaceless(value: any) {
 		return RuntimeUtils.toString(value).replace(/>\s+</g, '><');
 	}
+    
+    /**
+     * @see http://twig.sensiolabs.org/doc/extensions/i18n.html
+     */
+    static trans(value: any) {
+        var runtimeContext: RuntimeContext = <any>this;
+        return runtimeContext.languageContext.trans(value);
+    }
 }

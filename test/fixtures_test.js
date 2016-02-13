@@ -115,7 +115,9 @@ function handleSets(path, name) {
 }
 function createTemplateParser(templates) {
     var templateProvider = new MemoryTemplateProvider_1.MemoryTemplateProvider();
-    var templateParser = new TemplateParser_1.TemplateParser(templateProvider, Default.register(new LanguageContext_1.LanguageContext()));
+    var languageContext = new LanguageContext_1.LanguageContext();
+    var templateParser = new TemplateParser_1.TemplateParser(templateProvider, Default.register(languageContext));
+    languageContext.trans = function (text) { return "FIXTRANS:" + text; };
     for (var key in templates) {
         templateProvider.add(key, templates[key]);
     }

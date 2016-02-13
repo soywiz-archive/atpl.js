@@ -22,6 +22,10 @@ export class LanguageContext {
             for (var key in list) this._registerSomethingItem(object, key, list[key]);
         }
     }
+    
+    trans(text:string, count:number = undefined) {
+        return "TRANS:" + text;
+    }
 
     registerExtension(container: any) {
         this.registerTags(container.tags);

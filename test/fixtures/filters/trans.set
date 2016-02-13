@@ -1,0 +1,11 @@
+=== TITLE
+trans
+
+=== INPUT
+{ }
+
+=== TEMPLATE:main
+{{ "hello"|trans }}
+
+=== OUTPUT
+FIXTRANS:hello

@@ -110,7 +110,9 @@ function handleSets(path:string, name:string) {
 
 function createTemplateParser(templates: { [key:string]:string }) {
 	var templateProvider = new MemoryTemplateProvider();
-	var templateParser = new TemplateParser(templateProvider, Default.register(new LanguageContext()));
+    var languageContext = new LanguageContext();
+	var templateParser = new TemplateParser(templateProvider, Default.register(languageContext));
+    languageContext.trans = (text:string) => "FIXTRANS:" + text;
 
 	for (var key in templates) {
 		templateProvider.add(key, templates[key]);

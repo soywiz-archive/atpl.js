@@ -26,7 +26,7 @@ export class RuntimeContext {
 	constructor(public templateParser: ITemplateParser, scopeData: any, public languageContext: LanguageContext) {
 		this.scope = new Scope(scopeData);
 	}
-
+    
 	setTemplate(Template: any) {
 		this.LeafTemplate = Template;
 		this.CurrentTemplate = Template;

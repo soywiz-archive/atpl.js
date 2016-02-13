@@ -579,6 +579,46 @@ export class DefaultTags {
 		])));
 	}
 
+    // TRANS
+    // http://twig.sensiolabs.org/doc/extensions/i18n.html
+	static endtrans = _flowexception;
+	static trans(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
+        var expressionNode:ParserNodeExpression = null;
+        
+        if (expressionTokenReader.hasMore()) {
+            expressionNode = (new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
+        }
+        
+        checkNoMoreTokens(expressionTokenReader);
+        
+        if (expressionNode != null) {
+            return new ParserNodeStatementExpression(new ParserNodeOutputNodeExpression(new ParserNodeContainer([
+                new ParserNodeRaw('runtimeContext.languageContext.trans('),
+                expressionNode,
+                new ParserNodeRaw(')')
+            ])));
+        } else {
+            var innerNode = new ParserNodeContainer([]);
+
+            //console.log('************************');
+            handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
+                'endtrans': (e:any) => {
+                    return true;
+                },
+            }, (node) => {
+                //console.log(node);
+                innerNode.add(node);
+            });
+            //console.log('************************');
+
+            return new ParserNodeStatementExpression(new ParserNodeOutputNodeExpression(new ParserNodeContainer([
+                new ParserNodeRaw('runtimeContext.languageContext.trans(runtimeContext.captureOutput(function() { '),
+                innerNode,
+                new ParserNodeRaw('}))')
+            ])));
+        }
+	}
+
 	// IF/ELSEIF/ELSE/ENDIF
 	static $else = _flowexception;
 	static $elseif = _flowexception;

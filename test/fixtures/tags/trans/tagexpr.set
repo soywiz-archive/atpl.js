@@ -1,8 +1,16 @@
 == TITLE
 mytitle2
 
+=== EVAL
+languageContext.trans = function(key) {
+    switch (key) {
+        case 'hello': return 'hola';
+    }
+    return 'unknown';
+};
+
 === TEMPLATE:main
 {% trans "hello" %}
 
 === OUTPUT
-FIXTRANS:hello
+hola

@@ -62,7 +62,7 @@ function handleSet(name:string, data:any) {
 		}
 
 		if (test.eval !== undefined) {
-			Function("test", "RuntimeUtils", test.eval)(test, RuntimeUtils);
+			Function("test", "RuntimeUtils", "languageContext", test.eval)(test, RuntimeUtils, templateParser.languageContext);
 		}
 
 		//console.log(templateParser.getEvalCode('test').output);

@@ -331,8 +331,8 @@ export class DefaultFilters {
     /**
      * @see http://twig.sensiolabs.org/doc/extensions/i18n.html
      */
-    static trans(value: any) {
+    static trans(value: string) {
         var runtimeContext: RuntimeContext = <any>this;
-        return runtimeContext.languageContext.trans(value);
+        return runtimeContext.trans2(RuntimeContext.normalizeTrans(value), "", 1);
     }
 }

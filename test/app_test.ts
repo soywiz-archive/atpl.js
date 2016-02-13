@@ -1,7 +1,7 @@
 ﻿///<reference path='./imports.d.ts'/>
 
 import assert = require('assert');
-var express3 = require("express3");
+var express3 = require("express");
 import supertest = require('supertest');
 import moment = require('moment');
 import async = require('async');

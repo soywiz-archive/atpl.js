@@ -23,8 +23,8 @@ export class LanguageContext {
         }
     }
     
-    trans(text:string, count:number = undefined) {
-        return "TRANS:" + text;
+    trans(selected:string, normal:string, plural:string, locale:string, count:number) {
+        return "TRANS[" + locale + "]:" + selected;
     }
 
     registerExtension(container: any) {

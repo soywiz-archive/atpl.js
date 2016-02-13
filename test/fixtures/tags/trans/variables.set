@@ -7,13 +7,15 @@ variables
 === EVAL
 languageContext.trans = function(key) {
     switch (key) {
-        case 'Hello %name%': return '¡{{ name }}, Hola!';
+        case 'Hello %name%': return '¡%name%, Hola!';
     }
     return 'UNTRANS(' + key + ')';
 };
 
 === TEMPLATE:main
-{% trans %}Hello {{ name }}{% endtrans %}
+{% trans %}
+    Hello {{ name }}
+{% endtrans %}
 
 === OUTPUT
 ¡Carlos, Hola!

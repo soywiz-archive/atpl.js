@@ -13,15 +13,17 @@ import { StringReader } from '../lexer/StringReader';
 
 import ParserNode = require('./ParserNode');
 
-export var FlowException = function (blockType:any, templateParser:any, tokenParserContext:any, templateTokenReader:any, expressionTokenReader:any) {
-	this.blockType = blockType;
-	this.templateParser = templateParser;
-	this.tokenParserContext = tokenParserContext;
-	this.templateTokenReader = templateTokenReader;
-	this.expressionTokenReader = expressionTokenReader;
-};
-
-FlowException.prototype['__proto__'] = Error.prototype;
+export class FlowException extends Error {
+    constructor(
+        public blockType:string,
+        public templateParser:TemplateParser,
+        public tokenParserContext:TokenParserContext,
+        public templateTokenReader:TokenReader,
+        public expressionTokenReader:TokenReader
+    ) {
+        super();
+    }
+} 
 
 function debug(data:any) {
     //console.log(data);
@@ -212,19 +214,19 @@ export class TemplateParser {
 			case 'trimSpacesAfter':
 			case 'trimSpacesBefore':
 				item = tokenReader.read();
-				return (new ParserNode.ParserNodeRaw('runtimeContext.trimSpaces();'));
+				return new ParserNode.ParserNodeRaw('runtimeContext.trimSpaces();');
 			case 'expression':
 				item = tokenReader.read();
 				// Propagate the "not done".
 				
-				return (new ParserNode.ParserNodeRaw(this.parseTemplateExpressionSync(tokenParserContext, tokenReader, new TokenReader(item.value)).generateCode({ doWrite: true })));
+				return new ParserNode.ParserNodeRaw(this.parseTemplateExpressionSync(tokenParserContext, tokenReader, new TokenReader(item.value)).generateCode({ doWrite: true }));
 			case 'block':
 				item = tokenReader.read();
 				// Propagate the "not done".
-				return (this.parseTemplateBlockSync(tokenParserContext, tokenReader, new TokenReader(item.value)));
+				return this.parseTemplateBlockSync(tokenParserContext, tokenReader, new TokenReader(item.value));
 		}
 
-		throw (new Error("Invalid item.type == '" + item.type + "'"));
+		throw new Error("Invalid item.type == '" + item.type + "'");
 	}
 
 	parseTemplateSync(tokenParserContext:any, tokenReader: TokenReader) {
@@ -245,7 +247,9 @@ export class TemplateParser {
 		var that = this;
 		var blockTypeToken = expressionTokenReader.read();
 		var blockType = blockTypeToken.value;
-		if (blockTypeToken.type != 'id') throw(new Error("Block expected a type as first token but found : " + JSON.stringify(blockTypeToken)));
+		if (blockTypeToken.type != 'id') {
+            throw new Error("Block expected a type as first token but found : " + JSON.stringify(blockTypeToken));
+        }
 		debug('BLOCK: ' + blockType);
 	
 		var blockHandler = this.languageContext.tags[blockType];
@@ -253,13 +257,15 @@ export class TemplateParser {
 			//console.log("blockHandler: " + blockType + " | " + tokenParserContext.common.sandbox);
 
 			if (tokenParserContext.common.sandbox) {
-				if (this.sandboxPolicy.allowedTags.indexOf(blockType) == -1) throw (new Error("Sandbox policy disallows block '" + blockType + "'"));
+				if (this.sandboxPolicy.allowedTags.indexOf(blockType) == -1) {
+                    throw new Error("Sandbox policy disallows block '" + blockType + "'");
+                }
 			}
 
 			return blockHandler(blockType, this, tokenParserContext, templateTokenReader, expressionTokenReader);
 		}
 
-		//throw (new Error("Invalid block type '" + blockTypeToken.value + "' just can handle " + JSON.stringify(Object.keys(this.languageContext.tags))));
-		throw (new Error("Invalid block type '" + blockTypeToken.value + "'"));
+		//throw new Error("Invalid block type '" + blockTypeToken.value + "' just can handle " + JSON.stringify(Object.keys(this.languageContext.tags)));
+		throw new Error("Invalid block type '" + blockTypeToken.value + "'");
 	}
 }

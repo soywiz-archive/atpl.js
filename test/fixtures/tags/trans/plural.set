@@ -1,0 +1,38 @@
+== TITLE
+translationplural
+
+=== INPUT
+{ "count" : 10, "count2" : 1, "name": "Carlos" }
+
+=== EVAL
+languageContext.trans = function(key, normal, plural, locale, count) {
+    switch (key) {
+        case 'Hey %name%, I have one apple.': return 'Hola %name%, tengo una manzana.';
+        case 'Hey %name%, I have %count% apples.': return 'Hola %name%, tengo %count% manzanas.';
+    }
+    return 'UNTRANS(' + normal + ' :: ' + plural + ' :: ' + locale + ' :: ' + count + ')';
+};
+
+=== TEMPLATE:main
+{% trans %}
+    Hey {{ name }}, I have one apple.
+{% plural count %}
+    Hey {{ name }}, I have {{ count }} apples.
+{% notes %}
+    This is shown in the user menu. This string should be shorter than 30 chars
+{% endtrans %}
+
+{% set count = count2 %}
+{% trans %}
+    Hey {{ name }}, I have one apple.
+{% plural count %}
+    Hey {{ name }}, I have {{ count }} apples.
+{% notes %}
+    This is shown in the user menu. This string should be shorter than 30 chars
+{% endtrans %}
+
+=== OUTPUT
+Hola Carlos, tengo 10 manzanas.
+
+
+Hola Carlos, tengo una manzana.

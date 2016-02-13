@@ -1,6 +1,6 @@
 ///<reference path='./imports.d.ts'/>
 var assert = require('assert');
-var express3 = require("express3");
+var express3 = require("express");
 var supertest = require('supertest');
 var atpl = require('../lib/atpl');
 var express = require('express');

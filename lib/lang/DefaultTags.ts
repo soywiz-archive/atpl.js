@@ -21,6 +21,7 @@ import { TokenParserContext } from '../parser/TokenParserContext';
 import { TemplateParser, FlowException } from '../parser/TemplateParser';
 import { TokenReader } from '../lexer/TokenReader';
 import RuntimeUtils = require('../runtime/RuntimeUtils');
+import { RuntimeContext } from '../runtime/RuntimeContext';
 
 interface ITemplateParser {
 	addBlockFlowExceptionHandler(name: string):void;
@@ -38,19 +39,30 @@ function checkNoMoreTokens(expressionTokenReader:TokenReader) {
 }
 
 function _flowexception(blockType:string, templateParser:TemplateParser, tokenParserContext:TokenParserContext, templateTokenReader:TokenReader, expressionTokenReader:TokenReader) {
-	throw(new (<any>FlowException)(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader));
+	throw new FlowException(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader);
 }
 
-function handleOpenedTag(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader, handlers:any, innerNodeHandler: (node: ParserNode) => void) {
+function handleOpenedTag(
+    blockType: string,
+    templateParser: TemplateParser,
+    tokenParserContext: TokenParserContext,
+    templateTokenReader: TokenReader,
+    expressionTokenReader: TokenReader,
+    handlers: { [key:string]: ((e:FlowException) => boolean) },
+    innerNodeHandler: (node: ParserNode, nodeStart: number, nodeEnd: number) => void
+) {
 	while (true) {
 		try {
-			var keys:any[] = []; for (var key in handlers) keys.push(key);
+			var keys:string[] = [];
+            for (var key in handlers) keys.push(key);
 			//console.log("[[");
+            var nodeStart = templateTokenReader.tokenizer.stringReader.position;
 			var node = templateParser.parseTemplateSyncOne(tokenParserContext, templateTokenReader);
-			if (node == null) throw (new Error("Unexpected end of '" + blockType + "' no any of [" + keys.map((key) => "'" + key + "'").join(', ') + "]"));
+            var nodeEnd = templateTokenReader.tokenizer.stringReader.position;
+			if (node == null) throw new Error("Unexpected end of '" + blockType + "' no any of [" + keys.map((key) => "'" + key + "'").join(', ') + "]");
 			//console.log("]]");
 			//console.log(node);
-			innerNodeHandler(node);
+			innerNodeHandler(node, nodeStart, nodeEnd);
 		} catch (e) {
 			if (!(e instanceof FlowException)) throw (e);
 			var handler = handlers[e.blockType];
@@ -238,10 +250,10 @@ export class DefaultTags {
 		var innerNode = new ParserNodeContainer([]);
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'endautoescape': (e:any) => {
+			'endautoescape': (e:FlowException) => {
 				return true;
 			},
-		}, (node) => {
+		}, (node, nodeStart, nodeEnd) => {
 			innerNode.add(node);
 		});
 
@@ -271,10 +283,10 @@ export class DefaultTags {
 
 			//console.log('************************');
 			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-				'endset': (e:any) => {
+				'endset': (e:FlowException) => {
 					return true;
 				},
-			}, (node) => {
+			}, (node, nodeStart, nodeEnd) => {
 				//console.log(node);
 				innerNode.add(node);
 			});
@@ -307,8 +319,8 @@ export class DefaultTags {
 		var offsetEnd = offsetStart;
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'endembed': (e:any) => { offsetEnd = templateTokenReader.getOffset() - 1; return true; },
-		}, (node) => {
+			'endembed': (e:FlowException) => { offsetEnd = templateTokenReader.getOffset() - 1; return true; },
+		}, (node, nodeStart, nodeEnd) => {
 		});
 		var rawText = templateTokenReader.getSlice(offsetStart, offsetEnd).map((item) => (<any>item).rawText).join('');
 		var templateString = '{% extends ' + expressionString + ' %}' + rawText;
@@ -322,8 +334,8 @@ export class DefaultTags {
 		var innerNode = new ParserNodeContainer([]);
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'endfilter': (e:any) => { return true; },
-		}, (node) => {
+			'endfilter': (e:FlowException) => { return true; },
+		}, (node, nodeStart, nodeEnd) => {
 			innerNode.add(node);
 		});
 
@@ -389,10 +401,10 @@ export class DefaultTags {
 		});
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'endmacro': (e:any) => {
+			'endmacro': (e:FlowException) => {
 				return true;
 			},
-		}, (node) => {
+		}, (node, nodeStart, nodeEnd) => {
 			macroNode.add(node);
 		});
 
@@ -518,7 +530,7 @@ export class DefaultTags {
 
 		//var rawText = templateTokenReader.tokens
 
-		var res = templateTokenReader.tokenizer.stringReader.findRegexp(/\{%\-?\s*endverbatim\s*\-?%\}/);
+		var res = templateTokenReader.tokenizer.stringReader.findRegexp(/\{%\-?\s*end(verbatim|raw)\s*\-?%\}/);
 		if (res.position === null) throw (new Error("Expecting endverbatim"));
 		var rawText = templateTokenReader.tokenizer.stringReader.readChars(res.position);
 		templateTokenReader.tokenizer.stringReader.skipChars(res.length);
@@ -537,10 +549,10 @@ export class DefaultTags {
 
 		tokenParserContext.common.setSandbox(() => {
 			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-				'endsandbox': (e:any) => {
+				'endsandbox': (e:FlowException) => {
 					return true;
 				},
-			}, (node) => {
+			}, (node, nodeStart, nodeEnd) => {
 				innerNode.add(node);
 			});
 		});
@@ -563,7 +575,7 @@ export class DefaultTags {
 
 		//console.log('************************');
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'endspaceless': (e:any) => {
+			'endspaceless': (e:FlowException) => {
 				return true;
 			},
 		}, (node) => {
@@ -582,6 +594,8 @@ export class DefaultTags {
     // TRANS
     // http://twig.sensiolabs.org/doc/extensions/i18n.html
 	static endtrans = _flowexception;
+    static plural = _flowexception;
+    static notes = _flowexception;
 	static trans(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
         var expressionNode:ParserNodeExpression = null;
         
@@ -593,29 +607,60 @@ export class DefaultTags {
         
         if (expressionNode != null) {
             return new ParserNodeStatementExpression(new ParserNodeOutputNodeExpression(new ParserNodeContainer([
-                new ParserNodeRaw('runtimeContext.languageContext.trans('),
+                new ParserNodeRaw('runtimeContext.trans2('),
                 expressionNode,
                 new ParserNodeRaw(')')
             ])));
         } else {
             var innerNode = new ParserNodeContainer([]);
-
-            //console.log('************************');
+            
+            var lastPos = templateTokenReader.tokenizer.stringReader.position;
+            var currentPos = lastPos;
+            
+            var state = 'normal';
+            var pluralNode:ParserNodeExpression = new ParserNodeRaw("1");
+            var info = <{ [a:string]:string }>{ 'normal': '', 'plural': '', 'notes': '' }
+            function flush(e:FlowException) {
+                info[state] = e.templateTokenReader.tokenizer.stringReader.getSlice(lastPos, currentPos);
+                lastPos = e.templateTokenReader.tokenizer.stringReader.position;
+            }
+            
             handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-                'endtrans': (e:any) => {
+                'plural': (e:FlowException) => {
+                    pluralNode = (new ExpressionParser(e.expressionTokenReader, tokenParserContext)).parseExpression();
+                    checkNoMoreTokens(e.expressionTokenReader);
+                    flush(e);
+                    state = 'plural';
+                    return false;
+                },
+                'notes': (e:FlowException) => {
+                    flush(e);
+                    state = 'notes';
+                    return false;
+                },
+                'endtrans': (e:FlowException) => {
+                    flush(e);
+                    //console.log(e.templateTokenReader.getOffset());
                     return true;
                 },
-            }, (node) => {
-                //console.log(node);
+            }, (node, nodeStart, nodeEnd) => {
+                //console.log('node', node, nodeStart, nodeEnd);
+                currentPos = nodeEnd;
                 innerNode.add(node);
             });
             //console.log('************************');
+            
+            //console.log(info);
 
             return new ParserNodeStatementExpression(new ParserNodeOutputNodeExpression(new ParserNodeContainer([
-                new ParserNodeRaw('runtimeContext.languageContext.trans(runtimeContext.captureOutput(function() { '),
-                innerNode,
-                new ParserNodeRaw('}))')
+                new ParserNodeRaw('runtimeContext.trans2('),
+                
+                new ParserNodeRaw(JSON.stringify(RuntimeContext.normalizeTrans(info['normal'])) + ","),
+                new ParserNodeRaw(JSON.stringify(RuntimeContext.normalizeTrans(info['plural'])) + ","),
+                pluralNode,  
+                new ParserNodeRaw(')')
             ])));
+            
         }
 	}
 
@@ -634,22 +679,24 @@ export class DefaultTags {
 		parserNodeIf.addCaseCondition(expressionNode);
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'elseif': (e:any) => {
-				if (didElse) throw (new Error("Can't put 'elseif' after the 'else'"));
+			'elseif': (e:FlowException) => {
+				if (didElse) throw new Error("Can't put 'elseif' after the 'else'");
 
 				var expressionNode = (new ExpressionParser(e.expressionTokenReader, tokenParserContext)).parseExpression();
 				checkNoMoreTokens(expressionTokenReader);
 				parserNodeIf.addCaseCondition(expressionNode);
+                return false;
 			},
-			'else': (e:any) => {
-				if (didElse) throw (new Error("Can't have two 'else'"));
+			'else': (e:FlowException) => {
+				if (didElse) throw new Error("Can't have two 'else'");
 				parserNodeIf.addElseCondition();
 				didElse = true;
+                return false;
 			},
-			'endif': (e:any) => {
+			'endif': (e:FlowException) => {
 				return true;
 			},
-		}, (node) => {
+		}, (node, nodeStart, nodeEnd) => {
 			parserNodeIf.addCodeToCondition(node);
 		});
 
@@ -671,10 +718,10 @@ export class DefaultTags {
 		} else {
 
 			handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-				'endblock': (e:any) => {
+				'endblock': (e:FlowException) => {
 					return true;
 				},
-			}, (node) => {
+			}, (node, nodeStart, nodeEnd) => {
 				innerNode.add(node);
 			});
 		}
@@ -725,14 +772,15 @@ export class DefaultTags {
 		var elseCode = new ParserNodeContainer([]);
 
 		handleOpenedTag(blockType, templateParser, tokenParserContext, templateTokenReader, expressionTokenReader, {
-			'else': (e:any) => {
+			'else': (e:FlowException) => {
 				if (didElse) throw (new Error("Can't have two 'else'"));
 				didElse = true;
+                return false;
 			},
-			'endfor': (e:any) => {
+			'endfor': (e:FlowException) => {
 				return true;
 			},
-		}, (node) => {
+		}, (node, nodeStart, nodeEnd) => {
 			if (!didElse) {
 				forCode.add(node);
 			} else {

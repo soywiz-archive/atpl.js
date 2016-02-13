@@ -22,10 +22,22 @@ export class RuntimeContext {
 	LeafTemplate: any;
 	CurrentTemplate: any;
 	RootTemplate: any;
+    
+    locale: string = null;
 
 	constructor(public templateParser: ITemplateParser, scopeData: any, public languageContext: LanguageContext) {
 		this.scope = new Scope(scopeData);
 	}
+    
+    static normalizeTrans(text:string) {
+        return String(text).trim().replace(/\{\{\s*(\w+)\s*\}\}/g, (str:string, id:string) => "%" + id + "%");
+    }
+    
+    trans2(normal:string, plural:string = "", count:number = 1) {
+        var locale = this.scopeGet("locale") || this.locale;
+        var selected = (count == 1) ? normal : plural;
+        return this.languageContext.trans(selected, normal, plural, locale, count).replace(/%(\w+)%/g, (str:string, id:string) => this.scopeGet(id))
+    }
     
 	setTemplate(Template: any) {
 		this.LeafTemplate = Template;

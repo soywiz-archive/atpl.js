@@ -242,6 +242,7 @@ class ParserNodeFor extends ParserNodeStatement {
 
 export class DefaultTags {
 	// autoescape
+	var _self;
 	static endautoescape = _flowexception;
     static autoescape(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader): ParserNodeStatement {
 		var expressionNode = (new ExpressionParser(expressionTokenReader, tokenParserContext)).parseExpression();
@@ -419,7 +420,9 @@ export class DefaultTags {
 	}
 	static from(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
-		var fileNameNode = expressionParser.parseExpression();
+		var expression = expressionParser.parseExpression();
+	    	var fileNameNode = expression.value !== '_self' ? expression : _self;
+	    	_self = fileNameNode;
 		expressionTokenReader.expectAndMoveNext(['import']);
 
 		var pairs:any[] = [];
@@ -445,7 +448,9 @@ export class DefaultTags {
 	}
 	static $import(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
 		var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
-		var fileNameNode = expressionParser.parseExpression();
+		var expression = expressionParser.parseExpression();
+		var fileNameNode = expression.value !== '_self' ? expression : _self;
+	    	_self = fileNameNode;
 		expressionTokenReader.expectAndMoveNext(['as']);
 		var aliasNode = <ParserNodeLeftValue>expressionParser.parseIdentifier();
 

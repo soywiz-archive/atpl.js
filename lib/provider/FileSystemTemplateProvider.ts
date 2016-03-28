@@ -20,7 +20,10 @@ export class FileSystemTemplateProvider implements ITemplateProvider {
         //console.log(path);
 
         if (this.cacheObject[path] === undefined) {
-            var normalizedPath = RuntimeUtils.normalizePath(this.basePath + '/' + path);
+            var normalizedPath = RuntimeUtils.normalizePath(path);
+            if (normalizedPath.indexOf(this.basePath) === -1) {
+              normalizedPath = this.basePath + '/' + normalizedPath;
+            }
 
             if (normalizedPath.split('/').slice(0, this.basePathComponents.length) == this.basePathComponents) {
                 throw (new Error("Outside the Base Path"));

@@ -21,13 +21,13 @@
         "test/express3_test.ts",
         "test/app_test.ts"
     ],
-    
+
     "formatCodeOptions": {
-        "indentSize": 4,
-        "tabSize": 4,
-        "newLineCharacter": "\r\n",
-        "convertTabsToSpaces": true,
-        "insertSpaceAfterCommaDelimiter": true,
+        "indentSize": 2,
+        "tabSize": 2,
+        "newLineCharacter": "\n",
+        "convertTabsToSpaces": false,
+        "insertSpaceAfterCommaDelimiter": false,
         "insertSpaceAfterSemicolonInForStatements": true,
         "insertSpaceBeforeAndAfterBinaryOperators": true,
         "insertSpaceAfterKeywordsInControlFlowStatements": true,

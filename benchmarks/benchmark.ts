@@ -1,5 +1,4 @@
-﻿///<reference path='../_typings.d.ts'/>
-import util = require("util");
+﻿import util = require("util");
 import express = require("express");
 import atpl = require('../lib/atpl');
 import supertest = require('supertest');

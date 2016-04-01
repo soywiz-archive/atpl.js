@@ -1,4 +1,5 @@
 ///<reference path='./imports.d.ts'/>
+"use strict";
 var assert = require('assert');
 var ExpressionTokenizer_1 = require('../lib/lexer/ExpressionTokenizer');
 var StringReader_1 = require('../lib/lexer/StringReader');

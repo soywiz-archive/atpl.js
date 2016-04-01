@@ -40,7 +40,7 @@ export class ParserNodeWriteExpression extends ParserNodeExpression {
 	generateCode(context: ParserNodeGenerateCodeContext):string {
 		if (!context.doWrite) {
 			throw (new Error('A template that extends another one cannot have a body'));
-			return '';
+			// return '';
 		}
 		return 'runtimeContext.writeExpression(' + this.expression.generateCode(context) + ')';
 	}
@@ -483,7 +483,7 @@ export class ParserNodeTernaryOperation extends ParserNodeExpression {
 	generateCode(context: ParserNodeGenerateCodeContext) {
 		return (
 			'(' +
-				this.cond.generateCode(context) + 
+				this.cond.generateCode(context) +
 				" ? " + this.exprTrue.generateCode(context) +
 				" : " + this.exprFalse.generateCode(context) +
 			')'

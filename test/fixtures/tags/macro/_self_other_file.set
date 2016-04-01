@@ -1,0 +1,18 @@
+﻿=== TITLE
+_self macros other file
+
+=== INPUT
+{}
+
+=== TEMPLATE:_macros
+{% macro test(v) %}1{{ v }}{% endmacro %}
+{% macro test2() %}{% import _self as self %}z{{ self.test('a') }}Z{% endmacro %}
+
+=== TEMPLATE:main
+{% import "_macros" as macros %}
+{% macro test(v) %}BAD{% endmacro %}
+
+{{ macros.test2() }}
+
+=== OUTPUT
+z1aZ

@@ -1,4 +1,5 @@
 ///<reference path='./imports.d.ts'/>
+"use strict";
 var assert = require('assert');
 var FileSystemTemplateProvider_1 = require('../lib/provider/FileSystemTemplateProvider');
 var MemoryTemplateProvider_1 = require('../lib/provider/MemoryTemplateProvider');

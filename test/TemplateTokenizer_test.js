@@ -1,4 +1,5 @@
 ///<reference path='./imports.d.ts'/>
+"use strict";
 var TemplateTokenizer_1 = require('../lib/lexer/TemplateTokenizer');
 var assert = require('assert');
 describe('TemplateTokenizer', function () {

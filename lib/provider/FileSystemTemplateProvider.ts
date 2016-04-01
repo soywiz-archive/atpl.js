@@ -16,19 +16,15 @@ export class FileSystemTemplateProvider implements ITemplateProvider {
 
     getSync(path: string, cache: boolean): string {
         if (!cache) delete this.cacheObject[path];
-
         //console.log(path);
-
         if (this.cacheObject[path] === undefined) {
             var normalizedPath = RuntimeUtils.normalizePath(path);
             if (normalizedPath.indexOf(this.basePath) === -1) {
               normalizedPath = this.basePath + '/' + normalizedPath;
             }
-
             if (normalizedPath.split('/').slice(0, this.basePathComponents.length) == this.basePathComponents) {
                 throw (new Error("Outside the Base Path"));
             }
-
             this.cacheObject[path] = (<string><any>fs.readFileSync(normalizedPath, 'utf-8')).replace(/^\uFEFF/, '');
         }
         return this.cacheObject[path];

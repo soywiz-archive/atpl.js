@@ -13,7 +13,7 @@ import Default = require('../lib/lang/Default');
 
 function handleSet(name:string, data:any) {
 	var parts = data.split('===');
-	var test = { 
+	var test = {
         title: 'untitled: ' + name, description: '',
         input: {},
         expected: '',
@@ -22,7 +22,7 @@ function handleSet(name:string, data:any) {
         eval_after: <any>undefined,
         exception: <any>undefined
     };
-    
+
 	for (var n = 0; n < parts.length; n++) {
 		var part = parts[n].trim();
 		var token = /^([\w:]+)\s+([\S\s]*)$/igm.exec(part);
@@ -64,7 +64,7 @@ function handleSet(name:string, data:any) {
 		if (test.eval !== undefined) {
 			Function("test", "RuntimeUtils", "languageContext", test.eval)(test, RuntimeUtils, templateParser.languageContext);
 		}
-
+ 
 		//console.log(templateParser.getEvalCode('test').output);
 		try {
 			var result = templateParser.compileAndRenderToString('main', test.input).trim().replace(/\r\n/g, '\n');
@@ -77,7 +77,7 @@ function handleSet(name:string, data:any) {
 				throw (e);
 			}
 			if (e.message === undefined) throw (new Error("ERROR, INVALID EXCEPTION! " + JSON.stringify(e)));
-			//console.log(e); 
+			//console.log(e);
 			assert.equal(e.message, test.exception);
 			return;
 		}

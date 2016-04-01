@@ -1,4 +1,5 @@
 ///<reference path='./imports.d.ts'/>
+"use strict";
 var assert = require('assert');
 var atpl = require('../lib/atpl');
 describe('express3', function () {

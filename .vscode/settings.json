@@ -1,7 +1,9 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-	"files.exclude": {
-		"node_modules/": true,
-		"**/*.js" : true
-	}
+  "editor.tabSize": 2,
+  "files.exclude": {
+    "node_modules/": true,
+    "**/*.js": true
+  },
+  "editor.detectIndentation": false
 }

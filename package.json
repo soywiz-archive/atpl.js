@@ -3,7 +3,12 @@
   "description": "A complete and fast template engine fully compatible with twig and similar to jinja with zero dependencies.",
   "version": "0.8.0",
   "author": "Carlos Ballesteros <cballesterosvelasco@gmail.com> (http://cballesterosvelasco.es/)",
-  "contributors": [],
+  "contributors": [
+    {
+      "name": "Roberto Guevara",
+      "email": "raguevara@uci.cu"
+    }
+  ],
   "dependencies": {},
   "devDependencies": {
     "supertest": "0.13.0",

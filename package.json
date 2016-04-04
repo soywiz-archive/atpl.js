@@ -31,8 +31,8 @@
   },
   "main": "lib/atpl.js",
   "scripts": {
-    "benchmark": "node benchmarks/benchmark.js",
-    "test": "./node_modules/.bin/mocha --ui exports --globals name "
+    "benchmark": "tsc && node benchmarks/benchmark.js",
+    "test": "tsc && ./node_modules/.bin/mocha --ui exports --globals name "
   },
   "license": "MIT",
   "engines": {

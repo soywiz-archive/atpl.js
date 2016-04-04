@@ -149,7 +149,5 @@ export class TemplateTokenizer implements ITokenizer {
 					throw (new Error("Invalid state"));
 			}
 		}
-
-		return null;
 	}
 }

@@ -422,7 +422,7 @@ export class DefaultTags {
     var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
     var expression = expressionParser.parseExpression();
     let self = DefaultTags._self;
-    var fileNameNode = expression.value !== '_self' ? expression : self;
+    var fileNameNode = (<any>expression).value !== '_self' ? expression : self;
     DefaultTags._self = fileNameNode;
     expressionTokenReader.expectAndMoveNext(['import']);
 
@@ -451,7 +451,7 @@ export class DefaultTags {
     var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
     var expression = expressionParser.parseExpression();
     let self = DefaultTags._self;
-    var fileNameNode = expression.value !== '_self' ? expression : self;
+    var fileNameNode = (<any>expression).value !== '_self' ? expression : self;
     DefaultTags._self = fileNameNode;
     expressionTokenReader.expectAndMoveNext(['as']);
     var aliasNode = <ParserNodeLeftValue>expressionParser.parseIdentifier();

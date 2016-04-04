@@ -1,5 +1,4 @@
-﻿///<reference path='../_typings.d.ts'/>
-import util = require("util");
+﻿import util = require("util");
 import express = require("express");
 import atpl = require('../lib/atpl');
 import supertest = require('supertest');
@@ -8,7 +7,7 @@ import async = require('async');
 
 var app: express.Application = express();
 
-declare var setImmediate: (callback) => void;
+declare var setImmediate: (callback: any) => void;
 
 function nextTick(callback: () => void ): void {
 	if (setImmediate !== undefined) {
@@ -51,7 +50,7 @@ function roundDecimals(number: number, decimals: number) {
 	return Math.round(number * disp) / disp;
 }
 
-function measure(path, done) {
+function measure(path: string, done: any) {
 	var start = (<any>moment)();
 	var requestCount = 0;
 	var measure = true;
@@ -84,10 +83,10 @@ function measure(path, done) {
 }
 
 async.series([
-	(done) => { measure('/raw', done); },
-	(done) => { measure('/simple', done); },
-	(done) => { measure('/for', done); },
-	(done) => { measure('/simple_extends', done); },
+	(done: any) => { measure('/raw', done); },
+	(done: any) => { measure('/simple', done); },
+	(done: any) => { measure('/for', done); },
+	(done: any) => { measure('/simple_extends', done); },
 ], () => {
 	process.exit(0);
 });

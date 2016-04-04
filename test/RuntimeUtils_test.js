@@ -1,4 +1,5 @@
 ///<reference path='./imports.d.ts'/>
+"use strict";
 var assert = require('assert');
 var RuntimeUtils = require('../lib/runtime/RuntimeUtils');
 describe('RuntimeUtils', function () {

@@ -1,4 +1,5 @@
 ///<reference path='./imports.d.ts'/>
+"use strict";
 var assert = require('assert');
 var StringReader_1 = require('../lib/lexer/StringReader');
 describe('StringReader', function () {

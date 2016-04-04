@@ -1,4 +1,5 @@
 ///<reference path='./imports.d.ts'/>
+"use strict";
 var assert = require('assert');
 var express3 = require("express");
 var supertest = require('supertest');
@@ -48,10 +49,15 @@ describe('app', function () {
             done();
         });
     });
+    it('should be compatible with express2 (render file with absolute path)', function () {
+        //express2Compile(templateString: string, options: any): (params: any) => string
+        var func = atpl.compile('dummy');
+        assert.equal(func({ filename: __dirname + '/templates/simple.html', name: 'World' }), 'Hello World!');
+    });
     it('should be compatible with express2 (render file)', function () {
         //express2Compile(templateString: string, options: any): (params: any) => string
         var func = atpl.compile('dummy');
-        assert.equal(func({ filename: 'test/templates/simple.html', name: 'World' }), 'Hello World!');
+        assert.equal(func({ filename: '/test/templates/simple.html', name: 'World' }), 'Hello World!');
     });
     it('should be compatible with express2 (render string)', function () {
         //express2Compile(templateString: string, options: any): (params: any) => string

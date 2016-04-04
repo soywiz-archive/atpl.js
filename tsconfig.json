@@ -1,40 +1,37 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "es5",
-        "noImplicitAny": true,
-        "removeComments": false
-    },
-
-    "files": [
-        "lib/atpl.ts",
-        "test/utils_test.ts",
-        "test/TemplateTokenizer_test.ts",
-        "test/TemplateProvider_test.ts",
-        "test/StringReader_test.ts",
-        "test/RuntimeUtils_test.ts",
-        "test/renderFileTest.ts",
-        "test/fixtures_test.ts",
-        "test/ExpressionTokenizer_test.ts",
-        "test/expressionparser_test.ts",
-        "test/express_test.ts",
-        "test/express3_test.ts",
-        "test/app_test.ts"
-    ],
-    
-    "formatCodeOptions": {
-        "indentSize": 4,
-        "tabSize": 4,
-        "newLineCharacter": "\r\n",
-        "convertTabsToSpaces": true,
-        "insertSpaceAfterCommaDelimiter": true,
-        "insertSpaceAfterSemicolonInForStatements": true,
-        "insertSpaceBeforeAndAfterBinaryOperators": true,
-        "insertSpaceAfterKeywordsInControlFlowStatements": true,
-        "insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
-        "insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
-        "placeOpenBraceOnNewLineForFunctions": false,
-        "placeOpenBraceOnNewLineForControlBlocks": false
-    }
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "noImplicitAny": true,
+    "removeComments": false
+  },
+  "files": [
+    "lib/atpl.ts",
+    "test/utils_test.ts",
+    "test/TemplateTokenizer_test.ts",
+    "test/TemplateProvider_test.ts",
+    "test/StringReader_test.ts",
+    "test/RuntimeUtils_test.ts",
+    "test/renderFileTest.ts",
+    "test/fixtures_test.ts",
+    "test/ExpressionTokenizer_test.ts",
+    "test/expressionparser_test.ts",
+    "test/express_test.ts",
+    "test/express3_test.ts",
+    "test/app_test.ts"
+  ],
+  "formatCodeOptions": {
+    "indentSize": 2,
+    "tabSize": 2,
+    "newLineCharacter": "\n",
+    "convertTabsToSpaces": false,
+    "insertSpaceAfterCommaDelimiter": false,
+    "insertSpaceAfterSemicolonInForStatements": true,
+    "insertSpaceBeforeAndAfterBinaryOperators": true,
+    "insertSpaceAfterKeywordsInControlFlowStatements": true,
+    "insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+    "insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
+    "placeOpenBraceOnNewLineForFunctions": false,
+    "placeOpenBraceOnNewLineForControlBlocks": false
+  }
 }
-

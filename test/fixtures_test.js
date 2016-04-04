@@ -1,4 +1,5 @@
 ///<reference path='./imports.d.ts'/>
+"use strict";
 var assert = require('assert');
 var fs = require('fs');
 var TemplateParser_1 = require('../lib/parser/TemplateParser');
@@ -82,7 +83,7 @@ function handleSet(name, data) {
             }
             if (e.message === undefined)
                 throw (new Error("ERROR, INVALID EXCEPTION! " + JSON.stringify(e)));
-            //console.log(e); 
+            //console.log(e);
             assert.equal(e.message, test.exception);
             return;
         }
@@ -134,7 +135,7 @@ var TestClass = (function () {
     }
     TestClass.prototype.testMethod = function (a, b, c) { return 'a=' + a + "," + 'b=' + b + "," + 'c=' + c + "," + 'testClassValue=' + this.testClassValue + ","; };
     return TestClass;
-})();
+}());
 describe('extra fixtures', function () {
     it('function call as argument', function () {
         var templateParser = createTemplateParser({

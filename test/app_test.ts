@@ -62,10 +62,16 @@ describe('app', () => {
 		;
 	});
 
+	it('should be compatible with express2 (render file with absolute path)', () => {
+		//express2Compile(templateString: string, options: any): (params: any) => string
+		var func = atpl.compile('dummy');
+		assert.equal(func({ filename: __dirname + '/templates/simple.html', name: 'World' }), 'Hello World!');
+  });
+
 	it('should be compatible with express2 (render file)', () => {
 		//express2Compile(templateString: string, options: any): (params: any) => string
 		var func = atpl.compile('dummy');
-		assert.equal(func({ filename: 'test/templates/simple.html', name: 'World' }), 'Hello World!');
+		assert.equal(func({ filename: '/test/templates/simple.html', name: 'World' }), 'Hello World!');
 	});
 
 	it('should be compatible with express2 (render string)', () => {

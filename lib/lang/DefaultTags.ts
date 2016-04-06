@@ -422,8 +422,12 @@ export class DefaultTags {
     var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
     var expression = expressionParser.parseExpression();
     let self = DefaultTags._self;
-    var fileNameNode = expression.value !== '_self' ? expression : self;
+    var fileNameNode = expression;
+    if (fileNameNode.value === '_self') {
+      fileNameNode = self;
+    }
     DefaultTags._self = fileNameNode;
+    DefaultTags._self.value = templateParser.path;
     expressionTokenReader.expectAndMoveNext(['import']);
 
     var pairs: any[] = [];

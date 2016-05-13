@@ -1,2 +1,2 @@
 @echo off
-npm publish . %*
+tsc && npm publish . %*

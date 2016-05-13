@@ -432,7 +432,10 @@ export class DefaultTags {
   }
   static from(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
     var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
-    let fileNameNode = _self(expressionParser.parseExpression(), templateParser.path);
+    var expression = expressionParser.parseExpression();
+    let self = DefaultTags._self;
+    var fileNameNode = (<any>expression).value !== '_self' ? expression : self;
+    DefaultTags._self = fileNameNode;
     expressionTokenReader.expectAndMoveNext(['import']);
 
     var pairs: any[] = [];
@@ -458,7 +461,10 @@ export class DefaultTags {
   }
   static $import(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
     var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
-    let fileNameNode = _self(expressionParser.parseExpression(), templateParser.path);
+    var expression = expressionParser.parseExpression();
+    let self = DefaultTags._self;
+    var fileNameNode = (<any>expression).value !== '_self' ? expression : self;
+    DefaultTags._self = fileNameNode;
     expressionTokenReader.expectAndMoveNext(['as']);
     var aliasNode = <ParserNodeLeftValue>expressionParser.parseIdentifier();
 

@@ -524,7 +524,6 @@ export function escapeJsString(text: string) {
 				var retCode = charCode.toString(16);
 				while (retCode.length < 4) retCode = '0' + retCode;
 				return '\\u' + retCode;
-			break;
 		}
 	});
 }

@@ -6,5 +6,7 @@
 *.js.map
 /obj
 /*.iws
+/*.ipr
+/*.iml
 /npm-debug.log
 *.js

@@ -132,7 +132,6 @@ export class ExpressionTokenizer implements ITokenizer {
 					} catch (e) {
 						throw (new Error("Can't parse [" + value + "]"));
 					}
-				break;
 				default:
 					// Numbers
 					if (currentChar.match(/^\d$/)) {
@@ -172,7 +171,6 @@ export class ExpressionTokenizer implements ITokenizer {
 						} else {
 							this.stringReader.skipChars(1);
 							throw (new Error("Unknown token '" + currentChar + "' in '" + this.stringReader.peekChars(10) + "'"));
-							return this.emitToken('unknown', currentChar);
 						}
 					}
 				break;

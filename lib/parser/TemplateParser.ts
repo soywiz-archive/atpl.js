@@ -23,7 +23,7 @@ export class FlowException extends Error {
     ) {
         super();
     }
-} 
+}
 
 function debug(data:any) {
     //console.log(data);
@@ -40,6 +40,7 @@ export interface EvalResult {
 }
 
 export class TemplateParser {
+  path: string;
 	registry: any = {};
 	registryString: any = {};
 	sandboxPolicy: SandboxPolicy = new SandboxPolicy();
@@ -77,10 +78,11 @@ export class TemplateParser {
 		return template;
 	}
 
-	getEvalCodeString(content: string, path: string, tokenParserContextCommon?: TokenParserContextCommon): EvalResult {
+  getEvalCodeString(content: string, path: string, tokenParserContextCommon?: TokenParserContextCommon): EvalResult {
+    this.path = path;
 		var templateTokenizer  = new TemplateTokenizer(content);
 		var tokenParserContext = new TokenParserContext(tokenParserContextCommon || new TokenParserContextCommon(), this.sandboxPolicy);
-	
+
 		try {
 			var tokenReader:TokenReader = new TokenReader(templateTokenizer);
 			tokenParserContext.setBlock('__main', this.parseTemplateSync(tokenParserContext, tokenReader));
@@ -117,7 +119,7 @@ export class TemplateParser {
 
 		output += 'CurrentTemplate.prototype.macros = {};\n';
 		output += 'CurrentTemplate.prototype.macros.$runtimeContext = runtimeContext;\n';
-		
+
 		tokenParserContext.iterateMacros((macroNode, macroName) => {
             output += 'CurrentTemplate.prototype.macros.' + macroName + ' = function() {\n';
             //output += 'console.log(this);\n';
@@ -137,11 +139,11 @@ export class TemplateParser {
 		if (this.registry[path] !== undefined) {
 			return this.registry[path];
 		}
-	
+
 		//console.log("TemplateParser.prototype.compile: " + path);
 
 		var content = this.templateProvider.getSync(path, this.getCache());
-	
+
 		return this.getEvalCodeString(content, path, tokenParserContextCommon);
 	}
 
@@ -172,7 +174,7 @@ export class TemplateParser {
 
 			this.registryString[content] = { output : output, class : CurrentTemplate };
 		}
-	
+
 		return <CompiledTemplate>this.registryString[content];
 	}
 
@@ -199,7 +201,7 @@ export class TemplateParser {
 
 			this.registry[path] = { output : output, class : CurrentTemplate };
 		}
-	
+
 		return <CompiledTemplate>this.registry[path];
 	}
 
@@ -218,7 +220,7 @@ export class TemplateParser {
 			case 'expression':
 				item = tokenReader.read();
 				// Propagate the "not done".
-				
+
 				return new ParserNode.ParserNodeRaw(this.parseTemplateExpressionSync(tokenParserContext, tokenReader, new TokenReader(item.value)).generateCode({ doWrite: true }));
 			case 'block':
 				item = tokenReader.read();
@@ -235,7 +237,7 @@ export class TemplateParser {
 		while (tokenReader.hasMore()) {
 			nodes.add(this.parseTemplateSyncOne(tokenParserContext, tokenReader));
 		}
-	
+
 		return nodes;
 	}
 
@@ -251,7 +253,7 @@ export class TemplateParser {
             throw new Error("Block expected a type as first token but found : " + JSON.stringify(blockTypeToken));
         }
 		debug('BLOCK: ' + blockType);
-	
+
 		var blockHandler = this.languageContext.tags[blockType];
 		if (blockHandler !== undefined) {
 			//console.log("blockHandler: " + blockType + " | " + tokenParserContext.common.sandbox);

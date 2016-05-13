@@ -9,6 +9,7 @@ import {
   ParserNodeLeftValue,
   ParserNodeAssignment,
   ParserNodeRaw,
+  ParserNodeLiteral,
   ParserNodeContainerExpression,
   ParserNodeStatementExpression,
   ParserNodeIdentifier,
@@ -73,6 +74,17 @@ function handleOpenedTag(
       }
     }
   }
+}
+
+function _self(expression: ParserNodeExpression, path: string) {
+  let self = DefaultTags._self;
+  let fileNameNode = <ParserNodeLiteral> expression;
+  if (fileNameNode.value === '_self') {
+    self.value = path;
+    fileNameNode = self;
+  }
+  DefaultTags._self = fileNameNode;
+  return fileNameNode;
 }
 
 class ParserNodeAutoescape extends ParserNodeStatement {
@@ -420,10 +432,7 @@ export class DefaultTags {
   }
   static from(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
     var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
-    var expression = expressionParser.parseExpression();
-    let self = DefaultTags._self;
-    var fileNameNode = (<any>expression).value !== '_self' ? expression : self;
-    DefaultTags._self = fileNameNode;
+    let fileNameNode = _self(expressionParser.parseExpression(), templateParser.path);
     expressionTokenReader.expectAndMoveNext(['import']);
 
     var pairs: any[] = [];
@@ -449,10 +458,7 @@ export class DefaultTags {
   }
   static $import(blockType: string, templateParser: TemplateParser, tokenParserContext: TokenParserContext, templateTokenReader: TokenReader, expressionTokenReader: TokenReader) {
     var expressionParser = new ExpressionParser(expressionTokenReader, tokenParserContext);
-    var expression = expressionParser.parseExpression();
-    let self = DefaultTags._self;
-    var fileNameNode = (<any>expression).value !== '_self' ? expression : self;
-    DefaultTags._self = fileNameNode;
+    let fileNameNode = _self(expressionParser.parseExpression(), templateParser.path);
     expressionTokenReader.expectAndMoveNext(['as']);
     var aliasNode = <ParserNodeLeftValue>expressionParser.parseIdentifier();
 

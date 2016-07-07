@@ -633,7 +633,7 @@ export class DefaultTags {
       var state = 'normal';
       var pluralNode: ParserNodeExpression = new ParserNodeRaw("1");
       var info = <{ [a: string]: string }>{ 'normal': '', 'plural': '', 'notes': '' }
-      function flush(e: FlowException) {
+      var flush = function(e: FlowException) {
         info[state] = e.templateTokenReader.tokenizer.stringReader.getSlice(lastPos, currentPos);
         lastPos = e.templateTokenReader.tokenizer.stringReader.position;
       }

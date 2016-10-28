@@ -54,6 +54,20 @@
 		return this.scope[key] = value;
 	}
 
+    /**
+     * Sets a value in the scope it is defined, if it is not, it creates it in the current scope. 
+     */
+    setUpdate(key: string, value: any): any {
+        if (!(key in this.scope)) return this.set(key, value);
+
+        var keyScope = this.scope;
+        while (keyScope) {
+            if (keyScope.hasOwnProperty(key)) return keyScope[key] = value;
+            keyScope = keyScope['__proto__']; 
+        }
+        return null;
+    }
+
 	/**
 	 * Sets a list of values in the current scope.
 	 */

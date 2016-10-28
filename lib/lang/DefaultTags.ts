@@ -1,4 +1,5 @@
 ﻿import { ExpressionParser } from '../parser/ExpressionParser';
+import { Scope } from '../runtime/Scope';
 import {
   ParserNode,
   ParserNodeExpression,
@@ -161,7 +162,7 @@ class ParserNodeScopeSet extends ParserNodeStatement {
   }
 
   generateCode(context: ParserNodeGenerateCodeContext) {
-    return 'runtimeContext.scope.set(' + JSON.stringify(this.key) + ', ' + this.value.generateCode(context) + ');';
+    return 'runtimeContext.scope.setUpdate(' + JSON.stringify(this.key) + ', ' + this.value.generateCode(context) + ');';
   }
 }
 
@@ -306,7 +307,7 @@ export class DefaultTags {
       //console.log('************************');
 
       return new ParserNodeStatementExpression(<ParserNodeExpression><any>(new ParserNodeContainer([
-        new ParserNodeRaw('runtimeContext.scopeSet(' + JSON.stringify((<ParserNodeIdentifier>nodeIds[0]).value) + ', (runtimeContext.captureOutput(function() { '),
+        new ParserNodeRaw('runtimeContext.scopeSetUpdate(' + JSON.stringify((<ParserNodeIdentifier>nodeIds[0]).value) + ', (runtimeContext.captureOutput(function() { '),
         innerNode,
         new ParserNodeRaw('})))')
       ])));

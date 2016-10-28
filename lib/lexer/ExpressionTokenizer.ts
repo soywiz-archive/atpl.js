@@ -173,7 +173,6 @@ export class ExpressionTokenizer implements ITokenizer {
 							throw (new Error("Unknown token '" + currentChar + "' in '" + this.stringReader.peekChars(10) + "'"));
 						}
 					}
-				break;
 			}
 		}
 	

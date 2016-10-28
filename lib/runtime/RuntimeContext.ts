@@ -333,6 +333,10 @@ export class RuntimeContext {
 		return this.scope.set(key, value);
 	}
 
+    scopeSetUpdate(key:string, value:any) {
+		return this.scope.setUpdate(key, value);
+	}
+
 	slice(object: any, left: any, right: any):any {
 		if (RuntimeUtils.isString(object)) {
 			return (<String>object).substr(left, right);

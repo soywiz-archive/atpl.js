@@ -24,13 +24,16 @@ export class DefaultFilters {
 	 *
 	 * @see http://twig.sensiolabs.org/doc/filters/batch.html
 	 */
-	static batch(_items: any[], groupCount: number) {
+	static batch(_items: any[], groupCount: number, fill: any = undefined) {
 		var items = RuntimeUtils.ensureArray(_items);
 		var groupList:any[] = [];
+        if (fill !== undefined) groupCount = Math.min(groupCount, items.length); 
 		groupCount = RuntimeUtils.ensureNumber(groupCount);
 
 		for (var n = 0; n < items.length; n += groupCount) {
-			groupList.push(items.slice(n, n + groupCount));
+            const slice = items.slice(n, n + groupCount);
+            if (fill !== undefined) while (slice.length < groupCount) slice.push(fill);
+			groupList.push(slice);
 		}
 
 		return groupList;

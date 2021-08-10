@@ -6,7 +6,7 @@ import { TemplateParser } from './parser/TemplateParser';
 
 import Default = require('./lang/Default');
 import fs = require('fs');
-var isWin = !!process.platform.match(/^win/);
+var isWin = process.platform ? !!process.platform.match(/^win/) : false;
 
 function normalizePath(path:string) {
 	path = path.replace(/\\/g, '/');

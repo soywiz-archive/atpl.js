@@ -25,7 +25,8 @@ export class FileSystemTemplateProvider implements ITemplateProvider {
             if (normalizedPath.split('/').slice(0, this.basePathComponents.length) == this.basePathComponents) {
                 throw (new Error("Outside the Base Path"));
             }
-            this.cacheObject[path] = (<string><any>fs.readFileSync(normalizedPath, 'utf-8')).replace(/^\uFEFF/, '');
+            this.cacheObject[path] = normalizedPath;
+            // this.cacheObject[path] = (<string><any>fs.readFileSync(normalizedPath, 'utf-8')).replace(/^\uFEFF/, '');
         }
         return this.cacheObject[path];
     }

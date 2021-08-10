@@ -40,5 +40,10 @@
   "license": "MIT",
   "engines": {
     "node": "*"
+  },
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
   }
 }
